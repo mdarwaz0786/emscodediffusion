@@ -11,8 +11,6 @@ import formatTimeToHoursMinutes from '../../../Helper/formatTimeToHoursMinutes.j
 const Home = () => {
   const { team, validToken } = useAuth();
   const [attendance, setAttendance] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const currentDate = new Date().toISOString().split('T')[0];
   const currentTime = new Date().toTimeString().split(' ')[0].slice(0, 5);
@@ -70,9 +68,6 @@ const Home = () => {
 
   // Fetch attendance
   const fetchAttendance = async () => {
-    setLoading(true);
-    setError(null);
-
     try {
       const params = {};
 
@@ -84,15 +79,17 @@ const Home = () => {
         params.employeeId = employeeId;
       };
 
-      const response = await axios.get(`${API_BASE_URL}/api/v1/attendance/all-attendance`, { params });
+      const response = await axios.get(`${API_BASE_URL}/api/v1/attendance/all-attendance`, { params }, {
+        headers: {
+          Authorization: validToken,
+        },
+      });
 
       if (response?.data?.success) {
         setAttendance(response?.data?.attendance);
       };
     } catch (error) {
-      setError(error.message || 'Something went wrong');
-    } finally {
-      setLoading(false);
+      console.error(error.message);
     };
   };
 

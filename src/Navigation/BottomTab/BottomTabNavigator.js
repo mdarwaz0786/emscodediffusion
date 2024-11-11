@@ -1,5 +1,5 @@
 import React from "react";
-import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/Ionicons";
 import HomeScreen from "../../screens/Home/HomeScreen.js";
 import SettingsScreen from "../../screens/Settings/SettingsScreen.js";
@@ -20,9 +20,10 @@ const BottomTabNavigator = () => {
 
   return (
     <Tab.Navigator
-      screenOptions={({route}) => ({
+      initialRouteName="Home"
+      screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarIcon: ({color, size}) => {
+        tabBarIcon: ({ color, size }) => {
           const iconName = icons[route.name];
           return <Icon name={iconName} size={size} color={color} />;
         },
