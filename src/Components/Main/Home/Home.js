@@ -1,18 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useAuth } from '../../../Context/auth.context.js';
 import axios from 'axios';
 import Toast from "react-native-toast-message";
 import { API_BASE_URL } from "@env";
+import formatTimeWithAmPm from '../../../Helper/formatTimeWithAmPm.js';
+import formatTimeToHoursMinutes from '../../../Helper/formatTimeToHoursMinutes.js';
 
 const Home = () => {
   const { team, validToken } = useAuth();
+  const [attendance, setAttendance] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const currentDate = new Date().toISOString().split('T')[0];
   const currentTime = new Date().toTimeString().split(' ')[0].slice(0, 5);
   const employeeId = team?._id;
 
+  // Punch in attendance
   const handleCreateAttendance = async () => {
     try {
       const response = await axios.post(`${API_BASE_URL}/api/v1/attendance/create-attendance`,
@@ -30,11 +36,69 @@ const Home = () => {
 
       if (response.data.success) {
         Toast.show({ type: "success", text1: "successful" });
+        fetchAttendance();
       };
     } catch (error) {
       Toast.show({ type: "error", text1: error.response.data.message });
     };
   };
+
+  // Punch out attendance
+  const handleUpdateAttendance = async () => {
+    try {
+      const response = await axios.put(`${API_BASE_URL}/api/v1/attendance/update-attendance`,
+        {
+          employee: employeeId,
+          attendanceDate: currentDate,
+          punchOutTime: currentTime,
+        },
+        {
+          headers: {
+            Authorization: validToken,
+          },
+        },
+      );
+
+      if (response.data.success) {
+        Toast.show({ type: "success", text1: "successful" });
+        fetchAttendance();
+      };
+    } catch (error) {
+      Toast.show({ type: "error", text1: error.response.data.message });
+    };
+  };
+
+  // Fetch attendance
+  const fetchAttendance = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const params = {};
+
+      if (currentDate) {
+        params.date = currentDate;
+      };
+
+      if (employeeId) {
+        params.employeeId = employeeId;
+      };
+
+      const response = await axios.get(`${API_BASE_URL}/api/v1/attendance/all-attendance`, { params });
+
+      if (response?.data?.success) {
+        setAttendance(response?.data?.attendance);
+      };
+    } catch (error) {
+      setError(error.message || 'Something went wrong');
+    } finally {
+      setLoading(false);
+    };
+  };
+
+  useEffect(() => {
+    fetchAttendance();
+  }, [currentDate, employeeId]);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -44,17 +108,32 @@ const Home = () => {
           <View style={styles.profileContainer}>
             <Image style={styles.profileIcon} source={require("../../../Assets/user-icon.png")} />
             <View>
-              <Text style={styles.employeeName}>{team?.name}</Text>
+              <Text style={styles.employeeName}>{team?.name?.split(' ', 1)[0]}</Text>
               <Text style={styles.positionText}>{team?.role?.name}</Text>
             </View>
           </View>
           <View style={styles.punchButtons}>
-            <TouchableOpacity style={[styles.punchButton, styles.punchInButton]} onPress={handleCreateAttendance}>
-              <Text style={styles.punchButtonText}>Punch In</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.punchButton, styles.punchOutButton]}>
-              <Text style={styles.punchButtonText}>Punch Out</Text>
-            </TouchableOpacity>
+            {
+              !(attendance[0]?.punchIn) && !(attendance[0]?.punchOut) && (
+                <TouchableOpacity style={[styles.punchButton, styles.punchInButton]} onPress={handleCreateAttendance}>
+                  <Text style={styles.punchButtonText}>Punch In</Text>
+                </TouchableOpacity>
+              )
+            }
+            {
+              !(attendance[0]?.punchOut) && (attendance[0]?.punchIn) && (
+                <TouchableOpacity style={[styles.punchButton, styles.punchOutButton]} onPress={handleUpdateAttendance}>
+                  <Text style={styles.punchButtonText}>Punch Out</Text>
+                </TouchableOpacity>
+              )
+            }
+            {
+              (attendance[0]?.punchOut) && (attendance[0]?.punchOut) && (
+                <TouchableOpacity style={[styles.punchButton, styles.markedButton]}>
+                  <Text style={styles.punchButtonText}>✓ Attendance Marked</Text>
+                </TouchableOpacity>
+              )
+            }
           </View>
         </View>
       </View>
@@ -65,10 +144,21 @@ const Home = () => {
         <Text style={styles.dateText}>{new Date().toDateString()}</Text>
       </View>
 
-      {/* Attendance Status Card */}
-      <View style={styles.attendanceStatus}>
-        <Text style={styles.statusText}>Status: Checked In</Text>
-        <Text style={styles.statusTime}>Last Punch: 9:00 AM</Text>
+      {/* Today's Activity */}
+      <View style={styles.activitySection}>
+        <Text style={styles.sectionTitle}>Today’s Activity</Text>
+        <Text>
+          <Text style={{ color: attendance[0]?.punchIn ? "green" : "red" }}>{attendance[0]?.punchIn ? "✓" : "✗"}</Text>
+          {" "}
+          {formatTimeWithAmPm(attendance[0]?.punchInTime)}
+          {attendance[0]?.punchIn ? " - Punched In" : " Punched In"}
+        </Text>
+        <Text>
+          <Text style={{ color: attendance[0]?.punchOut ? "green" : "red" }}>{attendance[0]?.punchOut ? "✓" : "✗"}</Text>
+          {" "}
+          {formatTimeWithAmPm(attendance[0]?.punchOutTime)}
+          {attendance[0]?.punchOut ? " - Punched Out" : " Punched Out"}
+        </Text>
       </View>
 
       {/* Quick Actions */}
@@ -86,8 +176,8 @@ const Home = () => {
       {/* Today's Summary */}
       <View style={styles.summary}>
         <Text style={styles.summaryTitle}>Today’s Summary</Text>
-        <Text>Total Hours Worked: 5 hrs</Text>
-        <Text>Break Time: 30 mins</Text>
+        <Text>Total Hours Worked: {formatTimeToHoursMinutes(attendance[0]?.hoursWorked)}</Text>
+        <Text>Break Time: 45 mins</Text>
       </View>
 
       {/* Monthly Statistics */}
@@ -103,25 +193,10 @@ const Home = () => {
             <Text style={styles.statLabel}>Absent Days</Text>
           </View>
           <View style={styles.statBox}>
-            <Text style={styles.statNumber}>3</Text>
+            <Text style={styles.statNumber}>0</Text>
             <Text style={styles.statLabel}>Leaves</Text>
           </View>
         </View>
-      </View>
-
-      {/* Recent Activity */}
-      <View style={styles.activitySection}>
-        <Text style={styles.sectionTitle}>Recent Activity</Text>
-        <Text>✓ 9:00 AM - Checked In</Text>
-        <Text>✓ 12:00 PM - Break</Text>
-        <Text>✓ 12:30 PM - Resume Work</Text>
-      </View>
-
-      {/* Upcoming Events */}
-      <View style={styles.upcomingEvents}>
-        <Text style={styles.sectionTitle}>Upcoming Events</Text>
-        <Text>📅 Project Deadline: June 30, 2023</Text>
-        <Text>📅 Team Meeting: June 15, 2023</Text>
       </View>
 
       {/* Notifications */}
@@ -153,7 +228,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   header: {
     flexDirection: 'row',
@@ -163,68 +238,61 @@ const styles = StyleSheet.create({
   profileContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   profileIcon: {
-    width: 50,
-    height: 50,
+    width: 35,
+    height: 35,
     borderRadius: 25,
-    marginRight: 10,
+    marginRight: 8,
   },
   employeeName: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 16,
+    fontWeight: '500',
+    marginRight: 10,
   },
   positionText: {
     color: 'gray',
+    fontSize: 12,
   },
   punchButtons: {
     flexDirection: 'row',
   },
   punchButton: {
     paddingVertical: 8,
-    paddingHorizontal: 15,
+    paddingHorizontal: 10,
     borderRadius: 8,
     marginHorizontal: 5,
   },
   punchInButton: {
-    backgroundColor: '#28a745',
+    backgroundColor: '#dc3545',
   },
   punchOutButton: {
     backgroundColor: '#dc3545',
-    display: "none",
+  },
+  markedButton: {
+    backgroundColor: '#28a745',
   },
   punchButtonText: {
     color: '#fff',
-    fontWeight: '600',
+    fontSize: 13,
+    fontWeight: '500',
   },
   greetingContainer: {
-    marginBottom: 20,
+    marginBottom: 12,
   },
   greetingText: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: '500',
   },
   dateText: {
     color: 'gray',
-  },
-  attendanceStatus: {
-    padding: 20,
-    backgroundColor: '#d9e3f0',
-    borderRadius: 10,
-    marginVertical: 10,
-  },
-  statusText: {
-    fontSize: 17,
-    color: '#006400',
-  },
-  statusTime: {
-    fontSize: 15,
-    color: 'gray',
+    fontSize: 13,
   },
   quickActions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginVertical: 10,
+    marginTop: 9,
   },
   quickActionButton: {
     flexDirection: 'column',
@@ -243,6 +311,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 10,
     marginTop: 15,
+    marginBottom: 1,
   },
   summaryTitle: {
     fontSize: 16,
@@ -254,6 +323,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 10,
     marginTop: 15,
+    marginBottom: 1,
   },
   sectionTitle: {
     fontSize: 16,
@@ -281,15 +351,10 @@ const styles = StyleSheet.create({
   },
   activitySection: {
     padding: 15,
-    backgroundColor: '#fff',
+    backgroundColor: '#d9e3f0',
     borderRadius: 10,
-    marginTop: 15,
-  },
-  upcomingEvents: {
-    padding: 15,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    marginTop: 15,
+    marginTop: 2,
+    marginBottom: 6,
   },
   notifications: {
     padding: 15,
