@@ -14,14 +14,20 @@ import Toast from "react-native-toast-message";
 import { API_BASE_URL } from "@env";
 import formatTimeWithAmPm from "../../../Helper/formatTimeWithAmPm.js";
 import formatTimeToHoursMinutes from "../../../Helper/formatTimeToHoursMinutes.js";
+import { useNavigation } from "@react-navigation/native";
 
 const Home = () => {
+  const navigation = useNavigation();
   const { team, validToken, isLoading } = useAuth();
   const [attendance, setAttendance] = useState([]);
 
   const currentDate = new Date().toISOString().split("T")[0];
   const currentTime = new Date().toTimeString().split(" ")[0].slice(0, 5);
   const employeeId = team?._id;
+
+  const handlePress = () => {
+    navigation.navigate('Attendance');
+  };
 
   // Punch in attendance
   const handleCreateAttendance = async () => {
@@ -185,7 +191,7 @@ const Home = () => {
 
         {/* Quick Actions */}
         <View style={styles.quickActions}>
-          <TouchableOpacity style={styles.quickActionButton}>
+          <TouchableOpacity style={styles.quickActionButton} onPress={handlePress}>
             <Icon name="history" size={20} />
             <Text style={styles.quickActionText}>Attendance History</Text>
           </TouchableOpacity>
