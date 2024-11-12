@@ -1,26 +1,51 @@
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import CustomDrawerNavigator from './CustomDrawerNavigator.js';
-import HomeScreen from '../../screens/Home/HomeScreen.js';
-import ProfileScreen from '../../screens/Profile/ProfileScreen.js';
-import BottomTabNavigator from '../BottomTab/BottomTabNavigator.js';
-import LoginScreen from '../../screens/Auth/LoginScreen.js';
-import Logout from '../../Components/Main/Auth/Logout.js';
+// src/Navigation/Drawer/DrawerNavigator.js
+import React from "react";
+import {ActivityIndicator, View} from "react-native";
+import {createDrawerNavigator} from "@react-navigation/drawer";
+import {useAuth} from "../../Context/auth.context.js";
+import CustomDrawerNavigator from "./CustomDrawerNavigator.js";
+import BottomTabNavigator from "../BottomTab/BottomTabNavigator.js";
+import LoginScreen from "../../Screens/Auth/LoginScreen.js";
+import AboutUsScreen from "../../Screens/AboutUs/AboutUsScreen.js";
+import ContactUsScreen from "../../Screens/ContactUs/ContactUsScreen.js";
+import HelpScreen from "../../Screens/Help/HelpScreen.js";
+import LogoutScreen from "../../Screens/Auth/LogoutScreen.js";
 
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {
+  const {isLoggedIn, isLoading} = useAuth();
+
+  if (isLoading) {
+    return (
+      <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+        <ActivityIndicator size="large" color="#A63ED3" />
+      </View>
+    );
+  }
+
   return (
     <Drawer.Navigator
-      initialRouteName="BottomTab"
-      drawerContent={(props) => <CustomDrawerNavigator {...props} />}
+      initialRouteName={isLoggedIn ? "BottomTab" : "Login"}
+      drawerContent={props =>
+        isLoggedIn ? <CustomDrawerNavigator {...props} /> : null
+      }
       screenOptions={{
         headerShown: false,
-      }}
-    >
-      <Drawer.Screen name="BottomTab" component={BottomTabNavigator} />
-      <Drawer.Screen name="Profile" component={ProfileScreen} />
-      <Drawer.Screen name="Login" component={LoginScreen} />
-      <Drawer.Screen name="Logout" component={Logout} />
+        gestureEnabled: isLoggedIn,
+        swipeEnabled: isLoggedIn,
+      }}>
+      {isLoggedIn ? (
+        <>
+          <Drawer.Screen name="BottomTab" component={BottomTabNavigator} />
+          <Drawer.Screen name="About" component={AboutUsScreen} />
+          <Drawer.Screen name="Contact" component={ContactUsScreen} />
+          <Drawer.Screen name="Help" component={HelpScreen} />
+          <Drawer.Screen name="Logout" component={LogoutScreen} />
+        </>
+      ) : (
+        <Drawer.Screen name="Login" component={LoginScreen} />
+      )}
     </Drawer.Navigator>
   );
 };

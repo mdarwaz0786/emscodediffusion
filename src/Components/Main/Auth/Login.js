@@ -1,48 +1,57 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, Button, Image, StyleSheet } from "react-native";
+import React, {useState} from "react";
+import {View, Text, TextInput, Button, Image, StyleSheet} from "react-native";
 import axios from "axios";
 import Toast from "react-native-toast-message";
-import { useAuth } from "../../../Context/auth.context.js";
-import { API_BASE_URL } from "@env";
+import {useAuth} from "../../../Context/auth.context.js";
+import {API_BASE_URL} from "@env";
 
-const Login = (props) => {
+const Login = props => {
   const [employeeId, setEmployeeId] = useState("");
   const [password, setPassword] = useState("");
-  const { storeToken } = useAuth();
+  const {storeToken} = useAuth();
 
   // Ensure the employeeId starts with "EmpID" and the rest remains unchanged
   const transformedEmployeeId = `EmpID${employeeId.substring(5)}`;
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/v1/team/login-team`, {
-        employeeId: transformedEmployeeId,
-        password,
-      });
-      console.log(response);
+      const response = await axios.post(
+        `${API_BASE_URL}/api/v1/team/login-team`,
+        {
+          employeeId: transformedEmployeeId,
+          password,
+        },
+      );
       if (response?.data?.success) {
         storeToken(response?.data?.token);
         setEmployeeId("");
         setPassword("");
-        Toast.show({ type: "success", text1: response?.data?.message });
+        Toast.show({type: "success", text1: response?.data?.message});
         props.navigation.navigate("Home");
-      };
+      }
     } catch (error) {
-      console.log("Error while login:", error.message);
-      const errorMessage = error.response?.data?.message || "An unexpected error occurred. Please try again.";
-      Toast.show({ type: "error", text1: errorMessage });
-    };
+      console.error("Error while login:", error.message);
+      const errorMessage =
+        error.response?.data?.message ||
+        "An unexpected error occurred. Please try again.";
+      Toast.show({type: "error", text1: errorMessage});
+    }
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
-        <Image source={require("../../../Assets/logo.png")} style={styles.logo} />
+        <Image
+          source={require("../../../Assets/logo.png")}
+          style={styles.logo}
+        />
       </View>
       <Text style={styles.heading}>Login</Text>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>Employee ID <Text style={styles.required}>*</Text></Text>
+        <Text style={styles.label}>
+          Employee ID <Text style={styles.required}>*</Text>
+        </Text>
         <TextInput
           style={styles.input}
           placeholder="Employee ID"
@@ -53,7 +62,9 @@ const Login = (props) => {
       </View>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>Password <Text style={styles.required}>*</Text></Text>
+        <Text style={styles.label}>
+          Password <Text style={styles.required}>*</Text>
+        </Text>
         <TextInput
           style={styles.input}
           placeholder="Password"

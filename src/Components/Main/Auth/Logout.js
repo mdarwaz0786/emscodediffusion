@@ -1,22 +1,52 @@
-import React, { useEffect } from 'react';
-import { View, Text } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { useAuth } from '../../../Context/auth.context.js';
+import React, {useEffect} from "react";
+import {View, Text, ActivityIndicator, StyleSheet} from "react-native";
+import {useAuth} from "../../../Context/auth.context.js";
 
-const Logout = () => {
-  const { logOutTeam } = useAuth();
-  const navigation = useNavigation();
+const Logout = props => {
+  const {logOutTeam} = useAuth();
 
   useEffect(() => {
-    logOutTeam();
-    navigation.navigate('Login');
-  }, [logOutTeam, navigation]);
+    const performLogout = () => {
+      setTimeout(async () => {
+        await logOutTeam();
+        props.navigation.reset({
+          index: 0,
+          routes: [{name: "Login"}],
+        });
+      }, 2000);
+    };
+    performLogout();
+  }, [logOutTeam]);
 
   return (
-    <View>
-      <Text>Logging out...</Text>
+    <View style={styles.container}>
+      <ActivityIndicator size="large" color="#A63ED3" />
+      <Text style={styles.message}>Thank you for using our app!</Text>
+      <Text style={styles.subMessage}>
+        You have been logged out successfully.
+      </Text>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  message: {
+    fontSize: 18,
+    color: "#333",
+    marginTop: 10,
+    fontWeight: "bold",
+  },
+  subMessage: {
+    fontSize: 14,
+    color: "#666",
+    marginTop: 5,
+  },
+});
 
 export default Logout;
