@@ -113,8 +113,8 @@ const Home = () => {
   }, [employeeId, currentDate, isLoading]);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {/* Header Card with Profile Icon and Punch Buttons */}
+    <>
+      {/* Header Card with Profile Icon and Punch Buttons non scrollable */}
       <View style={styles.cardContainer}>
         <View style={styles.header}>
           <View style={styles.profileContainer}>
@@ -154,81 +154,84 @@ const Home = () => {
         </View>
       </View>
 
-      {/* Greeting and Date */}
-      <View style={styles.greetingContainer}>
-        <Text style={styles.greetingText}>
-          Good Morning, {team?.name?.split(" ", 1)[0]}!
-        </Text>
-        <Text style={styles.dateText}>{new Date().toDateString()}</Text>
-      </View>
+      {/* Scrollable content */}
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* Greeting and Date */}
+        <View style={styles.greetingContainer}>
+          <Text style={styles.greetingText}>
+            Good Morning, {team?.name?.split(" ", 1)[0]}!
+          </Text>
+          <Text style={styles.dateText}>{new Date().toDateString()}</Text>
+        </View>
 
-      {/* Today's Activity */}
-      <View style={styles.activitySection}>
-        <Text style={styles.sectionTitle}>Today’s Activity</Text>
-        <Text>
-          <Text style={{ color: attendance[0]?.punchIn ? "green" : "red" }}>
-            {attendance[0]?.punchIn ? "✓" : "✗"}
-          </Text>{" "}
-          {formatTimeWithAmPm(attendance[0]?.punchInTime)}
-          {attendance[0]?.punchIn ? " - Punched In" : " Punched In"}
-        </Text>
-        <Text>
-          <Text style={{ color: attendance[0]?.punchOut ? "green" : "red" }}>
-            {attendance[0]?.punchOut ? "✓" : "✗"}
-          </Text>{" "}
-          {formatTimeWithAmPm(attendance[0]?.punchOutTime)}
-          {attendance[0]?.punchOut ? " - Punched Out" : " Punched Out"}
-        </Text>
-      </View>
+        {/* Today's Activity */}
+        <View style={styles.activitySection}>
+          <Text style={styles.sectionTitle}>Today’s Activity</Text>
+          <Text>
+            <Text style={{ color: attendance[0]?.punchIn ? "green" : "red" }}>
+              {attendance[0]?.punchIn ? "✓" : "✗"}
+            </Text>{" "}
+            {formatTimeWithAmPm(attendance[0]?.punchInTime)}
+            {attendance[0]?.punchIn ? " - Punched In" : " Punched In"}
+          </Text>
+          <Text>
+            <Text style={{ color: attendance[0]?.punchOut ? "green" : "red" }}>
+              {attendance[0]?.punchOut ? "✓" : "✗"}
+            </Text>{" "}
+            {formatTimeWithAmPm(attendance[0]?.punchOutTime)}
+            {attendance[0]?.punchOut ? " - Punched Out" : " Punched Out"}
+          </Text>
+        </View>
 
-      {/* Quick Actions */}
-      <View style={styles.quickActions}>
-        <TouchableOpacity style={styles.quickActionButton}>
-          <Icon name="history" size={20} />
-          <Text style={styles.quickActionText}>Attendance History</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.quickActionButton}>
-          <Icon name="file-text-o" size={20} />
-          <Text style={styles.quickActionText}>Leave Request</Text>
-        </TouchableOpacity>
-      </View>
+        {/* Quick Actions */}
+        <View style={styles.quickActions}>
+          <TouchableOpacity style={styles.quickActionButton}>
+            <Icon name="history" size={20} />
+            <Text style={styles.quickActionText}>Attendance History</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.quickActionButton}>
+            <Icon name="file-text-o" size={20} />
+            <Text style={styles.quickActionText}>Leave Request</Text>
+          </TouchableOpacity>
+        </View>
 
-      {/* Today's Summary */}
-      <View style={styles.summary}>
-        <Text style={styles.summaryTitle}>Today’s Summary</Text>
-        <Text>
-          Total Hours Worked:{" "}
-          {formatTimeToHoursMinutes(attendance[0]?.hoursWorked)}
-        </Text>
-        <Text>Break Time: 45 mins</Text>
-      </View>
+        {/* Today's Summary */}
+        <View style={styles.summary}>
+          <Text style={styles.summaryTitle}>Today’s Summary</Text>
+          <Text>
+            Total Hours Worked:{" "}
+            {formatTimeToHoursMinutes(attendance[0]?.hoursWorked)}
+          </Text>
+          <Text>Break Time: 45 mins</Text>
+        </View>
 
-      {/* Monthly Statistics */}
-      <View style={styles.monthlyStats}>
-        <Text style={styles.sectionTitle}>Monthly Statistics</Text>
-        <View style={styles.statsRow}>
-          <View style={styles.statBox}>
-            <Text style={styles.statNumber}>20</Text>
-            <Text style={styles.statLabel}>Present Days</Text>
-          </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statNumber}>2</Text>
-            <Text style={styles.statLabel}>Absent Days</Text>
-          </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statNumber}>0</Text>
-            <Text style={styles.statLabel}>Leaves</Text>
+        {/* Monthly Statistics */}
+        <View style={styles.monthlyStats}>
+          <Text style={styles.sectionTitle}>Monthly Statistics</Text>
+          <View style={styles.statsRow}>
+            <View style={styles.statBox}>
+              <Text style={styles.statNumber}>20</Text>
+              <Text style={styles.statLabel}>Present Days</Text>
+            </View>
+            <View style={styles.statBox}>
+              <Text style={styles.statNumber}>2</Text>
+              <Text style={styles.statLabel}>Absent Days</Text>
+            </View>
+            <View style={styles.statBox}>
+              <Text style={styles.statNumber}>0</Text>
+              <Text style={styles.statLabel}>Leaves</Text>
+            </View>
           </View>
         </View>
-      </View>
 
-      {/* Notifications */}
-      <View style={styles.notifications}>
-        <Text style={styles.sectionTitle}>Notifications</Text>
-        <Text>🔔 New Holiday Announced on July 4th</Text>
-        <Text>🔔 1 pending leave request</Text>
-      </View>
-    </ScrollView>
+        {/* Notifications */}
+        <View style={styles.notifications}>
+          <Text style={styles.sectionTitle}>Notifications</Text>
+          <Text>🔔 New Holiday Announced on July 4th</Text>
+          <Text>🔔 1 pending leave request</Text>
+        </View>
+      </ScrollView>
+    </>
   );
 };
 
@@ -244,14 +247,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 15,
     borderRadius: 12,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    marginBottom: 10,
+    marginTop: 15,
+    marginHorizontal: 18,
   },
   header: {
     flexDirection: "row",
@@ -302,7 +299,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   greetingContainer: {
-    marginBottom: 12,
+    marginBottom: 20,
   },
   greetingText: {
     fontSize: 16,
