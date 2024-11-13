@@ -1,16 +1,16 @@
 import React from "react";
-import {View, Text, StyleSheet, ScrollView, Pressable} from "react-native";
-import {useNavigation} from "@react-navigation/native";
+import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
-import {useAuth} from "../../Context/auth.context.js";
+import { useAuth } from "../../Context/auth.context.js";
 
 const CustomDrawerNavigator = () => {
   const navigation = useNavigation();
-  const {isLoggedIn, isLoading} = useAuth();
+  const { isLoggedIn, isLoading } = useAuth();
 
   if (isLoading) {
     return (
-      <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color="#A63ED3" />
       </View>
     );
@@ -18,54 +18,54 @@ const CustomDrawerNavigator = () => {
 
   const drawerItems = isLoggedIn
     ? [
-        {
-          label: "Home",
-          icon: "home-outline",
-          route: "Home",
-        },
-        {
-          label: "Profile",
-          icon: "person-outline",
-          route: "Profile",
-        },
-        {
-          label: "Settings",
-          icon: "settings-outline",
-          route: "Settings",
-        },
-        {
-          label: "Notifications",
-          icon: "notifications-outline",
-          route: "Notifications",
-        },
-        {
-          label: "About Us",
-          icon: "information-circle-outline",
-          route: "About",
-        },
-        {
-          label: "Contact Us",
-          icon: "call-outline",
-          route: "Contact",
-        },
-        {
-          label: "Help",
-          icon: "help-circle-outline",
-          route: "Help",
-        },
-        {
-          label: "Logout",
-          icon: "log-out-outline",
-          route: "Logout",
-        },
-      ]
+      {
+        label: "Home",
+        icon: "home-outline",
+        route: "Home",
+      },
+      {
+        label: "Employee",
+        icon: "person-outline",
+        route: "Employee",
+      },
+      {
+        label: "Settings",
+        icon: "settings-outline",
+        route: "Settings",
+      },
+      {
+        label: "Notifications",
+        icon: "notifications-outline",
+        route: "Notifications",
+      },
+      {
+        label: "About Us",
+        icon: "information-circle-outline",
+        route: "About",
+      },
+      {
+        label: "Contact Us",
+        icon: "call-outline",
+        route: "Contact",
+      },
+      {
+        label: "Help",
+        icon: "help-circle-outline",
+        route: "Help",
+      },
+      {
+        label: "Logout",
+        icon: "log-out-outline",
+        route: "Logout",
+      },
+    ]
     : [
-        {
-          label: "Login",
-          icon: "log-in-outline",
-          route: "Login",
-        },
-      ];
+      {
+        label: "Login",
+        icon: "log-in-outline",
+        route: "Login",
+      },
+    ];
 
   return (
     <ScrollView style={styles.container}>
