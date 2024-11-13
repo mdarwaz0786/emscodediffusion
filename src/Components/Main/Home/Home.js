@@ -25,8 +25,9 @@ const Home = () => {
   const currentTime = new Date().toTimeString().split(" ")[0].slice(0, 5);
   const employeeId = team?._id;
 
-  const handlePress = () => {
-    navigation.navigate('Attendance');
+  // Navigate to attendance detail screen
+  const navigateToAttendance = () => {
+    navigation.navigate("Attendance");
   };
 
   // Punch in attendance
@@ -105,18 +106,25 @@ const Home = () => {
       );
 
       if (response?.data?.success) {
-        setAttendance(response?.data?.attendance);
+        if (response.data.attendance.length === 0) {
+          console.log("Attendance data is empty");
+          setAttendance([]);
+        } else {
+          setAttendance(response.data.attendance);
+        }
+      } else {
+        console.log("Request was unsuccessful");
       }
     } catch (error) {
-      console.error(error.message);
+      console.error("Error while fetching attendance:", error.message);
     }
   };
 
   useEffect(() => {
-    if (employeeId && currentDate && !isLoading) {
+    if (employeeId && currentDate && validToken && !isLoading) {
       fetchAttendance();
     }
-  }, [employeeId, currentDate, isLoading]);
+  }, [employeeId, currentDate, validToken, isLoading]);
 
   return (
     <>
@@ -129,9 +137,7 @@ const Home = () => {
               source={require("../../../Assets/user-icon.png")}
             />
             <View>
-              <Text style={styles.employeeName}>
-                {team?.name}
-              </Text>
+              <Text style={styles.employeeName}>{team?.name}</Text>
               <Text style={styles.positionText}>{team?.role?.name}</Text>
             </View>
           </View>
@@ -191,7 +197,9 @@ const Home = () => {
 
         {/* Quick Actions */}
         <View style={styles.quickActions}>
-          <TouchableOpacity style={styles.quickActionButton} onPress={handlePress}>
+          <TouchableOpacity
+            style={styles.quickActionButton}
+            onPress={navigateToAttendance}>
             <Icon name="history" size={20} />
             <Text style={styles.quickActionText}>Attendance History</Text>
           </TouchableOpacity>
@@ -240,8 +248,6 @@ const Home = () => {
     </>
   );
 };
-
-export default Home;
 
 const styles = StyleSheet.create({
   container: {
@@ -389,3 +395,5 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
 });
+
+export default Home;
