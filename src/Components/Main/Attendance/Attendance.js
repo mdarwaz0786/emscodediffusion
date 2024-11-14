@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Button, ScrollView } from "react-native";
-import { Picker } from '@react-native-picker/picker';
+import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import { API_BASE_URL } from "@env";
 import { useAuth } from "../../../Context/auth.context.js";
-import Icon from 'react-native-vector-icons/Feather';
-import { useNavigation } from '@react-navigation/native';
+import Icon from "react-native-vector-icons/Feather";
+import { useNavigation } from "@react-navigation/native";
 
-const Attendance = () => {
+const Attendance = ({ route }) => {
+  const id = route?.params?.id;
   const { team, validToken, isLoading } = useAuth();
   const [attendance, setAttendance] = useState([]);
   const [employee, setEmployee] = useState([]);
@@ -15,8 +16,13 @@ const Attendance = () => {
   const currentMonth = new Date().getMonth() + 1;
   const [month, setMonth] = useState(currentMonth);
   const [year, setYear] = useState(currentYear);
-  const [employeeId, setEmployeeId] = useState(team?._id);
+  const [employeeId, setEmployeeId] = useState(id || team?._id);
   const navigation = useNavigation();
+
+  // Update employeeId if team or id changes
+  useEffect(() => {
+    setEmployeeId(id || team?._id);
+  }, [id, team]);
 
   // Fetch all employee
   const fetchAllEmoloyee = async () => {
@@ -43,16 +49,18 @@ const Attendance = () => {
   const fetchAttendance = async () => {
     try {
       const response = await axios.get(
-        `${API_BASE_URL}/api/v1/attendance/all-attendance`, {
-        params: {
-          month,
-          year,
-          employeeId,
+        `${API_BASE_URL}/api/v1/attendance/all-attendance`,
+        {
+          params: {
+            month,
+            year,
+            employeeId,
+          },
+          headers: {
+            Authorization: validToken,
+          },
         },
-        headers: {
-          Authorization: validToken,
-        },
-      });
+      );
 
       if (response?.data?.success) {
         setAttendance(response?.data?.attendance);
@@ -60,7 +68,10 @@ const Attendance = () => {
         setAttendance([]);
       }
     } catch (error) {
-      console.error("Error while fetching attendance:", error?.response?.data?.message);
+      console.error(
+        "Error while fetching attendance:",
+        error?.response?.data?.message,
+      );
     }
   };
 
@@ -74,7 +85,7 @@ const Attendance = () => {
   const resetFilters = () => {
     setMonth(currentMonth);
     setYear(currentYear);
-    setEmployeeId(team?._id);
+    setEmployeeId(id || team?._id);
   };
 
   return (
@@ -89,7 +100,12 @@ const Attendance = () => {
           style={styles.icon}
         />
         <Text style={styles.title}>Attendance Details</Text>
-        <Button style={styles.buttonReset} title="Reset" onPress={resetFilters} color="#B22222" />
+        <Button
+          style={styles.buttonReset}
+          title="Reset"
+          onPress={resetFilters}
+          color="#B22222"
+        />
       </View>
 
       {/* Filter Section */}
@@ -100,12 +116,18 @@ const Attendance = () => {
             <Text style={styles.label}>Year:</Text>
             <Picker
               selectedValue={year}
-              onValueChange={(itemValue) => setYear(itemValue)}
-              style={styles.picker}
-            >
+              onValueChange={itemValue => setYear(itemValue)}
+              style={styles.picker}>
               {Array.from({ length: 5 }, (_, index) => {
                 const yearOption = currentYear - index;
-                return <Picker.Item key={yearOption} label={String(yearOption)} value={yearOption} style={styles.pickerItem} />;
+                return (
+                  <Picker.Item
+                    key={yearOption}
+                    label={String(yearOption)}
+                    value={yearOption}
+                    style={styles.pickerItem}
+                  />
+                );
               })}
             </Picker>
           </View>
@@ -115,13 +137,14 @@ const Attendance = () => {
             <Text style={styles.label}>Month:</Text>
             <Picker
               selectedValue={month}
-              onValueChange={(itemValue) => setMonth(itemValue)}
-              style={styles.picker}
-            >
+              onValueChange={itemValue => setMonth(itemValue)}
+              style={styles.picker}>
               {Array.from({ length: 12 }, (_, index) => (
                 <Picker.Item
                   key={index}
-                  label={new Date(0, index).toLocaleString("default", { month: "long" })}
+                  label={new Date(0, index).toLocaleString("default", {
+                    month: "long",
+                  })}
                   value={index}
                   style={styles.pickerItem}
                 />
@@ -135,9 +158,8 @@ const Attendance = () => {
             <Picker
               selectedValue={employeeId}
               style={styles.picker}
-              onValueChange={(value) => setEmployeeId(value)}
-            >
-              {employee?.map((emp) => (
+              onValueChange={value => setEmployeeId(value)}>
+              {employee?.map(emp => (
                 <Picker.Item
                   key={emp?._id}
                   label={emp?.name}
@@ -152,23 +174,39 @@ const Attendance = () => {
 
       {/* Attendance List */}
       {attendance.length === 0 ? (
-        <Text style={styles.emptyText}>No attendance records found for the selected month and year.</Text>
+        <Text style={styles.emptyText}>
+          No attendance records found for the selected month and year.
+        </Text>
       ) : (
-        attendance?.map((item) => (
+        attendance?.map(item => (
           <View key={item?._id} style={styles.attendanceCard}>
-            <Text style={styles.attendanceDate}>Date: {item?.attendanceDate}</Text>
+            <Text style={styles.attendanceDate}>
+              Date: {item?.attendanceDate}
+            </Text>
             <View style={styles.statusContainer}>
               <Text style={styles.statusText}>Status: {item?.status}</Text>
-              <View style={[styles.statusBadge, item?.status === "Present" ? styles.present : styles.absent]}>
+              <View
+                style={[
+                  styles.statusBadge,
+                  item?.status === "Present" ? styles.present : styles.absent,
+                ]}>
                 <Text style={styles.statusBadgeText}>{item.status}</Text>
               </View>
             </View>
             <Text style={styles.punchInOut}>Punch In: {item?.punchInTime}</Text>
-            <Text style={styles.punchInOut}>Punch Out: {item?.punchOutTime}</Text>
-            <Text style={styles.hoursWorked}>Hours Worked: {item?.hoursWorked}</Text>
+            <Text style={styles.punchInOut}>
+              Punch Out: {item?.punchOutTime}
+            </Text>
+            <Text style={styles.hoursWorked}>
+              Hours Worked: {item?.hoursWorked}
+            </Text>
             <View style={styles.statusContainer}>
               <Text style={styles.statusText}>Late In:</Text>
-              <View style={[styles.statusBadge, item?.lateIn === "00:00" ? styles.onTime : styles.late]}>
+              <View
+                style={[
+                  styles.statusBadge,
+                  item?.lateIn === "00:00" ? styles.onTime : styles.late,
+                ]}>
                 <Text style={styles.statusBadgeText}>
                   {item?.lateIn === "00:00" ? "On Time" : "Late"}
                 </Text>
