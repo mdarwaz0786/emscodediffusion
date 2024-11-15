@@ -12,12 +12,12 @@ import { useAuth } from "../../../Context/auth.context.js";
 import axios from "axios";
 import Toast from "react-native-toast-message";
 import { API_BASE_URL } from "@env";
+import { useNavigation } from "@react-navigation/native";
 import formatTimeWithAmPm from "../../../Helper/formatTimeWithAmPm.js";
 import formatTimeToHoursMinutes from "../../../Helper/formatTimeToHoursMinutes.js";
-import { useNavigation } from "@react-navigation/native";
-import Geolocation from 'react-native-geolocation-service';
-import requestLocationPermission from "./requestLocationPermission.js";
 import getGreeting from "../../../Helper/generateGreeting.js";
+import isWithinOfficeLocation from "./isWithinOfiiceLocation.js";
+import getUserLocation from "./getUerLocation.js";
 
 const Home = () => {
   const navigation = useNavigation();
@@ -25,10 +25,6 @@ const Home = () => {
   const [attendance, setAttendance] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date().toISOString().split("T")[0]);
   const [employeeId, setEmployeeId] = useState(team?._id);
-  const [location, setLocation] = useState({
-    latitude: null,
-    longitude: null,
-  });
 
   // Update employeeId and currentDate when the component mounts or team changes
   useEffect(() => {
@@ -36,106 +32,74 @@ const Home = () => {
     setCurrentDate(new Date().toISOString().split("T")[0]);
   }, [team]);
 
-  // Get current location of the user
-  const getLocation = async () => {
-    const hasPermission = await requestLocationPermission();
-    if (hasPermission) {
-      Geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setLocation({ latitude, longitude });
-        },
-        (error) => {
-          console.log(error.code, error.message);
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
-      );
-    } else {
-      console.log('Location permission denied');
-      Toast.show({ type: "error", text1: "Turn on location" });
-    }
-  };
-
-  useEffect(() => {
-    getLocation();
-  }, []);
-
-  // Navigate to attendance detail screen
-  const navigateToAttendance = () => {
-    navigation.navigate("Attendance");
-  };
-
   // Punch in attendance
   const handleCreateAttendance = async () => {
-    await getLocation();
+    try {
+      // Attempt to get the user's current location
+      const position = await getUserLocation();
 
-    // User latitude and longitude
-    const userLatitude = location.latitude;
-    const userLongitude = location.longitude;
-
-    // Office latitude and longitude
-    const officeLatitude = 28.6190774;
-    const officeLongitude = 77.0345819;
-
-    // Truncate it to two decimal places
-    const userLatParts = Math.floor(userLatitude * 100) / 100;
-    const userLongParts = Math.floor(userLongitude * 100) / 100;
-    const officeLatParts = Math.floor(officeLatitude * 100) / 100;
-    const officeLongParts = Math.floor(officeLongitude * 100) / 100;
-
-    // Punch in only if user latitude and longitude is matched with office latitude and longitude
-    if (userLatParts === officeLatParts && userLongParts === officeLongParts) {
-      const time = new Date().toTimeString().split(" ")[0].slice(0, 5);
-      const date = new Date().toISOString().split("T")[0];
-      const employee = team?._id;
-
-      try {
-        const response = await axios.post(
-          `${API_BASE_URL}/api/v1/attendance/create-attendance`,
-          {
-            employee: employee,
-            attendanceDate: date,
-            punchInTime: time,
-          },
-          {
-            headers: {
-              Authorization: validToken,
-            },
-          },
-        );
-
-        if (response.data.success) {
-          Toast.show({ type: "success", text1: "Punch in successful" });
-          fetchAttendance();
-        }
-      } catch (error) {
-        Toast.show({ type: "error", text1: error.response.data.message });
+      // Check if location was successfully retrieved
+      if (!position) {
+        Toast.show({ type: "error", text1: "Location not available" });
+        return;
       }
-    } else {
-      Toast.show({ type: "error", text1: "Location is not match" });
+
+      const { latitude, longitude } = position;
+
+      // Punch in only if user latitude and longitude match office location
+      if (isWithinOfficeLocation(latitude, longitude)) {
+        const time = new Date().toTimeString().split(" ")[0].slice(0, 5);
+        const date = new Date().toISOString().split("T")[0];
+        const employee = team?._id;
+
+        try {
+          const response = await axios.post(
+            `${API_BASE_URL}/api/v1/attendance/create-attendance`,
+            {
+              employee: employee,
+              attendanceDate: date,
+              punchInTime: time,
+            },
+            {
+              headers: {
+                Authorization: validToken,
+              },
+            }
+          );
+
+          if (response.data.success) {
+            Toast.show({ type: "success", text1: "Punch in successful" });
+            fetchAttendance();
+          }
+        } catch (error) {
+          // Handle any error from the axios request
+          Toast.show({
+            type: "error",
+            text1: error?.response?.data?.message || "Failed to punch in",
+          });
+        }
+      } else {
+        Toast.show({ type: "error", text1: "Location does not match" });
+      }
+    } catch (error) {
+      // Handle any error or rejection from getUserLocation
+      Toast.show({ type: "error", text1: "Failed to retrieve location" });
     }
   };
 
   // Punch out attendance
   const handleUpdateAttendance = async () => {
-    await getLocation();
+    const position = await getUserLocation();
 
-    // User latitude and longitude
-    const userLatitude = location.latitude;
-    const userLongitude = location.longitude;
+    if (!position) {
+      Toast.show({ type: "error", text1: "Location not available" });
+      return;
+    };
 
-    // Office latitude and longitude
-    const officeLatitude = 28.6190774;
-    const officeLongitude = 77.0345819;
-
-    // Convert to strings, split by the decimal, and get the integer and two decimal places
-    const userLatParts = Math.floor(userLatitude * 100) / 100;
-    const userLongParts = Math.floor(userLongitude * 100) / 100;
-    const officeLatParts = Math.floor(officeLatitude * 100) / 100;
-    const officeLongParts = Math.floor(officeLongitude * 100) / 100;
+    const { latitude, longitude } = position;
 
     // Punch out only if user latitude and longitude is matched with office latitude and longitude
-    if (userLatParts === officeLatParts && userLongParts === officeLongParts) {
+    if (isWithinOfficeLocation(latitude, longitude)) {
       const time = new Date().toTimeString().split(" ")[0].slice(0, 5);
       const date = new Date().toISOString().split("T")[0];
       const employee = team?._id;
@@ -160,10 +124,10 @@ const Home = () => {
           fetchAttendance();
         }
       } catch (error) {
-        Toast.show({ type: "error", text1: error.response.data.message });
+        Toast.show({ type: "error", text1: error.response.data.message || "Failed to punch out" });
       }
     } else {
-      Toast.show({ type: "error", text1: "Location is not match" });
+      Toast.show({ type: "error", text1: "Location does not match" });
     }
   };
 
@@ -218,6 +182,11 @@ const Home = () => {
     }
   }, [employeeId, currentDate, validToken, isLoading]);
 
+  // Navigate to attendance detail screen
+  const navigateToAttendance = () => {
+    navigation.navigate("Attendance");
+  };
+
   return (
     <>
       {/* Header Card with Profile Icon and Punch Buttons non scrollable */}
@@ -256,15 +225,6 @@ const Home = () => {
               </TouchableOpacity>
             )}
           </View>
-        </View>
-        <View style={styles.locationContainer}>
-          <View style={styles.location}>
-            <Text>{location.latitude}</Text>
-            <Text>{location.longitude}</Text>
-          </View>
-          <TouchableOpacity style={styles.locationRefresher} onPress={getLocation}>
-            <Icon name="refresh" size={16} />
-          </TouchableOpacity>
         </View>
       </View>
 
@@ -411,16 +371,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 13,
     fontWeight: "500",
-  },
-  locationContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: "space-between",
-    marginTop: 10,
-  },
-  location: {
-    flexDirection: "row",
-    columnGap: 10,
   },
   greetingContainer: {
     marginBottom: 22,

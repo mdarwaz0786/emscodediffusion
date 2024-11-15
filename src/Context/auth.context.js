@@ -1,12 +1,12 @@
-import React, {createContext, useContext, useEffect, useState} from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
-import {API_BASE_URL} from "@env";
+import { API_BASE_URL } from "@env";
 
 export const AuthContext = createContext();
 
-export const AuthProvider = ({children}) => {
+export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [team, setTeam] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -28,7 +28,7 @@ export const AuthProvider = ({children}) => {
       await AsyncStorage.removeItem("token");
       setToken(null);
       setTeam(null);
-      Toast.show({type: "success", text1: "Logout successful"});
+      Toast.show({ type: "success", text1: "Logout successful" });
     } catch (error) {
       console.error("Error while removing token:", error.message);
     }
@@ -40,7 +40,7 @@ export const AuthProvider = ({children}) => {
       const response = await axios.get(
         `${API_BASE_URL}/api/v1/team/loggedin-team`,
         {
-          headers: {Authorization: `Bearer ${token}`},
+          headers: { Authorization: `Bearer ${token}` },
         },
       );
       setTeam(response?.data?.team);
@@ -69,7 +69,7 @@ export const AuthProvider = ({children}) => {
         if (storedToken) {
           setToken(storedToken);
         } else {
-          Toast.show({type: "error", text1: "Please log in to continue"});
+          Toast.show({ type: "error", text1: "Please log in to continue" });
         }
       } catch (error) {
         console.error("Error while fetching token:", error);
@@ -89,7 +89,7 @@ export const AuthProvider = ({children}) => {
 
   return (
     <AuthContext.Provider
-      value={{storeToken, logOutTeam, isLoggedIn, team, isLoading, validToken}}>
+      value={{ storeToken, logOutTeam, isLoggedIn, team, isLoading, validToken }}>
       {children}
     </AuthContext.Provider>
   );
