@@ -2,13 +2,27 @@
 const officeLatitude = 28.6190774;
 const officeLongitude = 77.0345819;
 
-// Helper function to check if user location matches office location
-const isWithinOfficeLocation = (latitude, longitude) => {
-  const userLat = Math.floor(latitude * 100) / 100;
-  const userLong = Math.floor(longitude * 100) / 100;
-  const officeLat = Math.floor(officeLatitude * 100) / 100;
-  const officeLong = Math.floor(officeLongitude * 100) / 100;
-  return userLat === officeLat && userLong === officeLong;
+// Convert degrees to radians
+const toRadians = (degree) => degree * (Math.PI / 180);
+
+// Calculate distance using Haversine formula
+const getDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371; // Earth's radius in kilometers
+  const dLat = toRadians(lat2 - lat1);
+  const dLon = toRadians(lon2 - lon1);
+
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c * 1000; // Distance in meters
+};
+
+// Check if user location is within a certain distance from the office
+const isWithinOfficeLocation = (latitude, longitude, maxDistance = 100) => {
+  const distance = getDistance(latitude, longitude, officeLatitude, officeLongitude);
+  return distance <= maxDistance;
 };
 
 export default isWithinOfficeLocation;

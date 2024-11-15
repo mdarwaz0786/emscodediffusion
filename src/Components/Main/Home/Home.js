@@ -18,6 +18,7 @@ import formatTimeToHoursMinutes from "../../../Helper/formatTimeToHoursMinutes.j
 import getGreeting from "../../../Helper/generateGreeting.js";
 import isWithinOfficeLocation from "./isWithinOfiiceLocation.js";
 import getUserLocation from "./getUerLocation.js";
+import getAttendanceData from "./utils/getAttendanceData.js";
 
 const Home = () => {
   const navigation = useNavigation();
@@ -32,113 +33,71 @@ const Home = () => {
     setCurrentDate(new Date().toISOString().split("T")[0]);
   }, [team]);
 
-  // Punch in attendance
-  const handleCreateAttendance = async () => {
+  // Process Attendance API Request
+  const processAttendance = async (method, endpoint, data, successMessage, validToken) => {
     try {
-      // Attempt to get the user's current location
+      const axiosConfig = {
+        method,
+        url: `${API_BASE_URL}/api/v1/attendance/${endpoint}`,
+        data,
+        headers: { Authorization: validToken },
+      };
+
+      const response = await axios(axiosConfig);
+
+      if (response.data.success) {
+        Toast.show({ type: "success", text1: successMessage });
+        fetchAttendance();
+      };
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: error?.response?.data?.message || "Failed to process attendance",
+      });
+    };
+  };
+
+  // Handle Punch attendance
+  const handlePunchAction = async (actionType) => {
+    try {
       const position = await getUserLocation();
 
-      // Check if location was successfully retrieved
       if (!position) {
-        Toast.show({ type: "error", text1: "Location not available" });
+        Toast.show({ type: "error", text1: "Please enable location" });
         return;
-      }
+      };
 
       const { latitude, longitude } = position;
 
-      // Punch in only if user latitude and longitude match office location
-      if (isWithinOfficeLocation(latitude, longitude)) {
-        const time = new Date().toTimeString().split(" ")[0].slice(0, 5);
-        const date = new Date().toISOString().split("T")[0];
-        const employee = team?._id;
+      if (!isWithinOfficeLocation(latitude, longitude)) {
+        Toast.show({ type: "error", text1: "Attendance can only be marked in office." });
+        return;
+      };
 
-        try {
-          const response = await axios.post(
-            `${API_BASE_URL}/api/v1/attendance/create-attendance`,
-            {
-              employee: employee,
-              attendanceDate: date,
-              punchInTime: time,
-            },
-            {
-              headers: {
-                Authorization: validToken,
-              },
-            }
-          );
+      const { time, date, employeeId } = getAttendanceData(team);
 
-          if (response.data.success) {
-            Toast.show({ type: "success", text1: "Punch in successful" });
-            fetchAttendance();
-          }
-        } catch (error) {
-          // Handle any error from the axios request
-          Toast.show({
-            type: "error",
-            text1: error?.response?.data?.message || "Failed to punch in",
-          });
-        }
-      } else {
-        Toast.show({ type: "error", text1: "Location does not match" });
-      }
+      const requestData = actionType === "punchIn"
+        ? { employee: employeeId, attendanceDate: date, punchInTime: time }
+        : { employee: employeeId, attendanceDate: date, punchOutTime: time };
+
+      const apiMethod = actionType === "punchIn" ? "post" : "put";
+      const apiEndpoint = actionType === "punchIn" ? "create-attendance" : "update-attendance";
+      const successMessage = actionType === "punchIn" ? "Punch in successful" : "Punch out successful";
+
+      await processAttendance(apiMethod, apiEndpoint, requestData, successMessage, validToken);
     } catch (error) {
-      // Handle any error or rejection from getUserLocation
-      Toast.show({ type: "error", text1: "Failed to retrieve location" });
-    }
-  };
-
-  // Punch out attendance
-  const handleUpdateAttendance = async () => {
-    const position = await getUserLocation();
-
-    if (!position) {
-      Toast.show({ type: "error", text1: "Location not available" });
-      return;
+      Toast.show({ type: "error", text1: error.message });
     };
-
-    const { latitude, longitude } = position;
-
-    // Punch out only if user latitude and longitude is matched with office latitude and longitude
-    if (isWithinOfficeLocation(latitude, longitude)) {
-      const time = new Date().toTimeString().split(" ")[0].slice(0, 5);
-      const date = new Date().toISOString().split("T")[0];
-      const employee = team?._id;
-
-      try {
-        const response = await axios.put(
-          `${API_BASE_URL}/api/v1/attendance/update-attendance`,
-          {
-            employee: employee,
-            attendanceDate: date,
-            punchOutTime: time,
-          },
-          {
-            headers: {
-              Authorization: validToken,
-            },
-          },
-        );
-
-        if (response.data.success) {
-          Toast.show({ type: "success", text1: "Punch out successful" });
-          fetchAttendance();
-        }
-      } catch (error) {
-        Toast.show({ type: "error", text1: error.response.data.message || "Failed to punch out" });
-      }
-    } else {
-      Toast.show({ type: "error", text1: "Location does not match" });
-    }
   };
 
   // Handle marked attendance
   const handleMarkedAttendance = () => {
     if (attendance[0]?.punchOut && attendance[0]?.punchIn) {
       Toast.show({ type: "success", text1: "Attendance is marked" });
-    }
+    };
   };
 
-  // Fetch attendance
+  // Get current date attendance for logged in employee
   const fetchAttendance = async () => {
     try {
       const params = {};
@@ -167,19 +126,19 @@ const Home = () => {
           setAttendance([]);
         } else {
           setAttendance(response.data.attendance);
-        }
+        };
       } else {
         console.log("Request was unsuccessful");
-      }
+      };
     } catch (error) {
       console.error("Error while fetching attendance:", error.response.data.message);
-    }
+    };
   };
 
   useEffect(() => {
     if (employeeId && currentDate && validToken && !isLoading) {
       fetchAttendance();
-    }
+    };
   }, [employeeId, currentDate, validToken, isLoading]);
 
   // Navigate to attendance detail screen
@@ -206,14 +165,14 @@ const Home = () => {
             {!attendance[0]?.punchIn && !attendance[0]?.punchOut && (
               <TouchableOpacity
                 style={[styles.punchButton, styles.punchInButton]}
-                onPress={handleCreateAttendance}>
+                onPress={() => handlePunchAction("punchIn")}>
                 <Text style={styles.punchButtonText}>Punch In</Text>
               </TouchableOpacity>
             )}
             {!attendance[0]?.punchOut && attendance[0]?.punchIn && (
               <TouchableOpacity
                 style={[styles.punchButton, styles.punchOutButton]}
-                onPress={handleUpdateAttendance}>
+                onPress={() => handlePunchAction("punchOut")}>
                 <Text style={styles.punchButtonText}>Punch Out</Text>
               </TouchableOpacity>
             )}

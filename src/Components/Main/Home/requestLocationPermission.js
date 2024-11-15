@@ -1,6 +1,6 @@
 import { PermissionsAndroid } from 'react-native';
 
-// Get location permission
+// Get location permission from user
 const requestLocationPermission = async () => {
   try {
     const granted = await PermissionsAndroid.request(
@@ -17,7 +17,7 @@ const requestLocationPermission = async () => {
   } catch (error) {
     console.warn(error);
     return false;
-  }
+  };
 };
 
 export default requestLocationPermission;

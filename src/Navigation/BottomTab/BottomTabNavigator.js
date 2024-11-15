@@ -1,8 +1,8 @@
 // src/Navigation/BottomTab/BottomTabNavigator.js
 import React from "react";
-import {ActivityIndicator, View} from "react-native";
-import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
-import {useAuth} from "../../Context/auth.context.js";
+import { ActivityIndicator, View } from "react-native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { useAuth } from "../../Context/auth.context.js";
 import Icon from "react-native-vector-icons/Ionicons";
 import HomeScreen from "../../Screens/Home/HomeScreen.js";
 import SettingsScreen from "../../Screens/Settings/SettingsScreen.js";
@@ -14,7 +14,7 @@ import ProfileScreen from "../../Screens/Profile/ProfileScreen.js";
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator = () => {
-  const {isLoggedIn, isLoading} = useAuth();
+  const { isLoggedIn, isLoading } = useAuth();
 
   const icons = {
     Home: "home-outline",
@@ -27,7 +27,7 @@ const BottomTabNavigator = () => {
 
   if (isLoading) {
     return (
-      <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color="#A63ED3" />
       </View>
     );
@@ -36,9 +36,9 @@ const BottomTabNavigator = () => {
   return (
     <Tab.Navigator
       initialRouteName="Home"
-      screenOptions={({route}) => ({
+      screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarIcon: ({color, size}) => {
+        tabBarIcon: ({ color, size }) => {
           const iconName = icons[route.name];
           return <Icon name={iconName} size={size} color={color} />;
         },
@@ -67,7 +67,7 @@ const BottomTabNavigator = () => {
         <Tab.Screen
           name="Login"
           component={LoginScreen}
-          options={{headerShown: false}}
+          options={{ headerShown: false }}
         />
       )}
     </Tab.Navigator>

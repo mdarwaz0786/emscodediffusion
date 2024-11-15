@@ -7,7 +7,7 @@ const getUserLocation = async () => {
   const hasPermission = await requestLocationPermission();
 
   if (!hasPermission) {
-    Toast.show({ type: "error", text1: "Turn on location" });
+    Toast.show({ type: "error", text1: "Location permission is required to proceed." });
     return null;
   };
 
@@ -19,8 +19,7 @@ const getUserLocation = async () => {
       },
       (error) => {
         console.log(error.code, error.message);
-        Toast.show({ type: "error", text1: "Failed to retrieve location" });
-        reject(new Error("Failed to retrieve location"));
+        reject(new Error(error.message));
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
     );
