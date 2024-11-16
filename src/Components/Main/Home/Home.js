@@ -16,8 +16,8 @@ import { useNavigation } from "@react-navigation/native";
 import formatTimeWithAmPm from "../../../Helper/formatTimeWithAmPm.js";
 import formatTimeToHoursMinutes from "../../../Helper/formatTimeToHoursMinutes.js";
 import getGreeting from "../../../Helper/generateGreeting.js";
-import isWithinOfficeLocation from "./isWithinOfiiceLocation.js";
-import getUserLocation from "./getUerLocation.js";
+import isWithinOfficeLocation from "./utils/isWithinOfiiceLocation.js";
+import getUserLocation from "./utils/getUerLocation.js";
 import getAttendanceData from "./utils/getAttendanceData.js";
 
 const Home = () => {
@@ -93,7 +93,7 @@ const Home = () => {
   // Handle marked attendance
   const handleMarkedAttendance = () => {
     if (attendance[0]?.punchOut && attendance[0]?.punchIn) {
-      Toast.show({ type: "success", text1: "Attendance is marked" });
+      Toast.show({ type: "success", text1: "Attendance is marked for today." });
     };
   };
 
@@ -143,7 +143,7 @@ const Home = () => {
 
   // Navigate to attendance detail screen
   const navigateToAttendance = () => {
-    navigation.navigate("Attendance");
+    navigation.navigate("Attendance", { id: employeeId });
   };
 
   return (
@@ -237,7 +237,7 @@ const Home = () => {
             Total Hours Worked:{" "}
             {formatTimeToHoursMinutes(attendance[0]?.hoursWorked)}
           </Text>
-          <Text>Break Time: 45 mins</Text>
+          <Text>Break Time: 45 minutes</Text>
         </View>
 
         {/* Monthly Statistics */}

@@ -1,4 +1,4 @@
-// Helper function to format time with AM/PM
+// Function to format time with AM/PM
 const formatTimeWithAmPm = timeString => {
   if (!timeString) return ""; // Return empty if time is not provided
   const [hour, minute] = timeString.split(":").map(Number); // Split hour and minute

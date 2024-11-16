@@ -1,33 +1,31 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Button, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import { API_BASE_URL } from "@env";
 import { useAuth } from "../../../Context/auth.context.js";
 import Icon from "react-native-vector-icons/Feather";
 import { useNavigation } from "@react-navigation/native";
+import formatTimeWithAmPm from "../../../Helper/formatTimeWithAmPm.js";
+import formatTimeToHoursMinutes from "../../../Helper/formatTimeToHoursMinutes.js";
+import formatDate from "../../../Helper/formatDate.js";
 
 const Attendance = ({ route }) => {
   const id = route?.params?.id;
-  const { team, validToken, isLoading } = useAuth();
+  const { validToken, isLoading } = useAuth();
   const [attendance, setAttendance] = useState([]);
-  const [employee, setEmployee] = useState([]);
+  const [employee, setEmployee] = useState("");
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
   const [month, setMonth] = useState(currentMonth);
   const [year, setYear] = useState(currentYear);
-  const [employeeId, setEmployeeId] = useState(id || team?._id);
+  const [employeeId, setEmployeeId] = useState(id);
   const navigation = useNavigation();
 
-  // Update employeeId if team or id changes
-  useEffect(() => {
-    setEmployeeId(id || team?._id);
-  }, [id, team]);
-
-  // Fetch all employee
-  const fetchAllEmoloyee = async () => {
+  // Fetch single employee
+  const fetchSingleEmployee = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/v1/team/all-team`, {
+      const response = await axios.get(`${API_BASE_URL}/api/v1/team/single-team/${id}`, {
         headers: {
           Authorization: validToken,
         },
@@ -40,10 +38,6 @@ const Attendance = ({ route }) => {
       console.log(error.message);
     }
   };
-
-  useEffect(() => {
-    fetchAllEmoloyee();
-  }, []);
 
   // Fetch Attendance
   const fetchAttendance = async () => {
@@ -75,37 +69,42 @@ const Attendance = ({ route }) => {
     }
   };
 
+  // Update employeeId if team or id changes and fetch employee
   useEffect(() => {
-    if (validToken && !isLoading) {
+    if (id) {
+      setEmployeeId(id);
+      fetchSingleEmployee(id);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (validToken && !isLoading && month && year && employeeId) {
       fetchAttendance();
     }
-  }, [validToken, isLoading, validToken, isLoading, month, year, employeeId]);
+  }, [validToken, isLoading, month, year, employeeId]);
 
   // Function to reset filters to initial values
   const resetFilters = () => {
     setMonth(currentMonth);
     setYear(currentYear);
-    setEmployeeId(id || team?._id);
+    setEmployeeId(id);
+    fetchAttendance();
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <Icon
           name="arrow-left"
-          size={30}
+          size={23}
           color="#2D6A4F"
           onPress={() => navigation.goBack()}
-          style={styles.icon}
         />
         <Text style={styles.title}>Attendance Details</Text>
-        <Button
-          style={styles.buttonReset}
-          title="Reset"
-          onPress={resetFilters}
-          color="#B22222"
-        />
+        <Pressable style={styles.buttonReset} onPress={resetFilters}>
+          <Text style={styles.buttonResetText}>Reset Filter</Text>
+        </Pressable>
       </View>
 
       {/* Filter Section */}
@@ -113,7 +112,6 @@ const Attendance = ({ route }) => {
         <View style={styles.pickerRow}>
           {/* Year Picker */}
           <View style={styles.pickerContainer}>
-            <Text style={styles.label}>Year:</Text>
             <Picker
               selectedValue={year}
               onValueChange={itemValue => setYear(itemValue)}
@@ -134,7 +132,6 @@ const Attendance = ({ route }) => {
 
           {/* Month Picker */}
           <View style={styles.pickerContainer}>
-            <Text style={styles.label}>Month:</Text>
             <Picker
               selectedValue={month}
               onValueChange={itemValue => setMonth(itemValue)}
@@ -151,98 +148,104 @@ const Attendance = ({ route }) => {
               ))}
             </Picker>
           </View>
-
-          {/* Employee Picker */}
-          <View style={styles.pickerContainer}>
-            <Text style={styles.label}>Employee:</Text>
-            <Picker
-              selectedValue={employeeId}
-              style={styles.picker}
-              onValueChange={value => setEmployeeId(value)}>
-              {employee?.map(emp => (
-                <Picker.Item
-                  key={emp?._id}
-                  label={emp?.name}
-                  value={emp?._id}
-                  style={styles.pickerItem}
-                />
-              ))}
-            </Picker>
-          </View>
         </View>
       </View>
 
-      {/* Attendance List */}
-      {attendance.length === 0 ? (
-        <Text style={styles.emptyText}>
-          No attendance records found for the selected month and year.
+      {/* Employee */}
+      <View style={{ justifyContent: "center", alignItems: "center", marginBottom: 5 }}>
+        <Text style={{ fontSize: 18, fontWeight: "600" }}>
+          {employee?.name}
         </Text>
-      ) : (
-        attendance?.map(item => (
-          <View key={item?._id} style={styles.attendanceCard}>
-            <Text style={styles.attendanceDate}>
-              Date: {item?.attendanceDate}
-            </Text>
-            <View style={styles.statusContainer}>
-              <Text style={styles.statusText}>Status: {item?.status}</Text>
-              <View
-                style={[
-                  styles.statusBadge,
-                  item?.status === "Present" ? styles.present : styles.absent,
-                ]}>
-                <Text style={styles.statusBadgeText}>{item.status}</Text>
+      </View>
+
+      {/* Scrollable Attendance List */}
+      <ScrollView>
+        {attendance.length === 0 ? (
+          <Text style={styles.emptyText}>
+            No attendance records found for {employee?.name} for the selected month and year.
+          </Text>
+        ) : (
+          attendance?.map(item => (
+            <View key={item?._id} style={styles.attendanceCard}>
+              <Text style={styles.attendanceDate}>
+                Date: {formatDate(item?.attendanceDate)}
+              </Text>
+              <View style={styles.statusContainer}>
+                <Text style={styles.statusText}>Status: {item?.status}</Text>
+                <View
+                  style={[
+                    styles.statusBadge,
+                    item?.status === "Present" ? styles.present : styles.absent,
+                  ]}>
+                  <Text style={styles.statusBadgeText}>{item.status}</Text>
+                </View>
+              </View>
+              <Text style={styles.punchInOut}>Punch In: {formatTimeWithAmPm(item?.punchInTime)}</Text>
+              <Text style={styles.punchInOut}>
+                Punch Out: {formatTimeWithAmPm(item?.punchOutTime)}
+              </Text>
+              <Text style={styles.hoursWorked}>
+                Hours Worked: {formatTimeToHoursMinutes(item?.hoursWorked)}
+              </Text>
+              <View style={styles.statusContainer}>
+                <Text style={styles.statusText}>Late In: {item?.lateIn === "00:00" ? "On Time" : formatTimeToHoursMinutes(item?.lateIn)} </Text>
+                <View
+                  style={[
+                    styles.statusBadge,
+                    item?.lateIn === "00:00" ? styles.onTime : styles.late,
+                  ]}>
+                  <Text style={styles.statusBadgeText}>
+                    {item?.lateIn === "00:00" ? "On Time" : "Late"}
+                  </Text>
+                </View>
               </View>
             </View>
-            <Text style={styles.punchInOut}>Punch In: {item?.punchInTime}</Text>
-            <Text style={styles.punchInOut}>
-              Punch Out: {item?.punchOutTime}
-            </Text>
-            <Text style={styles.hoursWorked}>
-              Hours Worked: {item?.hoursWorked}
-            </Text>
-            <View style={styles.statusContainer}>
-              <Text style={styles.statusText}>Late In:</Text>
-              <View
-                style={[
-                  styles.statusBadge,
-                  item?.lateIn === "00:00" ? styles.onTime : styles.late,
-                ]}>
-                <Text style={styles.statusBadgeText}>
-                  {item?.lateIn === "00:00" ? "On Time" : "Late"}
-                </Text>
-              </View>
-            </View>
-          </View>
-        ))
-      )}
-    </ScrollView>
+          ))
+        )}
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
+    paddingHorizontal: 10,
+    paddingTop: 10,
+    paddingBottom: 10,
     backgroundColor: "#f3f4f6",
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 15,
     marginTop: 5,
     justifyContent: "space-between",
   },
   title: {
-    fontSize: 22,
-    fontWeight: "500",
+    fontSize: 19,
+    fontWeight: "400",
     color: "#2D6A4F",
     textAlign: "center",
   },
+  buttonReset: {
+    backgroundColor: "#B22222",
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  buttonResetText: {
+    color: "#fff",
+    fontSize: 13,
+    fontWeight: "400",
+  },
   filterContainer: {
     backgroundColor: "#fff",
-    padding: 15,
+    paddingHorizontal: 8,
+    paddingVertical: 15,
     borderRadius: 10,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   pickerRow: {
     flexDirection: "row",
@@ -252,17 +255,11 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 5,
   },
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
-    fontWeight: "600",
-    color: "#333",
-  },
   picker: {
     backgroundColor: "#f1f1f1",
   },
   pickerItem: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#333",
   },
   attendanceCard: {
@@ -273,7 +270,7 @@ const styles = StyleSheet.create({
   },
   attendanceDate: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "500",
     color: "#2D6A4F",
   },
   statusContainer: {
@@ -296,13 +293,13 @@ const styles = StyleSheet.create({
     backgroundColor: "green",
   },
   absent: {
-    backgroundColor: "red",
+    backgroundColor: "#B22222",
   },
   onTime: {
-    backgroundColor: "#28a745",
+    backgroundColor: "green",
   },
   late: {
-    backgroundColor: "#dc3545",
+    backgroundColor: "#B22222",
   },
   statusBadgeText: {
     fontSize: 12,
@@ -323,8 +320,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#999",
     textAlign: "center",
-    marginTop: 20,
   },
 });
+
 
 export default Attendance;
