@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   logo: {
-    width: "60%",
+    width: "40%",
     resizeMode: "contain",
   },
   heading: {
