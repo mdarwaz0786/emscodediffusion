@@ -29,7 +29,7 @@ const SalarySlip = () => {
     body {
       font-family: Arial, sans-serif;
       background-color: #f5f5f5;
-      width: 60vw;
+      width: 70vw;
       margin: 0 auto;
     }
 
@@ -225,6 +225,12 @@ const SalarySlip = () => {
       html: html,
       fileName: 'SalarySlip',
       directory: 'Downloads', // Ensure this is set to 'Downloads'
+      width: 595.28, // A4 width in points
+      height: 841.89, // A4 height in points
+      pageSize: {
+        width: 595.28,
+        height: 841.89,
+      },
     };
 
     try {

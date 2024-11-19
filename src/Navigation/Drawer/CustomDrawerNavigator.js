@@ -26,7 +26,7 @@ const CustomDrawerNavigator = () => {
       {
         label: "Employee",
         icon: "person-outline",
-        route: "Employee",
+        route: "EmployeeStack",
       },
       {
         label: "Settings",
