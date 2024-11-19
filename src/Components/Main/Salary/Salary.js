@@ -65,6 +65,7 @@ const SalarySlip = () => {
       font-size: 18px;
       color: #333;
       font-weight: 500;
+      margin-bottom: 20px,
     }
 
     .companyAddress,
@@ -138,7 +139,7 @@ const SalarySlip = () => {
 
     .footer {
       text-align: right;
-      margin-top: 20px;
+      margin-top: 30px;
     }
 
     .footerText {
@@ -225,17 +226,11 @@ const SalarySlip = () => {
       html: html,
       fileName: 'SalarySlip',
       directory: 'Downloads', // Ensure this is set to 'Downloads'
-      width: 595.28, // A4 width in points
-      height: 841.89, // A4 height in points
-      pageSize: {
-        width: 595.28,
-        height: 841.89,
-      },
     };
 
     try {
       const file = await RNHTMLtoPDF.convert(options);
-      const newPath = `${RNFetchBlob.fs.dirs.DownloadDir}/SalarySlip.pdf`; // Set the new path
+      const newPath = `${RNFetchBlob.fs.dirs.DownloadDir}/ArwazSalarySlip.pdf`; // Set the new path
       await RNFetchBlob.fs.mv(file.filePath, newPath); // Move the file to the new path
       Alert.alert('PDF Generated', `File saved to: ${newPath}`);
       console.log('PDF saved successfully at:', newPath);
