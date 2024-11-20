@@ -13,8 +13,6 @@ const Login = props => {
   // Ensure the employeeId starts with "EmpID" and the rest remains unchanged
   const transformedEmployeeId = `EmpID${employeeId.substring(5)}`;
 
-  console.log(API_BASE_URL);
-
   const handleLogin = async () => {
     try {
       const response = await axios.post(
@@ -29,7 +27,9 @@ const Login = props => {
         setEmployeeId("");
         setPassword("");
         Toast.show({ type: "success", text1: response?.data?.message });
-        props.navigation.navigate("Home");
+        props.navigation.navigate("DrawerNavigator", {
+          screen: "BottomTabNavigator",
+        });
       }
     } catch (error) {
       console.error("Error while login:", error.message);

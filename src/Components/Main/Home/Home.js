@@ -12,7 +12,7 @@ import { useAuth } from "../../../Context/auth.context.js";
 import axios from "axios";
 import Toast from "react-native-toast-message";
 import { API_BASE_URL } from "@env";
-import { useNavigation } from "@react-navigation/native";
+import { CommonActions, useNavigation } from "@react-navigation/native";
 import formatTimeWithAmPm from "../../../Helper/formatTimeWithAmPm.js";
 import formatTimeToHoursMinutes from "../../../Helper/formatTimeToHoursMinutes.js";
 import getGreeting from "../../../Helper/generateGreeting.js";
@@ -143,7 +143,26 @@ const Home = () => {
 
   // Navigate to attendance detail screen
   const navigateToAttendance = () => {
-    navigation.navigate("Attendance", { id: employeeId });
+    const routes = [
+      { name: "BottomTabNavigator" }, // Base route
+      {
+        name: "EmployeeStack",
+        params: {
+          screen: "Attendance",
+          params: { id: employeeId },
+        },
+      },
+    ];
+
+    // Index of Attendance in routes array
+    const attendanceIndex = routes.findIndex((route) => route.name === "EmployeeStack" && route.params?.screen === "Attendance");
+
+    navigation.dispatch(
+      CommonActions.reset({
+        index: attendanceIndex,
+        routes,
+      })
+    );
   };
 
   return (

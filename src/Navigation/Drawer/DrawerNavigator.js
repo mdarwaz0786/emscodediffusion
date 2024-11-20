@@ -1,4 +1,3 @@
-// src/Navigation/Drawer/DrawerNavigator.js
 import React from "react";
 import { ActivityIndicator, View } from "react-native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -11,6 +10,8 @@ import ContactUsScreen from "../../Screens/ContactUs/ContactUsScreen.js";
 import HelpScreen from "../../Screens/Help/HelpScreen.js";
 import LogoutScreen from "../../Screens/Auth/LogoutScreen.js";
 import EmployeeStack from "../Stack/EmployeeStack/EmployeeStack.js";
+import SettingsScreen from "../../Screens/Settings/SettingsScreen.js";
+import AttendanceScreen from "../../Screens/Attendance/AttendanceScreen.js";
 
 const Drawer = createDrawerNavigator();
 
@@ -27,7 +28,7 @@ const DrawerNavigator = () => {
 
   return (
     <Drawer.Navigator
-      initialRouteName={isLoggedIn ? "BottomTab" : "Login"}
+      initialRouteName={isLoggedIn ? "BottomTabNavigator" : "Login"}
       drawerContent={props =>
         isLoggedIn ? <CustomDrawerNavigator {...props} /> : null
       }
@@ -38,12 +39,13 @@ const DrawerNavigator = () => {
       }}>
       {isLoggedIn ? (
         <>
-          <Drawer.Screen name="BottomTab" component={BottomTabNavigator} />
+          <Drawer.Screen name="BottomTabNavigator" component={BottomTabNavigator} />
+          <Drawer.Screen name="EmployeeStack" component={EmployeeStack} />
+          <Drawer.Screen name="Settings" component={SettingsScreen} />
           <Drawer.Screen name="About" component={AboutUsScreen} />
           <Drawer.Screen name="Contact" component={ContactUsScreen} />
           <Drawer.Screen name="Help" component={HelpScreen} />
           <Drawer.Screen name="Logout" component={LogoutScreen} />
-          <Drawer.Screen name="EmployeeStack" component={EmployeeStack} />
         </>
       ) : (
         <Drawer.Screen name="Login" component={LoginScreen} />

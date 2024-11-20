@@ -5,7 +5,6 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useAuth } from "../../Context/auth.context.js";
 import Icon from "react-native-vector-icons/Ionicons";
 import HomeScreen from "../../Screens/Home/HomeScreen.js";
-import SettingsScreen from "../../Screens/Settings/SettingsScreen.js";
 import LoginScreen from "../../Screens/Auth/LoginScreen.js";
 import NotificationsScreen from "../../Screens/Notifications/NotificationScreen.js";
 import CustomDrawerNavigator from "../Drawer/CustomDrawerNavigator.js";
@@ -19,7 +18,6 @@ const BottomTabNavigator = () => {
   const icons = {
     Home: "home-outline",
     Profile: "person-outline",
-    Settings: "settings-outline",
     Login: "person-outline",
     Notifications: "notifications-outline",
     Menu: "menu-outline",
@@ -45,21 +43,20 @@ const BottomTabNavigator = () => {
         tabBarActiveTintColor: "#A63ED3",
         tabBarInactiveTintColor: "gray",
         tabBarStyle: {
-          height: 70,
+          height: 60,
           backgroundColor: "#fff",
-          paddingBottom: 10,
-          paddingTop: 8,
+          paddingBottom: 8,
+          paddingTop: 5,
         },
         tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: "600",
+          fontSize: 14,
+          fontWeight: "400",
         },
       })}>
       {isLoggedIn ? (
         <>
           <Tab.Screen name="Home" component={HomeScreen} />
           <Tab.Screen name="Profile" component={ProfileScreen} />
-          <Tab.Screen name="Settings" component={SettingsScreen} />
           <Tab.Screen name="Notifications" component={NotificationsScreen} />
           <Tab.Screen name="Menu" component={CustomDrawerNavigator} />
         </>

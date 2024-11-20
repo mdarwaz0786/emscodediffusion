@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { CommonActions, useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useAuth } from "../../Context/auth.context.js";
 
@@ -14,29 +14,20 @@ const CustomDrawerNavigator = () => {
         <ActivityIndicator size="large" color="#A63ED3" />
       </View>
     );
-  }
+  };
 
   const drawerItems = isLoggedIn
     ? [
       {
-        label: "Home",
-        icon: "home-outline",
-        route: "Home",
-      },
-      {
         label: "Employee",
         icon: "person-outline",
         route: "EmployeeStack",
+        resetScreen: "Employee",
       },
       {
         label: "Settings",
         icon: "settings-outline",
         route: "Settings",
-      },
-      {
-        label: "Notifications",
-        icon: "notifications-outline",
-        route: "Notifications",
       },
       {
         label: "About Us",
@@ -67,6 +58,27 @@ const CustomDrawerNavigator = () => {
       },
     ];
 
+  // Handle navigation
+  const handleNavigation = (item) => {
+    if (item.resetScreen) {
+      const routes = [
+        { name: item.route, params: { screen: item.resetScreen } },
+      ];
+
+      // Dynamic index calculation
+      const targetIndex = routes.findIndex((route) => route.name === item.route && route.params?.screen === item.resetScreen);
+
+      navigation.dispatch(
+        CommonActions.reset({
+          index: targetIndex,
+          routes,
+        })
+      );
+    } else {
+      navigation.navigate(item.route);
+    };
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -77,7 +89,7 @@ const CustomDrawerNavigator = () => {
           <Pressable
             key={index}
             style={styles.item}
-            onPress={() => navigation.navigate(item.route)}>
+            onPress={() => handleNavigation(item)}>
             <Icon name={item.icon} size={24} color="#A63ED3" />
             <Text style={styles.itemText}>{item.label}</Text>
           </Pressable>
