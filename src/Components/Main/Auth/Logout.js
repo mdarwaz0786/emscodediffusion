@@ -37,10 +37,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   message: {
-    fontSize: 18,
+    fontSize: 16,
     color: "#333",
     marginTop: 10,
-    fontWeight: "bold",
+    fontWeight: "500",
   },
   subMessage: {
     fontSize: 14,
