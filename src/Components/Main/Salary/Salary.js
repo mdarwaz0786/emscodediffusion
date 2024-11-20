@@ -1,14 +1,102 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Button, Alert, ScrollView, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Button, Alert, ScrollView, Image, Pressable } from 'react-native';
+import Icon from "react-native-vector-icons/Feather";
+import { Picker } from "@react-native-picker/picker";
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import RNFetchBlob from 'rn-fetch-blob';
 import requestStoragePermission from './utils/requestStoragePermission.js';
+import { useAuth } from '../../../Context/auth.context.js';
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import { API_BASE_URL } from "@env";
+import getMonthName from './utils/getMonthName.js';
 
-const SalarySlip = () => {
+const SalarySlip = ({ route }) => {
+  const id = route?.params?.id;
+  const { validToken, isLoading } = useAuth();
+  const [monthlySalary, setMonthlySalary] = useState("");
+  const [employee, setEmployee] = useState("");
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
+  const [month, setMonth] = useState(currentMonth);
+  const [year, setYear] = useState(currentYear);
+  const [employeeId, setEmployeeId] = useState(id);
+  const navigation = useNavigation();
 
   useEffect(() => {
     requestStoragePermission();
   }, []);
+
+  // Update employeeId, month and date when the component mounts
+  useEffect(() => {
+    setEmployeeId(id);
+    fetchSingleEmployee(id);
+    setMonth(currentMonth);
+    setYear(currentYear);
+  }, [id]);
+
+  // Fetch single employee
+  const fetchSingleEmployee = async (id) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/v1/team/single-team/${id}`, {
+        headers: {
+          Authorization: validToken,
+        },
+      });
+
+      if (response?.data?.success) {
+        setEmployee(response?.data?.team);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  // Get current month salary for employee
+  const fetchMonthlySalary = async () => {
+    try {
+      const params = {};
+
+      if (month) {
+        params.month = `${year}-${month}`;
+      }
+
+      if (employeeId) {
+        params.employeeId = employeeId;
+      }
+
+      const response = await axios.get(
+        `${API_BASE_URL}/api/v1/salary/monthly-salary`,
+        {
+          params,
+          headers: {
+            Authorization: validToken,
+          },
+        },
+      );
+
+      if (response?.data?.success) {
+        setMonthlySalary(response?.data?.salary);
+      };
+    } catch (error) {
+      console.error("Error while fetching monthly salary:", error.message);
+    };
+  };
+
+  useEffect(() => {
+    if (employeeId && month && year && validToken && !isLoading) {
+      fetchMonthlySalary();
+    };
+  }, [employeeId, month, year, validToken, isLoading]);
+
+  // Function to reset filters to initial values
+  const resetFilters = () => {
+    setMonth(currentMonth);
+    setYear(currentYear);
+    setEmployeeId(id);
+    fetchSingleEmployee(id);
+    fetchMonthlySalary();
+  };
 
   const generatePDF = async () => {
     const html = `
@@ -168,10 +256,10 @@ const SalarySlip = () => {
 
       <!-- Employee Information -->
       <div class="employeeInfo">
-        <div class="salaryMonth">November 2024</div>
-        <div class="employeeDetail"><span class="bold">Employee Name:</span> Md Arwaz</div>
-        <div class="employeeDetail"><span class="bold">Designation:</span> Software Engineer</div>
-        <div class="employeeDetail"><span class="bold">Employee ID:</span> EMPID003</div>
+        <div class="salaryMonth">${getMonthName(month)} ${year}</div>
+        <div class="employeeDetail"><span class="bold">Employee Name:</span>  ${employee?.name}</div>
+        <div class="employeeDetail"><span class="bold">Designation:</span> ${employee?.designation?.name}</div>
+        <div class="employeeDetail"><span class="bold">Employee ID:</span> ${employee?.employeeId}</div>
         <div class="employeeDetail"><span class="bold">Department:</span> IT</div>
         <div class="employeeDetail"><span class="bold">Bank Account:</span> XXXX-XXXX-1234</div>
       </div>
@@ -184,31 +272,31 @@ const SalarySlip = () => {
         </div>
         <div class="salaryRow">
           <div class="salaryText">Basic Salary</div>
-          <div class="salaryText">₹3000</div>
+          <div class="salaryText">₹${employee?.monthlySalary}</div>
         </div>
         <div class="salaryRow">
           <div class="salaryText">House Rent Allowance (HRA)</div>
-          <div class="salaryText">₹1200</div>
+          <div class="salaryText">₹0.00</div>
         </div>
         <div class="salaryRow">
           <div class="salaryText">Special Allowance</div>
-          <div class="salaryText">₹500</div>
+          <div class="salaryText">₹0.00</div>
         </div>
         <div class="salaryRow">
           <div class="salaryText">Bonus</div>
-          <div class="salaryText">₹300</div>
+          <div class="salaryText">₹0.00</div>
         </div>
         <div class="salaryRow">
           <div class="salaryText">Provident Fund (PF)</div>
-          <div class="salaryText">-₹200</div>
+          <div class="salaryText">-₹0.00</div>
         </div>
         <div class="salaryRow">
           <div class="salaryText">Income Tax</div>
-          <div class="salaryText">-₹250</div>
+          <div class="salaryText">-₹0.00</div>
         </div>
         <div class="salaryRow totalSalary">
           <div class="salaryTextBold">Total Salary</div>
-          <div class="salaryTextBold">₹3550</div>
+          <div class="salaryTextBold">₹${monthlySalary?.totalSalary}</div>
         </div>
       </div>
 
@@ -230,7 +318,7 @@ const SalarySlip = () => {
 
     try {
       const file = await RNHTMLtoPDF.convert(options);
-      const newPath = `${RNFetchBlob.fs.dirs.DownloadDir}/ArwazSalarySlip.pdf`; // Set the new path
+      const newPath = `${RNFetchBlob.fs.dirs.DownloadDir}/Arwaz-SalarySlip.pdf`; // Set the new path
       await RNFetchBlob.fs.mv(file.filePath, newPath); // Move the file to the new path
       Alert.alert('PDF Generated', `File saved to: ${newPath}`);
       console.log('PDF saved successfully at:', newPath);
@@ -242,13 +330,86 @@ const SalarySlip = () => {
 
   return (
     <>
-      <View style={styles.headerContainer}>
-        <Button title="Download Slip" onPress={generatePDF} />
+      {/* Header */}
+      <View style={styles.header}>
+        <Icon
+          name="arrow-left"
+          size={20}
+          color="#000"
+          onPress={() => navigation.goBack()}
+        />
+        <Text style={styles.headerTitle}>Salary</Text>
+        <Pressable style={styles.buttonReset} onPress={resetFilters}>
+          <Text style={styles.buttonResetText}>Reset Filter</Text>
+        </Pressable>
       </View>
+
+      {/* Filter Section */}
+      <View style={styles.filterContainer}>
+        <View style={styles.pickerRow}>
+          {/* Year Picker */}
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={year}
+              onValueChange={itemValue => setYear(itemValue)}
+              style={styles.picker}>
+              {Array.from({ length: 5 }, (_, index) => {
+                const yearOption = currentYear - index;
+                return (
+                  <Picker.Item
+                    key={yearOption}
+                    label={String(yearOption)}
+                    value={yearOption}
+                    style={styles.pickerItem}
+                  />
+                );
+              })}
+            </Picker>
+          </View>
+
+          {/* Month Picker */}
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={month}
+              onValueChange={itemValue => setMonth(itemValue)}
+              style={styles.picker}>
+              {Array.from({ length: 12 }, (_, index) => (
+                <Picker.Item
+                  key={index}
+                  label={new Date(0, index).toLocaleString("default", {
+                    month: "long",
+                  })}
+                  value={index}
+                  style={styles.pickerItem}
+                />
+              ))}
+            </Picker>
+          </View>
+        </View>
+      </View>
+
+      {/* Employee */}
+      <View style={styles.headerContainer}>
+        <Text style={{ fontSize: 16, fontWeight: "500" }}>{employee?.name}</Text>
+        <Pressable
+          onPress={generatePDF}
+          style={{
+            backgroundColor: "#4CAF50",
+            paddingVertical: 5,
+            paddingHorizontal: 5,
+            borderRadius: 5,
+          }}
+        >
+          <Text style={{ fontSize: 14, color: "#FFF", fontWeight: "400" }}>
+            Download
+          </Text>
+        </Pressable>
+      </View>
+
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <View style={styles.salarySlip}>
           {/* Company Header */}
-          <View style={styles.header}>
+          <View style={styles.slipHeader}>
             <View style={styles.companyLogo}>
               <Image source={require("../../../Assets/logo.png")} style={styles.logo} />
             </View>
@@ -262,15 +423,15 @@ const SalarySlip = () => {
 
           {/* Employee Information */}
           <View style={styles.employeeInfo}>
-            <Text style={styles.salaryMonth}>November 2024</Text>
+            <Text style={styles.salaryMonth}>{getMonthName(month)} {year}</Text>
             <Text style={styles.employeeDetail}>
-              <Text style={styles.bold}>Employee Name:</Text> Md Arwaz
+              <Text style={styles.bold}>Employee Name:</Text> {employee?.name}
             </Text>
             <Text style={styles.employeeDetail}>
-              <Text style={styles.bold}>Designation:</Text> Software Engineer
+              <Text style={styles.bold}>Designation:</Text> {employee?.designation?.name}
             </Text>
             <Text style={styles.employeeDetail}>
-              <Text style={styles.bold}>Employee ID:</Text> EMPID003
+              <Text style={styles.bold}>Employee ID:</Text> {employee?.employeeId}
             </Text>
             <Text style={styles.employeeDetail}>
               <Text style={styles.bold}>Department:</Text> IT
@@ -288,31 +449,31 @@ const SalarySlip = () => {
             </View>
             <View style={styles.salaryRow}>
               <Text style={styles.salaryText}>Basic Salary</Text>
-              <Text style={styles.salaryText}>₹3000</Text>
+              <Text style={styles.salaryText}>₹{employee?.monthlySalary}</Text>
             </View>
             <View style={styles.salaryRow}>
               <Text style={styles.salaryText}>House Rent Allowance (HRA)</Text>
-              <Text style={styles.salaryText}>₹1200</Text>
+              <Text style={styles.salaryText}>₹0.00</Text>
             </View>
             <View style={styles.salaryRow}>
               <Text style={styles.salaryText}>Special Allowance</Text>
-              <Text style={styles.salaryText}>₹500</Text>
+              <Text style={styles.salaryText}>₹0.00</Text>
             </View>
             <View style={styles.salaryRow}>
               <Text style={styles.salaryText}>Bonus</Text>
-              <Text style={styles.salaryText}>₹300</Text>
+              <Text style={styles.salaryText}>₹0.00</Text>
             </View>
             <View style={styles.salaryRow}>
               <Text style={styles.salaryText}>Provident Fund (PF)</Text>
-              <Text style={styles.salaryText}>-₹200</Text>
+              <Text style={styles.salaryText}>-₹0.00</Text>
             </View>
             <View style={styles.salaryRow}>
               <Text style={styles.salaryText}>Income Tax</Text>
-              <Text style={styles.salaryText}>-₹250</Text>
+              <Text style={styles.salaryText}>-₹0.00</Text>
             </View>
             <View style={[styles.salaryRow, styles.totalSalary]}>
               <Text style={styles.salaryTextBold}>Total Salary</Text>
-              <Text style={styles.salaryTextBold}>₹3550</Text>
+              <Text style={styles.salaryTextBold}>₹{monthlySalary?.totalSalary}</Text>
             </View>
           </View>
 
@@ -324,24 +485,73 @@ const SalarySlip = () => {
       </ScrollView>
     </>
   );
-
 };
 
 const styles = StyleSheet.create({
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 12,
+    marginBottom: 10,
+    backgroundColor: "#fff",
+    elevation: 1,
+  },
+  headerTitle: {
+    fontSize: 17,
+    fontWeight: "400",
+    color: "#000",
+  },
+  buttonReset: {
+    backgroundColor: "#B22222",
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  buttonResetText: {
+    color: "#fff",
+    fontSize: 13,
+    fontWeight: "400",
+  },
+  filterContainer: {
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  pickerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  pickerContainer: {
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  picker: {
+    backgroundColor: "#fff",
+  },
+  pickerItem: {
+    fontSize: 14,
+    color: "#333",
+  },
   headerContainer: {
-    padding: 20,
-    backgroundColor: '#fff',
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    columnGap: 16,
+    marginEnd: 16,
+    marginBottom: 10,
   },
   scrollViewContent: {
-    paddingBottom: 20,
-    paddingTop: 20,
+    padding: 10,
+    paddingTop: 0,
   },
   salarySlip: {
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 20,
+    padding: 10,
   },
-  header: {
+  slipHeader: {
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: '#e1e1e1',

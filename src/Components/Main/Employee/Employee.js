@@ -62,48 +62,60 @@ const Employee = ({ navigation }) => {
   );
 
   return (
-    <View style={styles.container}>
+    <>
+      {/* Header */}
       <View style={styles.header}>
-        <Icon name="arrow-left" size={25} onPress={() => navigation.goBack()} />
-        <Text style={styles.headerText}>Employee</Text>
+        <Icon
+          name="arrow-left"
+          size={20}
+          color="#000"
+          onPress={() => navigation.goBack()}
+        />
+        <Text style={styles.headerTitle}>Employee</Text>
       </View>
-      <FlatList
-        data={employees}
-        renderItem={renderEmployeeItem}
-        keyExtractor={item => item?._id}
-      />
-    </View>
+
+      <View style={styles.container}>
+        <FlatList
+          data={employees}
+          renderItem={renderEmployeeItem}
+          keyExtractor={item => item?._id}
+        />
+      </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f7f7f7",
     padding: 16,
-  },
-  headerText: {
-    fontSize: 19,
-    fontWeight: "400",
-    color: "#333",
-    textAlign: "center",
-  },
-  employeeCard: {
-    backgroundColor: "#ffffff",
-    padding: 12,
-    marginBottom: 16,
-    borderRadius: 8,
+    paddingTop: 4,
   },
   header: {
     flexDirection: "row",
-    width: "60%",
-    justifyContent: "space-between",
-    marginBottom: 16,
+    justifyContent: "flex-start",
+    alignItems: "center",
+    columnGap: 100,
+    padding: 12,
+    marginBottom: 15,
+    backgroundColor: "#fff",
+    elevation: 1,
+  },
+  headerTitle: {
+    fontSize: 16,
+    fontWeight: "400",
+    color: "#000",
+  },
+  employeeCard: {
+    backgroundColor: "#ffffff",
+    padding: 10,
+    marginBottom: 12,
+    borderRadius: 8,
   },
   heading: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 10,
+    marginBottom: 7,
   },
   employeeName: {
     fontSize: 14,
@@ -111,7 +123,7 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   employeeRole: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#888",
   },
   buttonContainer: {
@@ -126,7 +138,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   attendanceButtonText: {
-    fontSize: 13,
+    fontSize: 12,
     color: "#fff",
     fontWeight: "500",
   },
@@ -139,7 +151,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   salaryButtonText: {
-    fontSize: 13,
+    fontSize: 12,
     color: "#fff",
     fontWeight: "500",
   },

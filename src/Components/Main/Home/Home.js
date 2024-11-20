@@ -24,13 +24,16 @@ const Home = () => {
   const navigation = useNavigation();
   const { team, validToken, isLoading } = useAuth();
   const [attendance, setAttendance] = useState([]);
+  const [monthlyStatistic, setMonthlyStatistic] = useState("");
+  const [currentMonth, setCurrentMonth] = useState(new Date().toISOString().split("T")[0].slice(0, 7));
   const [currentDate, setCurrentDate] = useState(new Date().toISOString().split("T")[0]);
   const [employeeId, setEmployeeId] = useState(team?._id);
 
-  // Update employeeId and currentDate when the component mounts or team changes
+  // Update employeeId, currentMonth and currentDate when the component mounts or team changes
   useEffect(() => {
     setEmployeeId(team?._id);
     setCurrentDate(new Date().toISOString().split("T")[0]);
+    setCurrentMonth(new Date().toISOString().split("T")[0].slice(0, 7));
   }, [team]);
 
   // Process Attendance API Request
@@ -140,6 +143,43 @@ const Home = () => {
       fetchAttendance();
     };
   }, [employeeId, currentDate, validToken, isLoading]);
+
+  // Get current month statistic for logged in employee
+  const fetchMonthlyStatistic = async () => {
+    try {
+      const params = {};
+
+      if (currentMonth) {
+        params.month = currentMonth;
+      }
+
+      if (employeeId) {
+        params.employeeId = employeeId;
+      }
+
+      const response = await axios.get(
+        `${API_BASE_URL}/api/v1/attendance/monthly-statistic`,
+        {
+          params,
+          headers: {
+            Authorization: validToken,
+          },
+        },
+      );
+
+      if (response?.data?.success) {
+        setMonthlyStatistic(response?.data?.attendance);
+      };
+    } catch (error) {
+      console.error("Error while fetching monthly statistic:", error.message);
+    };
+  };
+
+  useEffect(() => {
+    if (employeeId && currentMonth && validToken && !isLoading) {
+      fetchMonthlyStatistic();
+    };
+  }, [employeeId, currentMonth, validToken, isLoading]);
 
   // Navigate to attendance detail screen
   const navigateToAttendance = () => {
@@ -264,15 +304,15 @@ const Home = () => {
           <Text style={styles.sectionTitle}>Monthly Statistics</Text>
           <View style={styles.statsRow}>
             <View style={styles.statBox}>
-              <Text style={styles.statNumber}>20</Text>
+              <Text style={styles.statNumber}>{monthlyStatistic?.employeePresentDays}</Text>
               <Text style={styles.statLabel}>Present Days</Text>
             </View>
             <View style={styles.statBox}>
-              <Text style={styles.statNumber}>2</Text>
+              <Text style={styles.statNumber}>{monthlyStatistic?.employeeAbsentDays}</Text>
               <Text style={styles.statLabel}>Absent Days</Text>
             </View>
             <View style={styles.statBox}>
-              <Text style={styles.statNumber}>0</Text>
+              <Text style={styles.statNumber}>{monthlyStatistic.employeeLeaveDays}</Text>
               <Text style={styles.statLabel}>Leaves</Text>
             </View>
           </View>
@@ -354,7 +394,7 @@ const styles = StyleSheet.create({
     marginBottom: 22,
   },
   greetingText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "500",
   },
   dateText: {
@@ -386,8 +426,8 @@ const styles = StyleSheet.create({
     marginBottom: 1,
   },
   summaryTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: 15,
+    fontWeight: "500",
     marginBottom: 5,
   },
   monthlyStats: {
@@ -395,11 +435,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 10,
     marginTop: 15,
-    marginBottom: 1,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: 15,
+    fontWeight: "500",
     marginBottom: 10,
   },
   statsRow: {
@@ -408,14 +447,15 @@ const styles = StyleSheet.create({
   },
   statBox: {
     alignItems: "center",
-    padding: 10,
+    padding: 8,
     backgroundColor: "#f0f4f8",
     borderRadius: 10,
     width: "30%",
+    paddingBottom: 16,
   },
   statNumber: {
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: 16,
+    fontWeight: "500",
   },
   statLabel: {
     fontSize: 12,

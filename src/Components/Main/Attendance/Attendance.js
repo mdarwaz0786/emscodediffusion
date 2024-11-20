@@ -92,16 +92,16 @@ const Attendance = ({ route }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <>
       {/* Header */}
       <View style={styles.header}>
         <Icon
           name="arrow-left"
-          size={23}
-          color="#2D6A4F"
+          size={20}
+          color="#000"
           onPress={() => navigation.goBack()}
         />
-        <Text style={styles.title}>Attendance Details</Text>
+        <Text style={styles.headerTitle}>Attendance</Text>
         <Pressable style={styles.buttonReset} onPress={resetFilters}>
           <Text style={styles.buttonResetText}>Reset Filter</Text>
         </Pressable>
@@ -152,14 +152,14 @@ const Attendance = ({ route }) => {
       </View>
 
       {/* Employee */}
-      <View style={{ justifyContent: "center", alignItems: "center", marginBottom: 5 }}>
-        <Text style={{ fontSize: 18, fontWeight: "600" }}>
+      <View style={{ justifyContent: "center", alignItems: "center", marginBottom: 10 }}>
+        <Text style={{ fontSize: 16, fontWeight: "500" }}>
           {employee?.name}
         </Text>
       </View>
 
       {/* Scrollable Attendance List */}
-      <ScrollView>
+      <ScrollView style={styles.container}>
         {attendance.length === 0 ? (
           <Text style={styles.emptyText}>
             No attendance records found for {employee?.name} for the selected month and year.
@@ -203,30 +203,29 @@ const Attendance = ({ route }) => {
           ))
         )}
       </ScrollView>
-    </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 10,
-    paddingTop: 10,
-    paddingBottom: 10,
+    paddingHorizontal: 16,
     backgroundColor: "#f3f4f6",
   },
   header: {
     flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 15,
-    marginTop: 5,
     justifyContent: "space-between",
+    alignItems: "center",
+    padding: 12,
+    marginBottom: 10,
+    backgroundColor: "#fff",
+    elevation: 1,
   },
-  title: {
-    fontSize: 19,
+  headerTitle: {
+    fontSize: 17,
     fontWeight: "400",
-    color: "#2D6A4F",
-    textAlign: "center",
+    color: "#000",
   },
   buttonReset: {
     backgroundColor: "#B22222",
@@ -241,9 +240,7 @@ const styles = StyleSheet.create({
     fontWeight: "400",
   },
   filterContainer: {
-    backgroundColor: "#fff",
-    paddingHorizontal: 8,
-    paddingVertical: 15,
+    paddingHorizontal: 10,
     borderRadius: 10,
     marginBottom: 10,
   },
@@ -256,7 +253,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   picker: {
-    backgroundColor: "#f1f1f1",
+    backgroundColor: "#fff",
   },
   pickerItem: {
     fontSize: 14,
@@ -264,30 +261,33 @@ const styles = StyleSheet.create({
   },
   attendanceCard: {
     backgroundColor: "#fff",
-    padding: 15,
+    padding: 12,
     borderRadius: 10,
-    marginVertical: 8,
+    marginBottom: 15,
   },
   attendanceDate: {
-    fontSize: 16,
-    fontWeight: "500",
+    fontSize: 14,
+    fontWeight: "400",
     color: "#2D6A4F",
   },
   statusContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginVertical: 5,
   },
   statusText: {
-    fontSize: 14,
-    fontWeight: "600",
+    fontSize: 13,
+    fontWeight: "400",
     color: "#333",
   },
   statusBadge: {
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 5,
+    width: 61,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
   present: {
     backgroundColor: "green",
@@ -306,22 +306,19 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   punchInOut: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#555",
-    marginVertical: 2,
   },
   hoursWorked: {
-    fontSize: 14,
-    fontWeight: "600",
+    fontSize: 13,
+    fontWeight: "400",
     color: "#2D6A4F",
-    marginTop: 5,
   },
   emptyText: {
-    fontSize: 16,
+    fontSize: 15,
     color: "#999",
     textAlign: "center",
   },
 });
-
 
 export default Attendance;
