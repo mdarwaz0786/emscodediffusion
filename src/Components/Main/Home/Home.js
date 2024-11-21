@@ -259,7 +259,7 @@ const Home = () => {
         {/* Today's Activity */}
         <View style={styles.activitySection}>
           <Text style={styles.sectionTitle}>Today’s Activity</Text>
-          <Text>
+          <Text style={{ marginTop: -3, }}>
             <Text style={{ color: attendance[0]?.punchIn ? "green" : "red" }}>
               {attendance[0]?.punchIn ? "✓" : "✗"}
             </Text>{" "}
@@ -292,7 +292,7 @@ const Home = () => {
         {/* Today's Summary */}
         <View style={styles.summary}>
           <Text style={styles.summaryTitle}>Today’s Summary</Text>
-          <Text>
+          <Text style={{ marginTop: -1 }}>
             Total Hours Worked:{" "}
             {formatTimeToHoursMinutes(attendance[0]?.hoursWorked)}
           </Text>
@@ -391,7 +391,8 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   greetingContainer: {
-    marginBottom: 22,
+    marginBottom: 8,
+    marginTop: -12,
   },
   greetingText: {
     fontSize: 15,
@@ -429,6 +430,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "500",
     marginBottom: 5,
+    marginTop: -5,
   },
   monthlyStats: {
     padding: 15,
@@ -439,11 +441,13 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 15,
     fontWeight: "500",
-    marginBottom: 10,
+    marginBottom: 5,
+    marginTop: -5,
   },
   statsRow: {
     flexDirection: "row",
     justifyContent: "space-around",
+    marginTop: 3,
   },
   statBox: {
     alignItems: "center",

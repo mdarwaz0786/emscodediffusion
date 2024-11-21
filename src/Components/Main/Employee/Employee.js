@@ -88,7 +88,7 @@ const Employee = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: 10,
     paddingTop: 4,
   },
   header: {
@@ -97,12 +97,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     columnGap: 100,
     padding: 12,
-    marginBottom: 15,
+    marginBottom: 10,
     backgroundColor: "#fff",
     elevation: 1,
   },
   headerTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "400",
     color: "#000",
   },
@@ -118,12 +118,12 @@ const styles = StyleSheet.create({
     marginBottom: 7,
   },
   employeeName: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "400",
-    color: "#333",
+    color: "#555",
   },
   employeeRole: {
-    fontSize: 13,
+    fontSize: 12,
     color: "#888",
   },
   buttonContainer: {
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   },
   attendanceButton: {
     backgroundColor: "#4CAF50",
-    paddingHorizontal: 10,
+    paddingHorizontal: 6,
     borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
@@ -140,11 +140,11 @@ const styles = StyleSheet.create({
   attendanceButtonText: {
     fontSize: 12,
     color: "#fff",
-    fontWeight: "500",
+    fontWeight: "400",
   },
   salaryButton: {
     backgroundColor: "#2196F3",
-    paddingHorizontal: 10,
+    paddingHorizontal: 7,
     paddingVertical: 5,
     borderRadius: 5,
     alignItems: "center",
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
   salaryButtonText: {
     fontSize: 12,
     color: "#fff",
-    fontWeight: "500",
+    fontWeight: "400",
   },
 });
 

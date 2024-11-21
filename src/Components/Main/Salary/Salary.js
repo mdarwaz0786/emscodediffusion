@@ -146,19 +146,18 @@ const SalarySlip = ({ route }) => {
     }
 
     .companyInfo {
-      margin-left: 10px;
+      padding-top: 10px,
     }
 
     .companyName {
-      font-size: 18px;
+      font-size: 16px;
       color: #333;
       font-weight: 500;
-      margin-bottom: 20px,
+      padding-bottom: 20px,
     }
 
-    .companyAddress,
-    .companyContact {
-      font-size: 14px;
+    .companyAddress {
+      font-size: 15px;
       color: #777;
     }
 
@@ -167,11 +166,11 @@ const SalarySlip = ({ route }) => {
     }
 
     .salaryMonth {
-      font-size: 18px;
-      color: #333;
+      font-size: 16px;
       margin-bottom: 10px;
       font-weight: 500;
       text-align: center;
+      color: #333;
     }
 
     .employeeDetail {
@@ -181,7 +180,7 @@ const SalarySlip = ({ route }) => {
     }
 
     .bold {
-      font-weight: 600;
+      font-weight: 500;
     }
 
     .salaryDetails {
@@ -197,8 +196,7 @@ const SalarySlip = ({ route }) => {
 
     .headerText {
       font-size: 14px;
-      font-weight: bold;
-      color: #555;
+      font-weight: 500;
     }
 
     .salaryRow {
@@ -221,19 +219,19 @@ const SalarySlip = ({ route }) => {
 
     .salaryTextBold {
       font-size: 14px;
-      font-weight: 550;
+      font-weight: 500;
       color: #333;
     }
 
     .footer {
       text-align: right;
-      margin-top: 30px;
+      margin-top: 50px;
     }
 
     .footerText {
       font-size: 16px;
-      color: #555;
       font-weight: 500;
+      color: #333;
     }
   </style>
 </head>
@@ -312,18 +310,18 @@ const SalarySlip = ({ route }) => {
 
     let options = {
       html: html,
-      fileName: 'SalarySlip',
+      fileName: `Salary-${getMonthName(month).slice(0, 3)}-${year}-${employee?.name.split(" ", 1)[0]}`,
       directory: 'Downloads', // Ensure this is set to 'Downloads'
     };
 
     try {
       const file = await RNHTMLtoPDF.convert(options);
-      const newPath = `${RNFetchBlob.fs.dirs.DownloadDir}/Arwaz-SalarySlip.pdf`; // Set the new path
+      const newPath = `${RNFetchBlob.fs.dirs.DownloadDir}/Salary-${getMonthName(month).slice(0, 3)}-${year}-${employee?.name.split(" ", 1)[0]}.pdf`; // Set the new path
       await RNFetchBlob.fs.mv(file.filePath, newPath); // Move the file to the new path
       Alert.alert('PDF Generated', `File saved to: ${newPath}`);
       console.log('PDF saved successfully at:', newPath);
     } catch (error) {
-      console.error('Error generating PDF:', error);
+      console.error('Error while generating PDF:', error);
       Alert.alert('Error', 'Failed to generate PDF');
     }
   };
@@ -390,17 +388,17 @@ const SalarySlip = ({ route }) => {
 
       {/* Employee */}
       <View style={styles.headerContainer}>
-        <Text style={{ fontSize: 16, fontWeight: "500" }}>{employee?.name}</Text>
+        <Text style={{ fontSize: 14, fontWeight: "500", color: "#555" }}>{employee?.name}</Text>
         <Pressable
           onPress={generatePDF}
           style={{
             backgroundColor: "#4CAF50",
-            paddingVertical: 5,
-            paddingHorizontal: 5,
+            paddingVertical: 2,
+            paddingHorizontal: 7,
             borderRadius: 5,
           }}
         >
-          <Text style={{ fontSize: 14, color: "#FFF", fontWeight: "400" }}>
+          <Text style={{ fontSize: 12, color: "#FFF", fontWeight: "400" }}>
             Download
           </Text>
         </Pressable>
@@ -498,24 +496,24 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   headerTitle: {
-    fontSize: 17,
+    fontSize: 15,
     fontWeight: "400",
     color: "#000",
   },
   buttonReset: {
     backgroundColor: "#B22222",
-    paddingVertical: 5,
-    paddingHorizontal: 10,
+    paddingVertical: 3,
+    paddingHorizontal: 6,
     borderRadius: 5,
     alignItems: "center",
   },
   buttonResetText: {
     color: "#fff",
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "400",
   },
   filterContainer: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 5,
     borderRadius: 10,
     marginBottom: 10,
   },
@@ -538,8 +536,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end",
     alignItems: "center",
-    columnGap: 16,
-    marginEnd: 16,
+    columnGap: 50,
+    marginEnd: 10,
     marginBottom: 10,
   },
   scrollViewContent: {
@@ -572,28 +570,28 @@ const styles = StyleSheet.create({
     flex: 2,
   },
   companyName: {
-    fontSize: 16,
-    color: '#333',
+    fontSize: 14,
+    color: '#555',
     fontWeight: '500',
   },
   companyAddress: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#777',
   },
   employeeInfo: {
     marginBottom: 20,
   },
   salaryMonth: {
-    fontSize: 17,
-    color: '#333',
-    marginBottom: 10,
+    fontSize: 14,
+    color: '#555',
     fontWeight: "500",
+    marginBottom: 10,
     textAlign: "center",
   },
   employeeDetail: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#555',
-    marginBottom: 5,
+    marginBottom: 2,
   },
   bold: {
     fontWeight: '500',
@@ -609,36 +607,35 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
   },
   headerText: {
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: 13,
+    fontWeight: '500',
     color: '#555',
   },
   salaryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 8,
+    paddingVertical: 5,
     borderBottomWidth: 1,
     borderBottomColor: '#e1e1e1',
   },
   salaryText: {
-    fontSize: 14,
-    color: '#333',
+    fontSize: 13,
+    color: '#555',
   },
   totalSalary: {
-    fontWeight: '500',
     backgroundColor: '#f9f9f9',
   },
   salaryTextBold: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '500',
-    color: '#333',
+    color: '#555',
   },
   footer: {
     alignItems: 'flex-end',
-    marginTop: 10,
+    marginTop: 20,
   },
   footerText: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#555',
     fontWeight: "500",
   },

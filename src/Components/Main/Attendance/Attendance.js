@@ -20,10 +20,20 @@ const Attendance = ({ route }) => {
   const [month, setMonth] = useState(currentMonth);
   const [year, setYear] = useState(currentYear);
   const [employeeId, setEmployeeId] = useState(id);
+  const [attendanceSummary, setAttendanceSummary] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
 
+  // Update employeeId, month and date when the component mounts
+  useEffect(() => {
+    setEmployeeId(id);
+    fetchSingleEmployee(id);
+    setMonth(currentMonth);
+    setYear(currentYear);
+  }, [id]);
+
   // Fetch single employee
-  const fetchSingleEmployee = async () => {
+  const fetchSingleEmployee = async (id) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/api/v1/team/single-team/${id}`, {
         headers: {
@@ -69,19 +79,48 @@ const Attendance = ({ route }) => {
     }
   };
 
-  // Update employeeId if team or id changes and fetch employee
-  useEffect(() => {
-    if (id) {
-      setEmployeeId(id);
-      fetchSingleEmployee(id);
-    }
-  }, [id]);
-
   useEffect(() => {
     if (validToken && !isLoading && month && year && employeeId) {
       fetchAttendance();
     }
   }, [validToken, isLoading, month, year, employeeId]);
+
+  // Get current month statistic for employee
+  const fetchMonthlyStatistic = async () => {
+    try {
+      const params = {};
+
+      if (month) {
+        params.month = `${year}-${month}`;
+      }
+
+      if (employeeId) {
+        params.employeeId = employeeId;
+      }
+
+      const response = await axios.get(
+        `${API_BASE_URL}/api/v1/attendance/monthly-statistic`,
+        {
+          params,
+          headers: {
+            Authorization: validToken,
+          },
+        },
+      );
+
+      if (response?.data?.success) {
+        setAttendanceSummary(response?.data?.attendance);
+      };
+    } catch (error) {
+      console.error("Error while fetching monthly statistic:", error.message);
+    };
+  };
+
+  useEffect(() => {
+    if (employeeId && month && year && validToken && !isLoading) {
+      fetchMonthlyStatistic();
+    };
+  }, [employeeId, month, year, validToken, isLoading]);
 
   // Function to reset filters to initial values
   const resetFilters = () => {
@@ -89,6 +128,7 @@ const Attendance = ({ route }) => {
     setYear(currentYear);
     setEmployeeId(id);
     fetchAttendance();
+    fetchMonthlyStatistic();
   };
 
   return (
@@ -153,7 +193,7 @@ const Attendance = ({ route }) => {
 
       {/* Employee */}
       <View style={{ justifyContent: "center", alignItems: "center", marginBottom: 10 }}>
-        <Text style={{ fontSize: 16, fontWeight: "500" }}>
+        <Text style={{ fontSize: 15, fontWeight: "400" }}>
           {employee?.name}
         </Text>
       </View>
@@ -210,7 +250,7 @@ const Attendance = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: 10,
     backgroundColor: "#f3f4f6",
   },
   header: {
@@ -223,24 +263,24 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   headerTitle: {
-    fontSize: 17,
+    fontSize: 15,
     fontWeight: "400",
     color: "#000",
   },
   buttonReset: {
     backgroundColor: "#B22222",
-    paddingVertical: 5,
-    paddingHorizontal: 10,
+    paddingVertical: 2,
+    paddingHorizontal: 6,
     borderRadius: 5,
     alignItems: "center",
   },
   buttonResetText: {
     color: "#fff",
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "400",
   },
   filterContainer: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 5,
     borderRadius: 10,
     marginBottom: 10,
   },
@@ -315,7 +355,7 @@ const styles = StyleSheet.create({
     color: "#2D6A4F",
   },
   emptyText: {
-    fontSize: 15,
+    fontSize: 14,
     color: "#999",
     textAlign: "center",
   },
