@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   employeeName: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "500",
     marginRight: 10,
   },
@@ -395,7 +395,7 @@ const styles = StyleSheet.create({
     marginTop: -12,
   },
   greetingText: {
-    fontSize: 15,
+    fontSize: 14.5,
     fontWeight: "500",
   },
   dateText: {
@@ -416,7 +416,7 @@ const styles = StyleSheet.create({
     width: "47%",
   },
   quickActionText: {
-    fontSize: 12,
+    fontSize: 13,
     marginTop: 5,
   },
   summary: {
@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
     marginBottom: 1,
   },
   summaryTitle: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: "500",
     marginBottom: 5,
     marginTop: -5,
@@ -439,7 +439,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   sectionTitle: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: "500",
     marginBottom: 5,
     marginTop: -5,

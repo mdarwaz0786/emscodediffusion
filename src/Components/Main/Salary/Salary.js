@@ -58,7 +58,8 @@ const SalarySlip = ({ route }) => {
       const params = {};
 
       if (month) {
-        params.month = `${year}-${month}`;
+        const formattedMonth = month.toString().padStart(2, "0");
+        params.month = `${year}-${formattedMonth}`;
       }
 
       if (employeeId) {
@@ -77,6 +78,8 @@ const SalarySlip = ({ route }) => {
 
       if (response?.data?.success) {
         setMonthlySalary(response?.data?.salary);
+      } else {
+        setMonthlySalary("");
       };
     } catch (error) {
       console.error("Error while fetching monthly salary:", error.message);
@@ -388,7 +391,7 @@ const SalarySlip = ({ route }) => {
 
       {/* Employee */}
       <View style={styles.headerContainer}>
-        <Text style={{ fontSize: 14, fontWeight: "500", color: "#555" }}>{employee?.name}</Text>
+        <Text style={{ fontSize: 15, fontWeight: "400", color: "#555" }}>{employee?.name}</Text>
         <Pressable
           onPress={generatePDF}
           style={{
@@ -398,7 +401,7 @@ const SalarySlip = ({ route }) => {
             borderRadius: 5,
           }}
         >
-          <Text style={{ fontSize: 12, color: "#FFF", fontWeight: "400" }}>
+          <Text style={{ fontSize: 13, color: "#FFF", fontWeight: "400", paddingVertical: 2, paddingHorizontal: 5, }}>
             Download
           </Text>
         </Pressable>
@@ -496,14 +499,14 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   headerTitle: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "400",
     color: "#000",
   },
   buttonReset: {
     backgroundColor: "#B22222",
-    paddingVertical: 3,
-    paddingHorizontal: 6,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
     borderRadius: 5,
     alignItems: "center",
   },
@@ -534,11 +537,10 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     flexDirection: "row",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
     alignItems: "center",
-    columnGap: 50,
-    marginEnd: 10,
     marginBottom: 10,
+    paddingHorizontal: 10,
   },
   scrollViewContent: {
     padding: 10,

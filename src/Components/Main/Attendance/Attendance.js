@@ -5,10 +5,12 @@ import axios from "axios";
 import { API_BASE_URL } from "@env";
 import { useAuth } from "../../../Context/auth.context.js";
 import Icon from "react-native-vector-icons/Feather";
+import Close from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from "@react-navigation/native";
 import formatTimeWithAmPm from "../../../Helper/formatTimeWithAmPm.js";
 import formatTimeToHoursMinutes from "../../../Helper/formatTimeToHoursMinutes.js";
 import formatDate from "../../../Helper/formatDate.js";
+import { Modal, Portal, Button } from "react-native-paper";
 
 const Attendance = ({ route }) => {
   const id = route?.params?.id;
@@ -26,10 +28,10 @@ const Attendance = ({ route }) => {
 
   // Update employeeId, month and date when the component mounts
   useEffect(() => {
-    setEmployeeId(id);
-    fetchSingleEmployee(id);
     setMonth(currentMonth);
     setYear(currentYear);
+    setEmployeeId(id);
+    fetchSingleEmployee(id);
   }, [id]);
 
   // Fetch single employee
@@ -49,17 +51,28 @@ const Attendance = ({ route }) => {
     }
   };
 
-  // Fetch Attendance
+  // Fetch Attendance of selected month, year and employee
   const fetchAttendance = async () => {
     try {
+      const params = {};
+
+      if (month) {
+        const formattedMonth = month.toString().padStart(2, "0");
+        params.month = formattedMonth;
+      }
+
+      if (employeeId) {
+        params.employeeId = employeeId;
+      }
+
+      if (year) {
+        params.year = year;
+      }
+
       const response = await axios.get(
         `${API_BASE_URL}/api/v1/attendance/all-attendance`,
         {
-          params: {
-            month,
-            year,
-            employeeId,
-          },
+          params,
           headers: {
             Authorization: validToken,
           },
@@ -70,13 +83,13 @@ const Attendance = ({ route }) => {
         setAttendance(response?.data?.attendance);
       } else {
         setAttendance([]);
-      }
+      };
     } catch (error) {
       console.error(
         "Error while fetching attendance:",
         error?.response?.data?.message,
       );
-    }
+    };
   };
 
   useEffect(() => {
@@ -85,13 +98,14 @@ const Attendance = ({ route }) => {
     }
   }, [validToken, isLoading, month, year, employeeId]);
 
-  // Get current month statistic for employee
+  // Get selected month and year statistic for employee
   const fetchMonthlyStatistic = async () => {
     try {
       const params = {};
 
       if (month) {
-        params.month = `${year}-${month}`;
+        const formattedMonth = month.toString().padStart(2, "0");
+        params.month = `${year}-${formattedMonth}`;
       }
 
       if (employeeId) {
@@ -127,6 +141,7 @@ const Attendance = ({ route }) => {
     setMonth(currentMonth);
     setYear(currentYear);
     setEmployeeId(id);
+    fetchSingleEmployee(id);
     fetchAttendance();
     fetchMonthlyStatistic();
   };
@@ -192,10 +207,30 @@ const Attendance = ({ route }) => {
       </View>
 
       {/* Employee */}
-      <View style={{ justifyContent: "center", alignItems: "center", marginBottom: 10 }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", padding: 10, paddingTop: 0, }}>
         <Text style={{ fontSize: 15, fontWeight: "400" }}>
           {employee?.name}
         </Text>
+        {/* Summary Button */}
+        <Pressable
+          style={{
+            paddingVertical: 3,
+            paddingHorizontal: 8,
+            backgroundColor: '#007bff',
+            borderRadius: 5,
+          }}
+          onPress={() => setModalVisible(true)}
+        >
+          <Text
+            style={{
+              color: '#fff',
+              fontSize: 13,
+              fontWeight: '400',
+            }}
+          >
+            Summary
+          </Text>
+        </Pressable>
       </View>
 
       {/* Scrollable Attendance List */}
@@ -243,6 +278,65 @@ const Attendance = ({ route }) => {
           ))
         )}
       </ScrollView>
+
+      {/* Modal */}
+      <Portal>
+        <Modal
+          visible={modalVisible}
+          onDismiss={() => setModalVisible(false)}
+          contentContainerStyle={{
+            backgroundColor: "white",
+            padding: 20,
+            marginHorizontal: 20,
+            borderRadius: 10,
+            elevation: 5,
+          }}
+        >
+          <Text style={{ fontSize: 17, fontWeight: "400", marginBottom: 10, textAlign: "center" }}>
+            Attendance Summary
+          </Text>
+          {attendanceSummary ? (
+            <>
+              <Text style={{ fontSize: 14, marginBottom: 5 }}>
+                Total Sundays: {attendanceSummary?.totalSundays}
+              </Text>
+              <Text style={{ fontSize: 14, marginBottom: 5 }}>
+                Total Holidays: {attendanceSummary?.totalHolidays}
+              </Text>
+              <Text style={{ fontSize: 14, marginBottom: 5 }}>
+                Total Present Days: {attendanceSummary?.employeePresentDays}/{attendanceSummary.companyWorkingDays}
+              </Text>
+              <Text style={{ fontSize: 14, marginBottom: 5 }}>
+                Total Absent Days: {attendanceSummary?.employeeAbsentDays}
+              </Text>
+              <Text style={{ fontSize: 14, marginBottom: 5 }}>
+                Total Leave Days: {attendanceSummary?.employeeLeaveDays}
+              </Text>
+              <Text style={{ fontSize: 14, marginBottom: 5 }}>
+                Total Hours Worked: {attendanceSummary?.employeeWorkingHours}/{attendanceSummary.companyWorkingHours}
+              </Text>
+              <Text style={{ fontSize: 14, marginBottom: 5 }}>
+                Total Late in Days: {attendanceSummary?.employeeLateInDays}
+              </Text>
+              <Text style={{ fontSize: 14, marginBottom: 5 }}>
+                Average Punch In Time: {attendanceSummary?.averagePunchInTime}
+              </Text>
+              <Text style={{ fontSize: 14, marginBottom: 5 }}>
+                Average Punch Out Time: {attendanceSummary?.averagePunchOutTime}
+              </Text>
+            </>
+          ) : (
+            <Text style={{ fontSize: 14, marginBottom: 10 }}>No Data</Text>
+          )}
+          <Button
+            mode="contained"
+            onPress={() => setModalVisible(false)}
+            style={{ marginTop: 10, backgroundColor: "#B22222" }}
+          >
+            <Close name="close" size={25} />
+          </Button>
+        </Modal>
+      </Portal>
     </>
   );
 };
@@ -263,14 +357,14 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   headerTitle: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "400",
     color: "#000",
   },
   buttonReset: {
     backgroundColor: "#B22222",
-    paddingVertical: 2,
-    paddingHorizontal: 6,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
     borderRadius: 5,
     alignItems: "center",
   },
@@ -321,10 +415,10 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   statusBadge: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 1,
     paddingVertical: 2,
     borderRadius: 5,
-    width: 61,
+    width: 55,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
@@ -358,6 +452,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#999",
     textAlign: "center",
+    marginTop: -3,
   },
 });
 
