@@ -55,7 +55,7 @@ const Home = () => {
     } catch (error) {
       Toast.show({
         type: "error",
-        text1: error?.response?.data?.message || "Failed to process attendance",
+        text1: error?.message || "Failed to process attendance",
       });
     };
   };
@@ -134,7 +134,7 @@ const Home = () => {
         console.log("Request was unsuccessful");
       };
     } catch (error) {
-      console.error("Error while fetching attendance:", error.response.data.message);
+      console.error("Error while fetching attendance:", error.message);
     };
   };
 
@@ -405,7 +405,7 @@ const styles = StyleSheet.create({
   quickActions: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 9,
+    marginTop: 10,
   },
   quickActionButton: {
     flexDirection: "column",
@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
     padding: 15,
     backgroundColor: "#fff",
     borderRadius: 10,
-    marginTop: 15,
+    marginTop: 16,
     marginBottom: 1,
   },
   summaryTitle: {
@@ -436,7 +436,7 @@ const styles = StyleSheet.create({
     padding: 15,
     backgroundColor: "#fff",
     borderRadius: 10,
-    marginTop: 15,
+    marginTop: 16,
   },
   sectionTitle: {
     fontSize: 14,
@@ -476,7 +476,7 @@ const styles = StyleSheet.create({
     padding: 15,
     backgroundColor: "#fce8e8",
     borderRadius: 10,
-    marginTop: 15,
+    marginTop: 16,
   },
 });
 

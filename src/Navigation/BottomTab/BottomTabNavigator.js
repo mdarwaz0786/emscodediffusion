@@ -38,7 +38,7 @@ const BottomTabNavigator = () => {
         headerShown: false,
         tabBarIcon: ({ color, size }) => {
           const iconName = icons[route.name];
-          return <Icon name={iconName} size={size} color={color} />;
+          return <Icon name={iconName} size={23} color={color} />;
         },
         tabBarActiveTintColor: "#A63ED3",
         tabBarInactiveTintColor: "gray",
@@ -50,7 +50,6 @@ const BottomTabNavigator = () => {
         },
         tabBarLabelStyle: {
           fontSize: 14,
-          fontWeight: "400",
         },
       })}>
       {isLoggedIn ? (

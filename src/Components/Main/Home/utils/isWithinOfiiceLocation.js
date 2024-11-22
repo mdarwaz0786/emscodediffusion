@@ -20,7 +20,7 @@ const getDistance = (lat1, lon1, lat2, lon2) => {
 };
 
 // Check if user location is within a certain distance from the office
-const isWithinOfficeLocation = (latitude, longitude, maxDistance = 10) => {
+const isWithinOfficeLocation = (latitude, longitude, maxDistance = 20) => {
   const distance = getDistance(latitude, longitude, officeLatitude, officeLongitude);
   return distance <= maxDistance;
 };

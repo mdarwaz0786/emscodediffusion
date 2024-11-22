@@ -313,13 +313,13 @@ const SalarySlip = ({ route }) => {
 
     let options = {
       html: html,
-      fileName: `Salary-${getMonthName(month).slice(0, 3)}-${year}-${employee?.name.split(" ", 1)[0]}`,
+      fileName: `Salary-${getMonthName(month)?.slice(0, 3)}-${year}-${employee?.name?.split(" ", 1)[0]}`,
       directory: 'Downloads', // Ensure this is set to 'Downloads'
     };
 
     try {
       const file = await RNHTMLtoPDF.convert(options);
-      const newPath = await `${RNFetchBlob.fs.dirs.DownloadDir}/Salary-${getMonthName(month).slice(0, 3)}-${year}-${employee?.name.split(" ", 1)[0]}.pdf`; // Set the new path
+      const newPath = await `${RNFetchBlob.fs.dirs.DownloadDir}/Salary-${getMonthName(month)?.slice(0, 3)}-${year}-${employee?.name?.split(" ", 1)[0]}.pdf`; // Set the new path
       await RNFetchBlob.fs.mv(file.filePath, newPath); // Move the file to the new path
       Alert.alert('PDF Generated', `File saved to: ${newPath}`);
       console.log('PDF saved successfully at:', newPath);

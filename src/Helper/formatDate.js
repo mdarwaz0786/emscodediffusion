@@ -5,7 +5,7 @@ const formatDate = (dateString) => {
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
   ];
 
-  const [year, month, day] = dateString.split("-").map(Number);
+  const [year, month, day] = dateString?.split("-").map(Number);
   const monthName = months[month - 1]; // Month is zero-indexed
 
   return `${day} ${monthName} ${year}`;

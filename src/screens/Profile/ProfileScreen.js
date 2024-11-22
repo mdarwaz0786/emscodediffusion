@@ -1,6 +1,8 @@
 import React from "react";
-import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import { useAuth } from "../../Context/auth.context.js";
+import formatTimeToHoursMinutes from "../../Helper/formatTimeToHoursMinutes.js";
+import formatDate from "../../Helper/formatDate.js";
 
 const ProfileScreen = () => {
   const { team } = useAuth();
@@ -8,9 +10,9 @@ const ProfileScreen = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* User Details */}
-      <View style={styles?.detailsCard}>
-        <Text style={styles?.name}>{team?.name}</Text>
-        <Text style={styles?.designation}>{team?.designation?.name || "Designation not assigned"}</Text>
+      <View style={styles.detailsCard}>
+        <Text style={styles.name}>{team?.name}</Text>
+        <Text style={styles.designation}>{team?.designation?.name || "Designation not assigned"}</Text>
       </View>
 
       {/* Additional Info */}
@@ -18,10 +20,10 @@ const ProfileScreen = () => {
         <DetailRow label="Employee ID" value={team?.employeeId} />
         <DetailRow label="Email" value={team?.email} />
         <DetailRow label="Mobile" value={team?.mobile} />
-        <DetailRow label="Joining Date" value={team?.joining} />
-        <DetailRow label="Date of Birth" value={team?.dob} />
-        <DetailRow label="Monthly Salary" value={`${team?.monthlySalary}`} />
-        <DetailRow label="Working Hours" value={team?.workingHoursPerDay} />
+        <DetailRow label="Joining Date" value={formatDate(team?.joining)} />
+        <DetailRow label="Date of Birth" value={formatDate(team?.dob)} />
+        <DetailRow label="Monthly Salary" value={`₹${team?.monthlySalary}`} />
+        <DetailRow label="Working Hours/Day" value={formatTimeToHoursMinutes(team?.workingHoursPerDay)} />
         <DetailRow label="Role" value={team?.role?.name || "Role not assigned"} />
       </View>
 
@@ -56,21 +58,20 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   name: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "400",
     color: "#343a40",
   },
   designation: {
-    fontSize: 15,
+    fontSize: 14,
     color: "#6c757d",
-    marginTop: 5,
   },
   infoCard: {
     backgroundColor: "#ffffff",
     padding: 15,
     borderRadius: 10,
     width: "100%",
-    marginBottom: 20,
+    marginBottom: 15,
   },
   detailRow: {
     flexDirection: "row",
@@ -79,7 +80,6 @@ const styles = StyleSheet.create({
   },
   detailLabel: {
     fontSize: 14,
-    fontWeight: "400",
     color: "#495057",
   },
   detailValue: {
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 20,
     alignItems: "center",
-    marginTop: 10,
+    marginTop: 0,
   },
   editButtonText: {
     color: "#ffffff",

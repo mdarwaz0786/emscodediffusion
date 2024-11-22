@@ -118,12 +118,12 @@ const styles = StyleSheet.create({
     marginBottom: 7,
   },
   employeeName: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: "400",
     color: "#555",
   },
   employeeRole: {
-    fontSize: 12,
+    fontSize: 13,
     color: "#888",
   },
   buttonContainer: {
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   attendanceButtonText: {
-    fontSize: 12,
+    fontSize: 13,
     color: "#fff",
     fontWeight: "400",
   },
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   salaryButtonText: {
-    fontSize: 12,
+    fontSize: 13,
     color: "#fff",
     fontWeight: "400",
   },
