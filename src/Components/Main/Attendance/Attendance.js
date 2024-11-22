@@ -270,7 +270,7 @@ const Attendance = ({ route }) => {
                     item?.lateIn === "00:00" ? styles.onTime : styles.late,
                   ]}>
                   <Text style={styles.statusBadgeText}>
-                    {item?.lateIn === "00:00" ? "On Time" : "Late"}
+                    {item?.lateIn === "00:00" ? "On Time" : item?.lateIn === "" ? "x" : ""}
                   </Text>
                 </View>
               </View>

@@ -25,6 +25,11 @@ const CustomDrawerNavigator = () => {
         resetScreen: "Employee",
       },
       {
+        label: "Holiday",
+        icon: "sunny-outline",
+        route: "Holiday",
+      },
+      {
         label: "Settings",
         icon: "settings-outline",
         route: "Settings",
