@@ -90,7 +90,7 @@ const CustomDrawerNavigator = () => {
             key={index}
             style={styles.item}
             onPress={() => handleNavigation(item)}>
-            <Icon name={item.icon} size={20} color="#A63ED3" />
+            <Icon name={item.icon} size={22} color="#A63ED3" />
             <Text style={styles.itemText}>{item.label}</Text>
           </Pressable>
         ))}
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 15,
-    paddingVertical: 10,
+    paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
   },

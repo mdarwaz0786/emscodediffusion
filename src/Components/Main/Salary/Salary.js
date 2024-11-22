@@ -17,7 +17,7 @@ const SalarySlip = ({ route }) => {
   const [monthlySalary, setMonthlySalary] = useState("");
   const [employee, setEmployee] = useState("");
   const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().getMonth() + 1;
+  const currentMonth = new Date().getMonth();
   const [month, setMonth] = useState(currentMonth);
   const [year, setYear] = useState(currentYear);
   const [employeeId, setEmployeeId] = useState(id);
@@ -319,7 +319,7 @@ const SalarySlip = ({ route }) => {
 
     try {
       const file = await RNHTMLtoPDF.convert(options);
-      const newPath = `${RNFetchBlob.fs.dirs.DownloadDir}/Salary-${getMonthName(month).slice(0, 3)}-${year}-${employee?.name.split(" ", 1)[0]}.pdf`; // Set the new path
+      const newPath = await `${RNFetchBlob.fs.dirs.DownloadDir}/Salary-${getMonthName(month).slice(0, 3)}-${year}-${employee?.name.split(" ", 1)[0]}.pdf`; // Set the new path
       await RNFetchBlob.fs.mv(file.filePath, newPath); // Move the file to the new path
       Alert.alert('PDF Generated', `File saved to: ${newPath}`);
       console.log('PDF saved successfully at:', newPath);
@@ -565,7 +565,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: 120,
+    width: "130%",
     resizeMode: 'contain',
   },
   companyInfo: {
