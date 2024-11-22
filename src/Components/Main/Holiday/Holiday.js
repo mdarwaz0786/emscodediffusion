@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert, Picker } from 'react-native';
-import DatePicker from "@react-native-picker/picker";
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import { useForm, Controller } from 'react-hook-form';
+import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 
-const Holiday = () => {
+const CreateHoliday = () => {
   const { control, handleSubmit, reset } = useForm();
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedType, setSelectedType] = useState('Holiday');
@@ -30,9 +31,11 @@ const Holiday = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Create Holiday</Text>
+      <View style={styles.headerContainer}>
+        <Icon name="person-outline" size={28} color="#007BFF" />
+        <Text style={styles.header}>Create Holiday</Text>
+      </View>
 
-      {/* Reason Field */}
       <Text style={styles.label}>Reason</Text>
       <Controller
         control={control}
@@ -48,47 +51,20 @@ const Holiday = () => {
         )}
       />
 
-      {/* Type Field */}
       <Text style={styles.label}>Type</Text>
-      <Picker
-        selectedValue={selectedType}
-        style={styles.picker}
-        onValueChange={(itemValue) => setSelectedType(itemValue)}
-      >
-        <Picker.Item label="Holiday" value="Holiday" />
-        <Picker.Item label="Sunday" value="Sunday" />
-      </Picker>
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={selectedType}
+          onValueChange={(itemValue) => setSelectedType(itemValue)}
+          style={styles.picker}
+        >
+          <Picker.Item label="Holiday" value="Holiday" />
+          <Picker.Item label="Sunday" value="Sunday" />
+        </Picker>
+      </View>
 
-      {/* Date Field */}
       <Text style={styles.label}>Date</Text>
-      <Controller
-        control={control}
-        name="date"
-        rules={{ required: 'Date is required' }}
-        render={({ field: { onChange }, fieldState: { error } }) => (
-          <>
-            <DatePicker
-              style={styles.datePicker}
-              date={selectedDate}
-              mode="date"
-              format="YYYY-MM-DD"
-              placeholder="Select date"
-              confirmBtnText="Confirm"
-              cancelBtnText="Cancel"
-              customStyles={{
-                dateInput: styles.dateInput,
-              }}
-              onDateChange={(date) => {
-                setSelectedDate(date);
-                onChange(date);
-              }}
-            />
-            {error && <Text style={styles.errorText}>{error.message}</Text>}
-          </>
-        )}
-      />
 
-      {/* Submit Button */}
       <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
         <Text style={styles.buttonText}>Create Holiday</Text>
       </TouchableOpacity>
@@ -102,12 +78,16 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#f5f5f5',
   },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 20,
-    textAlign: 'center',
+    marginLeft: 10,
   },
   label: {
     fontSize: 16,
@@ -122,12 +102,16 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 15,
   },
-  picker: {
+  pickerContainer: {
     backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 5,
     marginBottom: 15,
+  },
+  picker: {
+    height: 40,
+    width: '100%',
   },
   datePicker: {
     width: '100%',
@@ -158,4 +142,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Holiday;
+export default CreateHoliday;
