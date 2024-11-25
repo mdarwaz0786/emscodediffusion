@@ -1,74 +1,138 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import { useForm, Controller } from 'react-hook-form';
-import Icon from 'react-native-vector-icons/Ionicons';
+import {
+  View,
+  StyleSheet,
+  Alert,
+  TextInput,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from 'axios';
 
-const CreateHoliday = () => {
-  const { control, handleSubmit, reset } = useForm();
-  const [selectedDate, setSelectedDate] = useState('');
-  const [selectedType, setSelectedType] = useState('Holiday');
+const CreateHolidayForm = () => {
+  const [reason, setReason] = useState('');
+  const [type, setType] = useState('Holiday');
+  const [date, setDate] = useState(new Date());
+  const [showPicker, setShowPicker] = useState(false);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
 
-  const onSubmit = async (data) => {
+  const handleSubmit = async () => {
+    if (!reason || !date) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    const formattedDate = date.toISOString().split('T')[0];
+
+    const holidayData = {
+      reason,
+      type,
+      date: formattedDate,
+    };
+
     try {
-      const response = await axios.post('http://localhost:8080/api/v1/holiday/create-holiday', {
-        ...data,
-        type: selectedType,
-      });
-
-      if (response.status === 200 || response.status === 201) {
-        Alert.alert('Success', 'Holiday created successfully!');
-        reset();
-        setSelectedDate('');
-        setSelectedType('Holiday');
-      }
+      await axios.post(
+        'http://localhost:8080/api/v1/holiday/create-holiday',
+        holidayData,
+        {
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+      Alert.alert('Success', 'Holiday created successfully!');
+      // Reset form
+      setReason('');
+      setType('Holiday');
+      setDate(new Date());
     } catch (error) {
-      console.error(error);
-      Alert.alert('Error', 'Failed to create holiday. Please try again.');
+      console.error('Error:', error);
+      Alert.alert('Error', 'Failed to create holiday');
     }
   };
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.headerContainer}>
-        <Icon name="person-outline" size={28} color="#007BFF" />
-        <Text style={styles.header}>Create Holiday</Text>
-      </View>
+  const showDatePicker = () => {
+    setShowPicker(true);
+  };
 
-      <Text style={styles.label}>Reason</Text>
-      <Controller
-        control={control}
-        name="reason"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            style={styles.input}
-            placeholder="Enter reason (optional)"
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value}
+  const onDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setShowPicker(false);
+    setDate(currentDate);
+  };
+
+  const menuOptions = ['Holiday', 'Sunday'];
+
+  const handleOutsideClick = () => {
+    setDropdownVisible(false);
+    Keyboard.dismiss(); // Optional, hides keyboard if it's open
+  };
+
+  return (
+    <TouchableWithoutFeedback onPress={handleOutsideClick}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Add Holiday</Text>
+
+        {/* Reason Input */}
+        <TextInput
+          placeholder="Enter reason"
+          value={reason}
+          onChangeText={setReason}
+          style={styles.input}
+        />
+
+        {/* Dropdown for Type */}
+        <View style={styles.dropdownContainer}>
+          <TouchableOpacity
+            style={styles.dropdownInput}
+            onPress={() => setDropdownVisible(!dropdownVisible)}
+          >
+            <Text style={styles.dropdownText}>{type}</Text>
+          </TouchableOpacity>
+
+          {dropdownVisible && (
+            <View style={styles.dropdown}>
+              <FlatList
+                data={menuOptions}
+                keyExtractor={(item) => item}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={styles.dropdownItem}
+                    onPress={() => {
+                      setType(item);
+                      setDropdownVisible(false);
+                    }}
+                  >
+                    <Text style={styles.dropdownItemText}>{item}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
+          )}
+        </View>
+
+        {/* Date Picker */}
+        <TouchableOpacity style={styles.input} onPress={showDatePicker}>
+          <Text>{date.toISOString().split('T')[0]}</Text>
+        </TouchableOpacity>
+
+        {showPicker && (
+          <DateTimePicker
+            value={date}
+            mode="date"
+            display="default"
+            onChange={onDateChange}
           />
         )}
-      />
 
-      <Text style={styles.label}>Type</Text>
-      <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={selectedType}
-          onValueChange={(itemValue) => setSelectedType(itemValue)}
-          style={styles.picker}
-        >
-          <Picker.Item label="Holiday" value="Holiday" />
-          <Picker.Item label="Sunday" value="Sunday" />
-        </Picker>
+        {/* Submit Button */}
+        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+          <Text style={styles.submitButtonText}>Submit</Text>
+        </TouchableOpacity>
       </View>
-
-      <Text style={styles.label}>Date</Text>
-
-      <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
-        <Text style={styles.buttonText}>Create Holiday</Text>
-      </TouchableOpacity>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -76,70 +140,66 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f9f9f9',
   },
-  headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  title: {
+    fontSize: 18,
+    fontWeight: '400',
     marginBottom: 20,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginLeft: 10,
-  },
-  label: {
-    fontSize: 16,
-    color: '#555',
-    marginBottom: 5,
+    textAlign: 'center',
+    color: '#6200ee',
   },
   input: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
     padding: 10,
-    marginBottom: 15,
-  },
-  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#999',
+    borderRadius: 5,
+    marginBottom: 20,
     backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    marginBottom: 15,
   },
-  picker: {
-    height: 40,
-    width: '100%',
-  },
-  datePicker: {
-    width: '100%',
-    marginBottom: 15,
-  },
-  dateInput: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    height: 40,
-    alignItems: 'flex-start',
-    paddingLeft: 10,
-  },
-  button: {
-    backgroundColor: '#007BFF',
+  submitButton: {
+    backgroundColor: '#6200ee',
     padding: 15,
     borderRadius: 5,
     alignItems: 'center',
   },
-  buttonText: {
+  submitButtonText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '500',
   },
-  errorText: {
-    color: 'red',
+  dropdownContainer: {
+    position: 'relative',
+  },
+  dropdownInput: {
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#999',
+    borderRadius: 5,
+    backgroundColor: '#fff',
     marginBottom: 10,
+  },
+  dropdownText: {
+    color: '#333',
+  },
+  dropdown: {
+    position: 'absolute',
+    top: 45,
+    left: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    zIndex: 1,
+    elevation: 3,
+    width: '30%',
+  },
+  dropdownItem: {
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+  },
+  dropdownItemText: {
+    fontSize: 14,
+    color: '#333',
   },
 });
 
-export default CreateHoliday;
+export default CreateHolidayForm;
