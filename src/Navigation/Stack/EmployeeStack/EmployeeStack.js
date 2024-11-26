@@ -1,8 +1,8 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import EmployeeScreen from '../../../Screens/Employee/EmployeeScreen';
-import SalaryScreen from '../../../Screens/Salary/SalaryScreen';
-import AttendanceScreen from '../../../Screens/Attendance/AttendanceScreen';
+import EmployeeScreen from '../../../Screens/Employee/EmployeeScreen.js';
+import SalaryScreen from '../../../Screens/Salary/SalaryScreen.js';
+import AttendanceScreen from '../../../Screens/Attendance/AttendanceScreen.js';
 
 // Create a Stack Navigator
 const Stack = createStackNavigator();

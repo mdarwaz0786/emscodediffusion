@@ -1,205 +1,173 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
-  StyleSheet,
-  Alert,
-  TextInput,
   Text,
+  StyleSheet,
   TouchableOpacity,
   FlatList,
-  TouchableWithoutFeedback,
-  Keyboard,
 } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from 'axios';
+import Icon from "react-native-vector-icons/Feather";
+import { API_BASE_URL } from "@env";
+import { useAuth } from '../../../Context/auth.context.js';
+import Calender from 'react-native-vector-icons/MaterialCommunityIcons';
+import formatDate from '../../../Helper/formatDate.js';
 
-const CreateHolidayForm = () => {
-  const [reason, setReason] = useState('');
-  const [type, setType] = useState('Holiday');
-  const [date, setDate] = useState(new Date());
-  const [showPicker, setShowPicker] = useState(false);
-  const [dropdownVisible, setDropdownVisible] = useState(false);
+const Holiday = ({ navigation }) => {
+  const [holidays, setHolidays] = useState([]);
+  const { validToken } = useAuth();
 
-  const handleSubmit = async () => {
-    if (!reason || !date) {
-      Alert.alert('Error', 'Please fill in all fields');
-      return;
-    }
+  useEffect(() => {
+    fetchUpcomingHoliday();
+  }, []);
 
-    const formattedDate = date.toISOString().split('T')[0];
-
-    const holidayData = {
-      reason,
-      type,
-      date: formattedDate,
-    };
-
+  const fetchUpcomingHoliday = async () => {
     try {
-      await axios.post(
-        'http://localhost:8080/api/v1/holiday/create-holiday',
-        holidayData,
+      const response = await axios.get(
+        `${API_BASE_URL}/api/v1/holiday/upcoming-holiday`,
         {
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            Authorization: validToken,
+          },
         }
       );
-      Alert.alert('Success', 'Holiday created successfully!');
-      // Reset form
-      setReason('');
-      setType('Holiday');
-      setDate(new Date());
+
+      if (response?.data?.success) {
+        setHolidays(response?.data?.holiday);
+      }
     } catch (error) {
-      console.error('Error:', error);
-      Alert.alert('Error', 'Failed to create holiday');
+      console.error('Error while fetching upcoming holiday:', error.message);
     }
   };
 
-  const showDatePicker = () => {
-    setShowPicker(true);
-  };
-
-  const onDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setShowPicker(false);
-    setDate(currentDate);
-  };
-
-  const menuOptions = ['Holiday', 'Sunday'];
-
-  const handleOutsideClick = () => {
-    setDropdownVisible(false);
-    Keyboard.dismiss(); // Optional, hides keyboard if it's open
-  };
+  // Render each upcoming holiday
+  const renderItem = ({ item }) => (
+    <View style={styles.notificationCard}>
+      <View style={styles.cardHeader}>
+        <Calender name="calendar" size={22} color="#A63ED3" style={styles.icon} />
+        <View style={styles.cardContent}>
+          <Text style={styles.cardTitle}>{item?.reason}</Text>
+          <Text style={styles.cardDate}>{formatDate(item?.date)}</Text>
+        </View>
+      </View>
+      <Text style={styles.cardDescription}>The office will be closed on {formatDate(item?.date)} for {item?.reason}.</Text>
+    </View>
+  );
 
   return (
-    <TouchableWithoutFeedback onPress={handleOutsideClick}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Add Holiday</Text>
-
-        {/* Reason Input */}
-        <TextInput
-          placeholder="Enter reason"
-          value={reason}
-          onChangeText={setReason}
-          style={styles.input}
+    <>
+      {/* Header */}
+      <View style={styles.header}>
+        <Icon
+          name="arrow-left"
+          size={20}
+          color="#000"
+          onPress={() => navigation.goBack()}
         />
-
-        {/* Dropdown for Type */}
-        <View style={styles.dropdownContainer}>
-          <TouchableOpacity
-            style={styles.dropdownInput}
-            onPress={() => setDropdownVisible(!dropdownVisible)}
-          >
-            <Text style={styles.dropdownText}>{type}</Text>
-          </TouchableOpacity>
-
-          {dropdownVisible && (
-            <View style={styles.dropdown}>
-              <FlatList
-                data={menuOptions}
-                keyExtractor={(item) => item}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    style={styles.dropdownItem}
-                    onPress={() => {
-                      setType(item);
-                      setDropdownVisible(false);
-                    }}
-                  >
-                    <Text style={styles.dropdownItemText}>{item}</Text>
-                  </TouchableOpacity>
-                )}
-              />
-            </View>
-          )}
-        </View>
-
-        {/* Date Picker */}
-        <TouchableOpacity style={styles.input} onPress={showDatePicker}>
-          <Text>{date.toISOString().split('T')[0]}</Text>
-        </TouchableOpacity>
-
-        {showPicker && (
-          <DateTimePicker
-            value={date}
-            mode="date"
-            display="default"
-            onChange={onDateChange}
-          />
-        )}
-
-        {/* Submit Button */}
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>Submit</Text>
-        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Holiday</Text>
       </View>
-    </TouchableWithoutFeedback>
+
+      <View style={styles.container}>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => navigation.navigate("AddHoliday")}
+        >
+          <Text style={styles.addButtonText}>Add New Holiday</Text>
+        </TouchableOpacity>
+
+        <Text style={styles.pageTitle}>Upcoming Holidays</Text>
+
+        {holidays?.length > 0 ? (
+          <FlatList
+            data={holidays}
+            renderItem={renderItem}
+            keyExtractor={(item) => item?._id}
+            contentContainerStyle={styles.listContainer}
+          />
+        ) : (
+          <Text style={styles.noHolidaysText}>No upcoming holidays</Text>
+        )}
+      </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#f9f9f9',
+  header: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    columnGap: 100,
+    padding: 12,
+    backgroundColor: "#fff",
+    elevation: 1,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: '400',
-    marginBottom: 20,
+  headerTitle: {
+    fontSize: 16,
+    fontWeight: "400",
+    color: "#000",
+  },
+  pageTitle: {
+    fontSize: 15,
+    fontWeight: '500',
+    marginBottom: 12,
     textAlign: 'center',
-    color: '#6200ee',
   },
-  input: {
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#999',
-    borderRadius: 5,
-    marginBottom: 20,
-    backgroundColor: '#fff',
-  },
-  submitButton: {
-    backgroundColor: '#6200ee',
-    padding: 15,
+  addButton: {
+    backgroundColor: '#A63ED3',
+    padding: 8,
     borderRadius: 5,
     alignItems: 'center',
+    marginBottom: 30,
   },
-  submitButtonText: {
+  addButtonText: {
     color: '#fff',
-    fontWeight: '500',
+    fontWeight: '400',
   },
-  dropdownContainer: {
-    position: 'relative',
+  container: {
+    flex: 1,
+    padding: 16,
   },
-  dropdownInput: {
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#999',
-    borderRadius: 5,
+  notificationCard: {
+    marginBottom: 16,
+    borderRadius: 8,
     backgroundColor: '#fff',
-    marginBottom: 10,
+    padding: 16,
+    paddingTop: 12,
   },
-  dropdownText: {
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 2,
+  },
+  icon: {
+    marginRight: 10,
+  },
+  cardContent: {
+    flex: 1,
+  },
+  cardTitle: {
+    fontSize: 15,
+    fontWeight: '400',
     color: '#333',
   },
-  dropdown: {
-    position: 'absolute',
-    top: 45,
-    left: 0,
-    right: 0,
-    backgroundColor: '#fff',
-    borderRadius: 5,
-    zIndex: 1,
-    elevation: 3,
-    width: '30%',
+  cardDate: {
+    fontSize: 12,
+    color: '#888',
   },
-  dropdownItem: {
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-  },
-  dropdownItemText: {
+  cardDescription: {
     fontSize: 14,
-    color: '#333',
+    color: '#555',
+  },
+  listContainer: {
+    paddingBottom: 16,
+  },
+  noHolidaysText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#aaa',
+    marginTop: 20,
   },
 });
 
-export default CreateHolidayForm;
+export default Holiday;

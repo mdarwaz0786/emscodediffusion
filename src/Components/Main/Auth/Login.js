@@ -5,7 +5,7 @@ import Toast from "react-native-toast-message";
 import { useAuth } from "../../../Context/auth.context.js";
 import { API_BASE_URL } from "@env";
 
-const Login = props => {
+const Login = () => {
   const [employeeId, setEmployeeId] = useState("");
   const [password, setPassword] = useState("");
   const { storeToken } = useAuth();
@@ -82,7 +82,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#f0f0f0",
   },
   logoContainer: {
     alignItems: "center",
@@ -94,7 +93,7 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 20,
-    fontWeight: "500",
+    fontWeight: "400",
     textAlign: "center",
     marginBottom: 10,
     color: "#333",
@@ -109,8 +108,9 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   label: {
-    fontSize: 16,
+    fontSize: 15,
     marginBottom: 5,
+    color: "#555",
   },
   required: {
     color: "red",

@@ -1,43 +1,49 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, FlatList, Text, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Calender from 'react-native-vector-icons/MaterialCommunityIcons';
+import { API_BASE_URL } from "@env";
+import { useAuth } from '../../Context/auth.context.js';
+import formatDate from '../../Helper/formatDate.js';
+import axios from 'axios';
 
 const NotificationScreen = () => {
-  const [notifications] = useState([
-    {
-      id: '1',
-      title: 'Upcoming Holiday',
-      description: 'The office will be closed on 25th December for Christmas.',
-      date: '2024-12-25',
-      icon: 'calendar',
-    },
-    {
-      id: '2',
-      title: 'Important Notice',
-      description: 'Please submit your timesheets before the end of the week.',
-      date: '2024-11-22',
-      icon: 'information',
-    },
-    {
-      id: '3',
-      title: 'Holiday Reminder',
-      description: 'New Year’s Day holiday on 1st January.',
-      date: '2025-01-01',
-      icon: 'calendar-check',
-    },
-  ]);
+  const [holidays, setHolidays] = useState([]);
+  const { validToken } = useAuth();
 
-  // Render each notification item
+  useEffect(() => {
+    fetchUpcomingHoliday();
+  }, []);
+
+  const fetchUpcomingHoliday = async () => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/api/v1/holiday/upcoming-holiday`,
+        {
+          headers: {
+            Authorization: validToken,
+          },
+        }
+      );
+
+      if (response?.data?.success) {
+        setHolidays(response?.data?.holiday);
+      }
+    } catch (error) {
+      console.error('Error while fetching upcoming holiday:', error.message);
+    }
+  };
+
+  // Render each upcoming holiday
   const renderItem = ({ item }) => (
     <View style={styles.notificationCard}>
       <View style={styles.cardHeader}>
-        <Icon name={item.icon} size={22} color="#A63ED3" style={styles.icon} />
+        <Calender name="calendar" size={22} color="#A63ED3" style={styles.icon} />
         <View style={styles.cardContent}>
-          <Text style={styles.cardTitle}>{item.title}</Text>
-          <Text style={styles.cardDate}>{item.date}</Text>
+          <Text style={styles.cardTitle}>{item?.reason}</Text>
+          <Text style={styles.cardDate}>{formatDate(item?.date)}</Text>
         </View>
       </View>
-      <Text style={styles.cardDescription}>{item.description}</Text>
+      <Text style={styles.cardDescription}>The office will be closed on {formatDate(item?.date)} for {item?.reason}.</Text>
     </View>
   );
 
@@ -45,9 +51,9 @@ const NotificationScreen = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Notifications</Text>
       <FlatList
-        data={notifications}
+        data={holidays}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item?._id}
         contentContainerStyle={styles.listContainer}
       />
     </View>
@@ -58,13 +64,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#f5f5f5',
   },
   title: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: '400',
     color: '#333',
-    marginBottom: 16,
+    marginBottom: 15,
+    textAlign: "center",
   },
   notificationCard: {
     marginBottom: 16,

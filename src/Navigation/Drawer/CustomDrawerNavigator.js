@@ -27,7 +27,8 @@ const CustomDrawerNavigator = () => {
       {
         label: "Holiday",
         icon: "sunny-outline",
-        route: "Holiday",
+        route: "HolidayStack",
+        resetScreen: "Holiday",
       },
       {
         label: "Settings",
