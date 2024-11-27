@@ -4,17 +4,19 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  FlatList,
+  ScrollView,
   Image,
+  Pressable,
 } from "react-native";
-import axios from "axios";
 import Icon from "react-native-vector-icons/Feather";
 import { API_BASE_URL } from "@env";
-import { useAuth } from "../../../Context/auth.context.js";
+import axios from "axios";
+import { useAuth } from "../../../Context/auth.context";
 
 const Settings = ({ navigation }) => {
-  const [office, setOffice] = useState([]);
   const { validToken } = useAuth();
+  const [office, setOffice] = useState([]);
+  const [popupVisible, setPopupVisible] = useState(null);
 
   useEffect(() => {
     fetchOfficeLocation();
@@ -39,17 +41,59 @@ const Settings = ({ navigation }) => {
     }
   };
 
-  const renderOfficeCard = ({ item }) => (
-    <View style={styles.card}>
-      {item.logo && (
-        <Image source={{ uri: item.logo }} style={styles.logo} />
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`${API_BASE_URL}/api/v1/officeLocation/${id}`);
+      setOffice((prev) => prev.filter((office) => office._id !== id));
+      setPopupVisible(null);
+    } catch (error) {
+      console.error("Error while deleting office location:", error.message);
+    }
+  };
+
+  const renderOfficeCard = (item) => (
+    <View style={styles.card} key={item._id}>
+      <View style={styles.cardHeader}>
+        {item.logo && <Image source={{ uri: item.logo }} style={styles.logo} />}
+        <Pressable
+          onPress={() => setPopupVisible(popupVisible === item._id ? null : item._id)}
+        >
+          <Icon name="more-vertical" size={20} color="#333" />
+        </Pressable>
+      </View>
+      <Text style={styles.cardDetail}>Name: {item.name}</Text>
+      <Text style={styles.cardDetail}>Email: {item.email}</Text>
+      <Text style={styles.cardDetail}>Contact: {item.contact}</Text>
+      <Text style={styles.cardDetail}>Latitude: {item.latitude}</Text>
+      <Text style={styles.cardDetail}>Longitude: {item.longitude}</Text>
+      <Text style={styles.cardDetail}>Address: {item.addressLine1}</Text>
+      {item.addressLine2 && (
+        <Text style={styles.cardDetail}> {item.addressLine2}</Text>
       )}
-      <Text style={styles.cardTitle}>{item.name}</Text>
-      <Text style={styles.cardDetail}>{item.email}</Text>
-      <Text style={styles.cardDetail}>{item.contact}</Text>
-      <Text style={styles.cardDetail}>{item.addressLine1}</Text>
-      {item.addressLine2 && <Text style={styles.cardDetail}>{item.addressLine2}</Text>}
-      {item.addressLine3 && <Text style={styles.cardDetail}>{item.addressLine3}</Text>}
+      {item.addressLine3 && (
+        <Text style={styles.cardDetail}> {item.addressLine3}</Text>
+      )}
+
+      {/* Popup for Edit/Delete */}
+      {popupVisible === item._id && (
+        <View style={styles.popup}>
+          <TouchableOpacity
+            style={styles.popupOption}
+            onPress={() => {
+              setPopupVisible(null);
+              navigation.navigate("EditOffice", { office: item });
+            }}
+          >
+            <Text style={styles.popupOptionText}>Edit</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.popupOption, styles.deleteOption]}
+            onPress={() => handleDelete(item._id)}
+          >
+            <Text style={styles.popupOptionText}>Delete</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 
@@ -66,7 +110,12 @@ const Settings = ({ navigation }) => {
         <Text style={styles.headerTitle}>Settings</Text>
       </View>
 
-      <View style={styles.container}>
+      <Pressable
+        style={styles.container}
+        onPress={() => setPopupVisible(null)}
+      >
+
+        {/* Add New Office Button */}
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => navigation.navigate("AddOffice")}
@@ -74,15 +123,12 @@ const Settings = ({ navigation }) => {
           <Text style={styles.addButtonText}>Add New Office</Text>
         </TouchableOpacity>
 
+        {/* Office Locations */}
         <Text style={styles.pageTitle}>Offices</Text>
-
-        <FlatList
-          data={office}
-          keyExtractor={(item) => item._id}
-          renderItem={renderOfficeCard}
-          contentContainerStyle={styles.cardContainer}
-        />
-      </View>
+        <ScrollView contentContainerStyle={styles.cardContainer}>
+          {office.map((item) => renderOfficeCard(item))}
+        </ScrollView>
+      </Pressable>
     </>
   );
 };
@@ -105,18 +151,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#f8f8f8",
   },
   addButton: {
     backgroundColor: "#A63ED3",
-    padding: 8,
+    padding: 12,
     borderRadius: 5,
     alignItems: "center",
-    marginBottom: 30,
+    marginBottom: 16,
   },
   addButtonText: {
     color: "#fff",
-    fontWeight: "400",
+    fontWeight: "500",
   },
   pageTitle: {
     fontSize: 16,
@@ -129,32 +174,52 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: "#fff",
-    borderRadius: 8,
+    borderRadius: 10,
     padding: 16,
+    paddingTop: 10,
     marginBottom: 16,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
+  },
+  cardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   logo: {
-    width: 130,
+    width: 150,
     height: 50,
     resizeMode: "contain",
-    marginBottom: 8,
     alignSelf: "center",
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 4,
-    textAlign: "center",
   },
   cardDetail: {
     fontSize: 14,
     color: "#555",
-    marginBottom: 2,
-    textAlign: "center",
+    marginBottom: 3,
+  },
+  popup: {
+    position: "absolute",
+    top: 50,
+    right: 10,
+    backgroundColor: "#fff",
+    borderRadius: 5,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    zIndex: 10,
+    elevation: 3,
+  },
+  popupOption: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  popupOptionText: {
+    fontSize: 14,
+    color: "#333",
+  },
+  deleteOption: {
+    borderTopWidth: 1,
+    borderTopColor: "#eee",
   },
 });
 
