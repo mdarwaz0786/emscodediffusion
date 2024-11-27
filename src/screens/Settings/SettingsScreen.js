@@ -1,11 +1,11 @@
-import {View, Text} from "react-native";
-import React from "react";
+import React from 'react'
+import Settings from '../../Components/Main/Settings/Settings.js';
 
-const SettingsScreen = () => {
+const SettingsScreen = (props) => {
   return (
-    <View>
-      <Text>SettingScreen</Text>
-    </View>
+    <>
+      <Settings {...props} />
+    </>
   );
 };
 

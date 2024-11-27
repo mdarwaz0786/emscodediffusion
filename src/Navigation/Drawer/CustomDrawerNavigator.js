@@ -33,7 +33,8 @@ const CustomDrawerNavigator = () => {
       {
         label: "Settings",
         icon: "settings-outline",
-        route: "Settings",
+        route: "SettingsStack",
+        resetScreen: "Settings",
       },
       {
         label: "About Us",

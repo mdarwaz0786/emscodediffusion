@@ -10,8 +10,8 @@ import ContactUsScreen from "../../Screens/ContactUs/ContactUsScreen.js";
 import HelpScreen from "../../Screens/Help/HelpScreen.js";
 import LogoutScreen from "../../Screens/Auth/LogoutScreen.js";
 import EmployeeStack from "../Stack/EmployeeStack/EmployeeStack.js";
-import SettingsScreen from "../../Screens/Settings/SettingsScreen.js";
 import HolidayStack from "../Stack/HolidayStack/HolidayStack.js";
+import SettingsStack from "../Stack/SettingsStack/SettingsStack.js";
 
 const Drawer = createDrawerNavigator();
 
@@ -42,7 +42,7 @@ const DrawerNavigator = () => {
           <Drawer.Screen name="BottomTabNavigator" component={BottomTabNavigator} />
           <Drawer.Screen name="EmployeeStack" component={EmployeeStack} />
           <Drawer.Screen name="HolidayStack" component={HolidayStack} />
-          <Drawer.Screen name="Settings" component={SettingsScreen} />
+          <Drawer.Screen name="SettingsStack" component={SettingsStack} />
           <Drawer.Screen name="About" component={AboutUsScreen} />
           <Drawer.Screen name="Contact" component={ContactUsScreen} />
           <Drawer.Screen name="Help" component={HelpScreen} />
