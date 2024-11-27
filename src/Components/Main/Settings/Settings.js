@@ -11,7 +11,7 @@ import {
 import Icon from "react-native-vector-icons/Feather";
 import { API_BASE_URL } from "@env";
 import axios from "axios";
-import { useAuth } from "../../../Context/auth.context";
+import { useAuth } from "../../../Context/auth.context.js";
 
 const Settings = ({ navigation }) => {
   const { validToken } = useAuth();
@@ -37,14 +37,18 @@ const Settings = ({ navigation }) => {
         setOffice(response?.data?.officeLocation);
       }
     } catch (error) {
-      console.error("Error while fetching office:", error.message);
+      console.error("Error while fetching office location:", error.message);
     }
   };
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/api/v1/officeLocation/${id}`);
-      setOffice((prev) => prev.filter((office) => office._id !== id));
+      await axios.delete(`${API_BASE_URL}/api/v1/officeLocation/delete-officeLocation/${id}`, {
+        headers: {
+          Authorization: validToken,
+        },
+      });
+      fetchOfficeLocation();
       setPopupVisible(null);
     } catch (error) {
       console.error("Error while deleting office location:", error.message);
@@ -52,43 +56,41 @@ const Settings = ({ navigation }) => {
   };
 
   const renderOfficeCard = (item) => (
-    <View style={styles.card} key={item._id}>
+    <View style={styles.card} key={item?._id}>
       <View style={styles.cardHeader}>
-        {item.logo && <Image source={{ uri: item.logo }} style={styles.logo} />}
-        <Pressable
-          onPress={() => setPopupVisible(popupVisible === item._id ? null : item._id)}
-        >
+        {item?.logo && <Image source={{ uri: item?.logo }} style={styles.logo} />}
+        <Pressable onPress={() => setPopupVisible(popupVisible === item?._id ? null : item?._id)}>
           <Icon name="more-vertical" size={20} color="#333" />
         </Pressable>
       </View>
-      <Text style={styles.cardDetail}>Name: {item.name}</Text>
-      <Text style={styles.cardDetail}>Email: {item.email}</Text>
-      <Text style={styles.cardDetail}>Contact: {item.contact}</Text>
-      <Text style={styles.cardDetail}>Latitude: {item.latitude}</Text>
-      <Text style={styles.cardDetail}>Longitude: {item.longitude}</Text>
-      <Text style={styles.cardDetail}>Address: {item.addressLine1}</Text>
-      {item.addressLine2 && (
-        <Text style={styles.cardDetail}> {item.addressLine2}</Text>
+      <Text style={styles.cardDetail}>Name: {item?.name}</Text>
+      <Text style={styles.cardDetail}>Email: {item?.email}</Text>
+      <Text style={styles.cardDetail}>Contact: {item?.contact}</Text>
+      <Text style={styles.cardDetail}>Latitude: {item?.latitude}</Text>
+      <Text style={styles.cardDetail}>Longitude: {item?.longitude}</Text>
+      <Text style={styles.cardDetail}>Address: {item?.addressLine1}</Text>
+      {item?.addressLine2 && (
+        <Text style={styles.cardDetail}> {item?.addressLine2}</Text>
       )}
-      {item.addressLine3 && (
-        <Text style={styles.cardDetail}> {item.addressLine3}</Text>
+      {item?.addressLine3 && (
+        <Text style={styles.cardDetail}> {item?.addressLine3}</Text>
       )}
 
       {/* Popup for Edit/Delete */}
-      {popupVisible === item._id && (
+      {popupVisible === item?._id && (
         <View style={styles.popup}>
           <TouchableOpacity
             style={styles.popupOption}
             onPress={() => {
               setPopupVisible(null);
-              navigation.navigate("EditOffice", { office: item });
+              navigation.navigate("EditOffice", { id: item?._id });
             }}
           >
             <Text style={styles.popupOptionText}>Edit</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.popupOption, styles.deleteOption]}
-            onPress={() => handleDelete(item._id)}
+            onPress={() => handleDelete(item?._id)}
           >
             <Text style={styles.popupOptionText}>Delete</Text>
           </TouchableOpacity>
@@ -110,11 +112,7 @@ const Settings = ({ navigation }) => {
         <Text style={styles.headerTitle}>Settings</Text>
       </View>
 
-      <Pressable
-        style={styles.container}
-        onPress={() => setPopupVisible(null)}
-      >
-
+      <View style={styles.container}>
         {/* Add New Office Button */}
         <TouchableOpacity
           style={styles.addButton}
@@ -125,10 +123,17 @@ const Settings = ({ navigation }) => {
 
         {/* Office Locations */}
         <Text style={styles.pageTitle}>Offices</Text>
-        <ScrollView contentContainerStyle={styles.cardContainer}>
-          {office.map((item) => renderOfficeCard(item))}
+        <ScrollView
+          contentContainerStyle={[styles.cardContainer, { flexGrow: 1 }]}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Pressable
+            onPress={() => setPopupVisible(null)}
+          >
+            {office.map((item) => renderOfficeCard(item))}
+          </Pressable>
         </ScrollView>
-      </Pressable>
+      </View>
     </>
   );
 };

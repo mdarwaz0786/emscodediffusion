@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -15,7 +15,8 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import { useAuth } from '../../../Context/auth.context.js';
 import { ScrollView } from 'react-native-gesture-handler';
 
-const AddOffice = ({ navigation }) => {
+const EditOffice = ({ navigation, route }) => {
+  const id = route?.params?.id;
   const [name, setName] = useState('');
   const [logo, setLogo] = useState(null);
   const [email, setEmail] = useState('');
@@ -45,12 +46,39 @@ const AddOffice = ({ navigation }) => {
     );
   };
 
-  const handleSubmit = async () => {
-    if (!name || !email || !contact || !latitude || !longitude || !addressLine1) {
-      Toast.show({ type: "error", text1: "Please fill in all required fields" });
-      return;
-    };
+  useEffect(() => {
+    fetchOfficeLocation(id);
+  }, [id]);
 
+  const fetchOfficeLocation = async (id) => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/api/v1/officeLocation/single-officeLocation/${id}`,
+        {
+          headers: {
+            Authorization: validToken,
+          },
+        }
+      );
+
+      if (response?.data?.success) {
+        const office = response?.data?.officeLocation
+        setName(office?.name);
+        setLogo(office?.logo);
+        setEmail(office?.email);
+        setContact(office?.contact);
+        setLatitude(office?.latitude);
+        setLongitude(office?.longitude);
+        setAddressLine1(office?.addressLine1);
+        setAddressLine2(office?.addressLine2);
+        setAddressLine3(office?.addressLine3);
+      }
+    } catch (error) {
+      console.error("Error while fetching office location:", error.message);
+    }
+  };
+
+  const handleUpdate = async (id) => {
     const formData = new FormData();
     formData.append('name', name);
     formData.append('email', email);
@@ -60,15 +88,18 @@ const AddOffice = ({ navigation }) => {
     formData.append('addressLine1', addressLine1);
     formData.append('addressLine2', addressLine2);
     formData.append('addressLine3', addressLine3);
-    formData.append('logo', {
-      uri: logo.uri,
-      type: logo.type,
-      name: logo.fileName,
-    });
+    // Append logo only if a new one is uploaded
+    if (logo && logo.uri) {
+      formData.append('logo', {
+        uri: logo.uri,
+        type: logo.type,
+        name: logo.fileName,
+      });
+    };
 
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/api/v1/officeLocation/create-officeLocation`,
+      const response = await axios.put(
+        `${API_BASE_URL}/api/v1/officeLocation/update-officeLocation/${id}`,
         formData,
         {
           headers: {
@@ -79,7 +110,7 @@ const AddOffice = ({ navigation }) => {
       );
 
       if (response?.data?.success) {
-        Toast.show({ type: "success", text1: "Office added successfully" });
+        Toast.show({ type: "success", text1: "Updated successfully" });
         setName('');
         setLogo(null);
         setEmail('');
@@ -106,7 +137,7 @@ const AddOffice = ({ navigation }) => {
           color="#000"
           onPress={() => navigation.goBack()}
         />
-        <Text style={styles.headerTitle}>Add Office Location</Text>
+        <Text style={styles.headerTitle}>Edit Office Location</Text>
       </View>
 
       <ScrollView>
@@ -122,7 +153,7 @@ const AddOffice = ({ navigation }) => {
             <Text style={styles.logoButtonText}>Upload Logo</Text>
           </TouchableOpacity>
 
-          {logo && <Image source={{ uri: logo.uri }} style={styles.logoPreview} />}
+          {logo && <Image source={{ uri: logo.uri || logo }} style={styles.logoPreview} />}
 
           <TextInput
             placeholder="Email"
@@ -168,7 +199,7 @@ const AddOffice = ({ navigation }) => {
           />
 
           {/* Submit Button */}
-          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+          <TouchableOpacity style={styles.submitButton} onPress={() => handleUpdate(id)}>
             <Text style={styles.submitButtonText}>Submit</Text>
           </TouchableOpacity>
         </View>
@@ -219,9 +250,10 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   logoPreview: {
-    width: 100,
-    height: 100,
-    marginBottom: 20,
+    width: "100%",
+    height: 40,
+    resizeMode: "contain",
+    marginBottom: 8,
   },
   submitButton: {
     backgroundColor: '#A63ED3',
@@ -235,4 +267,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddOffice;
+export default EditOffice;
