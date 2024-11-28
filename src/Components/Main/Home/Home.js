@@ -19,11 +19,13 @@ import getGreeting from "../../../Helper/generateGreeting.js";
 import isWithinOfficeLocation from "./utils/isWithinOfiiceLocation.js";
 import getUserLocation from "./utils/getUerLocation.js";
 import getAttendanceData from "./utils/getAttendanceData.js";
+import formatDate from "../../../Helper/formatDate.js";
 
 const Home = () => {
   const navigation = useNavigation();
   const { team, validToken, isLoading } = useAuth();
   const [attendance, setAttendance] = useState([]);
+  const [holidays, setHolidays] = useState([]);
   const [monthlyStatistic, setMonthlyStatistic] = useState("");
   const [currentMonth, setCurrentMonth] = useState(new Date().toISOString().split("T")[0].slice(0, 7));
   const [currentDate, setCurrentDate] = useState(new Date().toISOString().split("T")[0]);
@@ -34,6 +36,7 @@ const Home = () => {
     setEmployeeId(team?._id);
     setCurrentDate(new Date().toISOString().split("T")[0]);
     setCurrentMonth(new Date().toISOString().split("T")[0].slice(0, 7));
+    fetchUpcomingHoliday();
   }, [team]);
 
   // Process Attendance API Request
@@ -49,8 +52,8 @@ const Home = () => {
       const response = await axios(axiosConfig);
 
       if (response.data.success) {
-        Toast.show({ type: "success", text1: successMessage });
         fetchAttendance();
+        Toast.show({ type: "success", text1: successMessage });
       };
     } catch (error) {
       Toast.show({
@@ -72,7 +75,10 @@ const Home = () => {
 
       const { latitude, longitude } = position;
 
-      if (!isWithinOfficeLocation(latitude, longitude)) {
+      // Ensure the function waits for the result of isWithinOfficeLocation
+      const isWithinOffice = await isWithinOfficeLocation(latitude, longitude, validToken);
+
+      if (!isWithinOffice) {
         Toast.show({ type: "error", text1: "Attendance can only be marked in office." });
         return;
       };
@@ -124,18 +130,31 @@ const Home = () => {
       );
 
       if (response?.data?.success) {
-        if (response.data.attendance.length === 0) {
-          console.log("Attendance data is empty");
-          setAttendance([]);
-        } else {
-          setAttendance(response.data.attendance);
-        };
-      } else {
-        console.log("Request was unsuccessful");
-      };
+        setAttendance(response?.data?.attendance);
+      }
     } catch (error) {
       console.error("Error while fetching attendance:", error.message);
     };
+  };
+
+  // Get upcoming holiday
+  const fetchUpcomingHoliday = async () => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/api/v1/holiday/upcoming-holiday`,
+        {
+          headers: {
+            Authorization: validToken,
+          },
+        }
+      );
+
+      if (response?.data?.success) {
+        setHolidays(response?.data?.holiday);
+      }
+    } catch (error) {
+      console.error('Error while fetching upcoming holiday:', error.message);
+    }
   };
 
   useEffect(() => {
@@ -321,8 +340,14 @@ const Home = () => {
         {/* Notifications */}
         <View style={styles.notifications}>
           <Text style={styles.sectionTitle}>Notifications</Text>
-          <Text>🔔 New Holiday Announced on July 4th</Text>
-          <Text>🔔 1 pending leave request</Text>
+          {holidays?.map((item) => (
+            <Text>🔔 New holiday announced on {formatDate(item?.date)} for {item?.reason}.</Text>
+          ))}
+          {
+            (holidays?.length === 0) && (
+              <Text>🔔 No new notifications</Text>
+            )
+          }
         </View>
       </ScrollView>
     </>

@@ -75,7 +75,7 @@ const Holiday = ({ navigation }) => {
           <Text style={styles.addButtonText}>Add New Holiday</Text>
         </TouchableOpacity>
 
-        <Text style={styles.pageTitle}>Upcoming Holidays</Text>
+        <Text style={styles.pageTitle}>Upcoming holidays</Text>
 
         {holidays?.length > 0 ? (
           <FlatList
@@ -85,7 +85,9 @@ const Holiday = ({ navigation }) => {
             contentContainerStyle={styles.listContainer}
           />
         ) : (
-          <Text style={styles.noHolidaysText}>No upcoming holidays</Text>
+          <View style={styles.centeredView}>
+            <Text style={styles.noHolidaysText}>No upcoming holidays</Text>
+          </View>
         )}
       </View>
     </>
@@ -108,17 +110,18 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   pageTitle: {
-    fontSize: 15,
-    fontWeight: '500',
+    fontSize: 16,
+    fontWeight: "400",
     marginBottom: 12,
-    textAlign: 'center',
+    textAlign: "center",
+    color: "#555",
   },
   addButton: {
     backgroundColor: '#A63ED3',
     padding: 8,
     borderRadius: 5,
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 18,
   },
   addButtonText: {
     color: '#fff',
@@ -163,11 +166,14 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   noHolidaysText: {
-    textAlign: 'center',
-    fontSize: 16,
+    fontSize: 15,
     color: '#aaa',
-    marginTop: 20,
   },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });
 
 export default Holiday;

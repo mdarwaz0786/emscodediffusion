@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -13,7 +13,8 @@ import { API_BASE_URL } from "@env";
 import axios from 'axios';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { useAuth } from '../../../Context/auth.context.js';
-import { ScrollView } from 'react-native-gesture-handler';
+import { Pressable, ScrollView } from 'react-native-gesture-handler';
+import getUserLocation from '../Home/utils/getUerLocation.js';
 
 const AddOffice = ({ navigation }) => {
   const [name, setName] = useState('');
@@ -26,6 +27,24 @@ const AddOffice = ({ navigation }) => {
   const [addressLine2, setAddressLine2] = useState('');
   const [addressLine3, setAddressLine3] = useState('');
   const { validToken } = useAuth();
+
+  async function fetchLatLong() {
+    const position = await getUserLocation();
+
+    if (!position) {
+      Toast.show({ type: "error", text1: "Please enable location" });
+      return;
+    };
+
+    const { latitude, longitude } = position;
+
+    setLatitude(String(latitude));
+    setLongitude(String(longitude));
+  };
+
+  useEffect(() => {
+    fetchLatLong();
+  }, []);
 
   const selectLogo = () => {
     launchImageLibrary(
@@ -106,7 +125,10 @@ const AddOffice = ({ navigation }) => {
           color="#000"
           onPress={() => navigation.goBack()}
         />
-        <Text style={styles.headerTitle}>Add Office Location</Text>
+        <Text style={styles.headerTitle}>Add Office</Text>
+        <Pressable style={styles.buttonReset} onPress={fetchLatLong}>
+          <Text style={styles.buttonResetText}>Reset Location</Text>
+        </Pressable>
       </View>
 
       <ScrollView>
@@ -119,7 +141,7 @@ const AddOffice = ({ navigation }) => {
           />
 
           <TouchableOpacity onPress={selectLogo} style={styles.logoButton}>
-            <Text style={styles.logoButtonText}>Upload Logo</Text>
+            <Text style={styles.logoButtonText}>Upload logo</Text>
           </TouchableOpacity>
 
           {logo && <Image source={{ uri: logo.uri }} style={styles.logoPreview} />}
@@ -180,10 +202,10 @@ const AddOffice = ({ navigation }) => {
 const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
     alignItems: "center",
-    columnGap: 80,
     padding: 12,
+    marginBottom: 10,
     backgroundColor: "#fff",
     elevation: 1,
   },
@@ -191,6 +213,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "400",
     color: "#000",
+  },
+  buttonReset: {
+    backgroundColor: "#B22222",
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  buttonResetText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "400",
   },
   container: {
     flex: 1,
@@ -208,15 +242,17 @@ const styles = StyleSheet.create({
     color: "#777",
   },
   logoButton: {
-    backgroundColor: '#765432',
+    backgroundColor: '#fff',
     padding: 10,
+    paddingLeft: 16,
+    borderWidth: 1,
+    borderColor: "#ddd",
     borderRadius: 5,
     marginBottom: 20,
-    alignItems: 'center',
   },
   logoButtonText: {
-    color: '#fff',
-    fontWeight: '500',
+    color: '#777',
+    fontWeight: '400',
   },
   logoPreview: {
     width: 100,

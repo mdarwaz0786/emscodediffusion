@@ -170,9 +170,10 @@ const styles = StyleSheet.create({
   },
   pageTitle: {
     fontSize: 16,
-    fontWeight: "500",
+    fontWeight: "400",
     marginBottom: 12,
     textAlign: "center",
+    color: "#333",
   },
   cardContainer: {
     paddingBottom: 16,

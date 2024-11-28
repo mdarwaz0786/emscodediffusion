@@ -250,9 +250,9 @@ const Attendance = ({ route }) => {
                 <View
                   style={[
                     styles.statusBadge,
-                    item?.status === "Present" ? styles.present : styles.absent,
+                    item?.status === "Present" ? styles.present : item?.status === "Absent" ? styles.absent : styles.holiday,
                   ]}>
-                  <Text style={styles.statusBadgeText}>{item.status}</Text>
+                  <Text style={styles.statusBadgeText}>{item?.status}</Text>
                 </View>
               </View>
               <Text style={styles.punchInOut}>Punch In: {formatTimeWithAmPm(item?.punchInTime)}</Text>
@@ -263,14 +263,14 @@ const Attendance = ({ route }) => {
                 Hours Worked: {formatTimeToHoursMinutes(item?.hoursWorked)}
               </Text>
               <View style={styles.statusContainer}>
-                <Text style={styles.statusText}>Late In: {item?.lateIn === "00:00" ? "On Time" : formatTimeToHoursMinutes(item?.lateIn)} </Text>
+                <Text style={styles.statusText}>Late In: {item?.lateIn === "00:00" ? "On Time" : item?.lateIn ? formatTimeToHoursMinutes(item?.lateIn) : ""} </Text>
                 <View
                   style={[
                     styles.statusBadge,
-                    item?.lateIn === "00:00" ? styles.onTime : styles.late,
+                    item?.lateIn === "00:00" ? styles.onTime : item?.lateIn ? styles.late : styles.holiday,
                   ]}>
                   <Text style={styles.statusBadgeText}>
-                    {item?.lateIn === "00:00" ? "On Time" : item?.lateIn === "" ? "x" : ""}
+                    {item?.lateIn === "00:00" ? "On Time" : item?.lateIn ? "Late" : "X"}
                   </Text>
                 </View>
               </View>
@@ -319,10 +319,10 @@ const Attendance = ({ route }) => {
                 Total Late in Days: {attendanceSummary?.employeeLateInDays}
               </Text>
               <Text style={{ fontSize: 14, marginBottom: 5 }}>
-                Average Punch In Time: {attendanceSummary?.averagePunchInTime}
+                Average Punch In Time: {formatTimeWithAmPm(attendanceSummary?.averagePunchInTime)}
               </Text>
               <Text style={{ fontSize: 14, marginBottom: 5 }}>
-                Average Punch Out Time: {attendanceSummary?.averagePunchOutTime}
+                Average Punch Out Time: {formatTimeWithAmPm(attendanceSummary?.averagePunchOutTime)}
               </Text>
             </>
           ) : (
@@ -428,6 +428,9 @@ const styles = StyleSheet.create({
   },
   absent: {
     backgroundColor: "#B22222",
+  },
+  holiday: {
+    backgroundColor: "gold",
   },
   onTime: {
     backgroundColor: "green",

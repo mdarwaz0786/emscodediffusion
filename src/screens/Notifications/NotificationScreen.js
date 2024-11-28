@@ -50,6 +50,13 @@ const NotificationScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Notifications</Text>
+      {
+        (holidays?.length === 0) && (
+          <View style={styles.centeredView}>
+            <Text style={styles.noHolidaysText}>No new notifications</Text>
+          </View>
+        )
+      }
       <FlatList
         data={holidays}
         renderItem={renderItem}
@@ -105,6 +112,15 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingBottom: 16,
+  },
+  noHolidaysText: {
+    fontSize: 15,
+    color: '#aaa',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

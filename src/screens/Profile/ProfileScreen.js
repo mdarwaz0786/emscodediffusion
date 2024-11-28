@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { useAuth } from "../../Context/auth.context.js";
 import formatTimeToHoursMinutes from "../../Helper/formatTimeToHoursMinutes.js";
 import formatDate from "../../Helper/formatDate.js";
@@ -26,11 +26,6 @@ const ProfileScreen = () => {
         <DetailRow label="Working Hours/Day" value={formatTimeToHoursMinutes(team?.workingHoursPerDay)} />
         <DetailRow label="Role" value={team?.role?.name || "Role not assigned"} />
       </View>
-
-      {/* Edit Profile Button */}
-      <TouchableOpacity style={styles.editButton}>
-        <Text style={styles.editButtonText}>Edit Profile</Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -85,19 +80,6 @@ const styles = StyleSheet.create({
   detailValue: {
     fontSize: 14,
     color: "#495057",
-  },
-  editButton: {
-    backgroundColor: "#007bff",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    alignItems: "center",
-    marginTop: 0,
-  },
-  editButtonText: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "400",
   },
 });
 
