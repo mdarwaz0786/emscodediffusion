@@ -2,68 +2,50 @@ import React from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import { CommonActions, useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
-import { useAuth } from "../../Context/auth.context.js";
 
 const CustomDrawerNavigator = () => {
   const navigation = useNavigation();
-  const { isLoggedIn, isLoading } = useAuth();
 
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#A63ED3" />
-      </View>
-    );
-  };
-
-  const drawerItems = isLoggedIn
-    ? [
-      {
-        label: "Employee",
-        icon: "person-outline",
-        route: "EmployeeStack",
-        resetScreen: "Employee",
-      },
-      {
-        label: "Holiday",
-        icon: "sunny-outline",
-        route: "HolidayStack",
-        resetScreen: "Holiday",
-      },
-      {
-        label: "Settings",
-        icon: "settings-outline",
-        route: "SettingsStack",
-        resetScreen: "Settings",
-      },
-      {
-        label: "About Us",
-        icon: "information-circle-outline",
-        route: "About",
-      },
-      {
-        label: "Contact Us",
-        icon: "call-outline",
-        route: "Contact",
-      },
-      {
-        label: "Help",
-        icon: "help-circle-outline",
-        route: "Help",
-      },
-      {
-        label: "Logout",
-        icon: "log-out-outline",
-        route: "Logout",
-      },
-    ]
-    : [
-      {
-        label: "Login",
-        icon: "log-in-outline",
-        route: "Login",
-      },
-    ];
+  const drawerItems = [
+    {
+      label: "Employee",
+      icon: "person-outline",
+      route: "EmployeeStack",
+      resetScreen: "Employee",
+    },
+    {
+      label: "Holiday",
+      icon: "sunny-outline",
+      route: "HolidayStack",
+      resetScreen: "Holiday",
+    },
+    {
+      label: "Settings",
+      icon: "settings-outline",
+      route: "SettingsStack",
+      resetScreen: "Settings",
+    },
+    {
+      label: "About Us",
+      icon: "information-circle-outline",
+      route: "About",
+    },
+    {
+      label: "Contact Us",
+      icon: "call-outline",
+      route: "Contact",
+    },
+    {
+      label: "Help",
+      icon: "help-circle-outline",
+      route: "Help",
+    },
+    {
+      label: "Logout",
+      icon: "log-out-outline",
+      route: "Logout",
+    },
+  ];
 
   // Handle navigation
   const handleNavigation = (item) => {
