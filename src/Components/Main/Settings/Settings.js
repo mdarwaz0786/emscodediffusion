@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import {
   View,
   Text,
@@ -9,12 +9,12 @@ import {
   Pressable,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
-import { API_BASE_URL } from "@env";
+import {API_BASE_URL} from "@env";
 import axios from "axios";
-import { useAuth } from "../../../Context/auth.context.js";
+import {useAuth} from "../../../Context/auth.context.js";
 
-const Settings = ({ navigation }) => {
-  const { validToken } = useAuth();
+const Settings = ({navigation}) => {
+  const {validToken} = useAuth();
   const [office, setOffice] = useState([]);
   const [popupVisible, setPopupVisible] = useState(null);
 
@@ -30,7 +30,7 @@ const Settings = ({ navigation }) => {
           headers: {
             Authorization: validToken,
           },
-        }
+        },
       );
 
       if (response?.data?.success) {
@@ -41,13 +41,16 @@ const Settings = ({ navigation }) => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async id => {
     try {
-      await axios.delete(`${API_BASE_URL}/api/v1/officeLocation/delete-officeLocation/${id}`, {
-        headers: {
-          Authorization: validToken,
+      await axios.delete(
+        `${API_BASE_URL}/api/v1/officeLocation/delete-officeLocation/${id}`,
+        {
+          headers: {
+            Authorization: validToken,
+          },
         },
-      });
+      );
       fetchOfficeLocation();
       setPopupVisible(null);
     } catch (error) {
@@ -55,11 +58,14 @@ const Settings = ({ navigation }) => {
     }
   };
 
-  const renderOfficeCard = (item) => (
+  const renderOfficeCard = item => (
     <View style={styles.card} key={item?._id}>
       <View style={styles.cardHeader}>
-        {item?.logo && <Image source={{ uri: item?.logo }} style={styles.logo} />}
-        <Pressable onPress={() => setPopupVisible(popupVisible === item?._id ? null : item?._id)}>
+        {item?.logo && <Image source={{uri: item?.logo}} style={styles.logo} />}
+        <Pressable
+          onPress={() =>
+            setPopupVisible(popupVisible === item?._id ? null : item?._id)
+          }>
           <Icon name="more-vertical" size={20} color="#333" />
         </Pressable>
       </View>
@@ -83,15 +89,13 @@ const Settings = ({ navigation }) => {
             style={styles.popupOption}
             onPress={() => {
               setPopupVisible(null);
-              navigation.navigate("EditOffice", { id: item?._id });
-            }}
-          >
+              navigation.navigate("EditOffice", {id: item?._id});
+            }}>
             <Text style={styles.popupOptionText}>Edit</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.popupOption, styles.deleteOption]}
-            onPress={() => handleDelete(item?._id)}
-          >
+            onPress={() => handleDelete(item?._id)}>
             <Text style={styles.popupOptionText}>Delete</Text>
           </TouchableOpacity>
         </View>
@@ -116,21 +120,17 @@ const Settings = ({ navigation }) => {
         {/* Add New Office Button */}
         <TouchableOpacity
           style={styles.addButton}
-          onPress={() => navigation.navigate("AddOffice")}
-        >
+          onPress={() => navigation.navigate("AddOffice")}>
           <Text style={styles.addButtonText}>Add New Office</Text>
         </TouchableOpacity>
 
         {/* Office Locations */}
         <Text style={styles.pageTitle}>Offices</Text>
         <ScrollView
-          contentContainerStyle={[styles.cardContainer, { flexGrow: 1 }]}
-          keyboardShouldPersistTaps="handled"
-        >
-          <Pressable
-            onPress={() => setPopupVisible(null)}
-          >
-            {office.map((item) => renderOfficeCard(item))}
+          contentContainerStyle={[styles.cardContainer, {flexGrow: 1}]}
+          keyboardShouldPersistTaps="handled">
+          <Pressable onPress={() => setPopupVisible(null)}>
+            {office.map(item => renderOfficeCard(item))}
           </Pressable>
         </ScrollView>
       </View>

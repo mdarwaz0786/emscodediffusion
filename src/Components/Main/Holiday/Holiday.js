@@ -1,21 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  FlatList,
-} from 'react-native';
-import axios from 'axios';
+import React, {useState, useEffect} from "react";
+import {View, Text, StyleSheet, TouchableOpacity, FlatList} from "react-native";
+import axios from "axios";
 import Icon from "react-native-vector-icons/Feather";
-import { API_BASE_URL } from "@env";
-import { useAuth } from '../../../Context/auth.context.js';
-import Calender from 'react-native-vector-icons/MaterialCommunityIcons';
-import formatDate from '../../../Helper/formatDate.js';
+import {API_BASE_URL} from "@env";
+import {useAuth} from "../../../Context/auth.context.js";
+import Calender from "react-native-vector-icons/MaterialCommunityIcons";
+import formatDate from "../../../Helper/formatDate.js";
 
-const Holiday = ({ navigation }) => {
+const Holiday = ({navigation}) => {
   const [holidays, setHolidays] = useState([]);
-  const { validToken } = useAuth();
+  const {validToken} = useAuth();
 
   useEffect(() => {
     fetchUpcomingHoliday();
@@ -29,28 +23,36 @@ const Holiday = ({ navigation }) => {
           headers: {
             Authorization: validToken,
           },
-        }
+        },
       );
 
       if (response?.data?.success) {
         setHolidays(response?.data?.holiday);
       }
     } catch (error) {
-      console.error('Error while fetching upcoming holiday:', error.message);
+      console.error("Error while fetching upcoming holiday:", error.message);
     }
   };
 
   // Render each upcoming holiday
-  const renderItem = ({ item }) => (
+  const renderItem = ({item}) => (
     <View style={styles.notificationCard}>
       <View style={styles.cardHeader}>
-        <Calender name="calendar" size={22} color="#A63ED3" style={styles.icon} />
+        <Calender
+          name="calendar"
+          size={22}
+          color="#A63ED3"
+          style={styles.icon}
+        />
         <View style={styles.cardContent}>
           <Text style={styles.cardTitle}>{item?.reason}</Text>
           <Text style={styles.cardDate}>{formatDate(item?.date)}</Text>
         </View>
       </View>
-      <Text style={styles.cardDescription}>The office will be closed on {formatDate(item?.date)} for {item?.reason}.</Text>
+      <Text style={styles.cardDescription}>
+        The office will be closed on {formatDate(item?.date)} for {item?.reason}
+        .
+      </Text>
     </View>
   );
 
@@ -70,8 +72,7 @@ const Holiday = ({ navigation }) => {
       <View style={styles.container}>
         <TouchableOpacity
           style={styles.addButton}
-          onPress={() => navigation.navigate("AddHoliday")}
-        >
+          onPress={() => navigation.navigate("AddHoliday")}>
           <Text style={styles.addButtonText}>Add New Holiday</Text>
         </TouchableOpacity>
 
@@ -81,7 +82,7 @@ const Holiday = ({ navigation }) => {
           <FlatList
             data={holidays}
             renderItem={renderItem}
-            keyExtractor={(item) => item?._id}
+            keyExtractor={item => item?._id}
             contentContainerStyle={styles.listContainer}
           />
         ) : (
@@ -117,15 +118,15 @@ const styles = StyleSheet.create({
     color: "#555",
   },
   addButton: {
-    backgroundColor: '#A63ED3',
+    backgroundColor: "#A63ED3",
     padding: 8,
     borderRadius: 5,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 18,
   },
   addButtonText: {
-    color: '#fff',
-    fontWeight: '400',
+    color: "#fff",
+    fontWeight: "400",
   },
   container: {
     flex: 1,
@@ -134,13 +135,13 @@ const styles = StyleSheet.create({
   notificationCard: {
     marginBottom: 16,
     borderRadius: 8,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 16,
     paddingTop: 12,
   },
   cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 2,
   },
   icon: {
@@ -151,29 +152,29 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 15,
-    fontWeight: '400',
-    color: '#333',
+    fontWeight: "400",
+    color: "#333",
   },
   cardDate: {
     fontSize: 12,
-    color: '#888',
+    color: "#888",
   },
   cardDescription: {
     fontSize: 14,
-    color: '#555',
+    color: "#555",
   },
   listContainer: {
     paddingBottom: 16,
   },
   noHolidaysText: {
     fontSize: 15,
-    color: '#aaa',
+    color: "#aaa",
   },
   centeredView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  }
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });
 
 export default Holiday;

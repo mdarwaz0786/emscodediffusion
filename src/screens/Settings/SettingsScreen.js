@@ -1,7 +1,7 @@
-import React from 'react'
-import Settings from '../../Components/Main/Settings/Settings.js';
+import React from "react";
+import Settings from "../../Components/Main/Settings/Settings.js";
 
-const SettingsScreen = (props) => {
+const SettingsScreen = props => {
   return (
     <>
       <Settings {...props} />

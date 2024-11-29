@@ -1,18 +1,20 @@
 import React from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
-import { useAuth } from "../../Context/auth.context.js";
+import {View, Text, ScrollView, StyleSheet} from "react-native";
+import {useAuth} from "../../Context/auth.context.js";
 import formatTimeToHoursMinutes from "../../Helper/formatTimeToHoursMinutes.js";
 import formatDate from "../../Helper/formatDate.js";
 
 const ProfileScreen = () => {
-  const { team } = useAuth();
+  const {team} = useAuth();
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* User Details */}
       <View style={styles.detailsCard}>
         <Text style={styles.name}>{team?.name}</Text>
-        <Text style={styles.designation}>{team?.designation?.name || "Designation not assigned"}</Text>
+        <Text style={styles.designation}>
+          {team?.designation?.name || "Designation not assigned"}
+        </Text>
       </View>
 
       {/* Additional Info */}
@@ -23,14 +25,20 @@ const ProfileScreen = () => {
         <DetailRow label="Joining Date" value={formatDate(team?.joining)} />
         <DetailRow label="Date of Birth" value={formatDate(team?.dob)} />
         <DetailRow label="Monthly Salary" value={`₹${team?.monthlySalary}`} />
-        <DetailRow label="Working Hours/Day" value={formatTimeToHoursMinutes(team?.workingHoursPerDay)} />
-        <DetailRow label="Role" value={team?.role?.name || "Role not assigned"} />
+        <DetailRow
+          label="Working Hours/Day"
+          value={formatTimeToHoursMinutes(team?.workingHoursPerDay)}
+        />
+        <DetailRow
+          label="Role"
+          value={team?.role?.name || "Role not assigned"}
+        />
       </View>
     </ScrollView>
   );
 };
 
-const DetailRow = ({ label, value }) => (
+const DetailRow = ({label, value}) => (
   <View style={styles.detailRow}>
     <Text style={styles.detailLabel}>{label}:</Text>
     <Text style={styles.detailValue}>{value || "Not available"}</Text>
@@ -84,4 +92,3 @@ const styles = StyleSheet.create({
 });
 
 export default ProfileScreen;
-

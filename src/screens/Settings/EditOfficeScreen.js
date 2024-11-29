@@ -1,7 +1,7 @@
-import React from 'react'
-import EditOffice from '../../Components/Main/Settings/EditOffice.js';
+import React from "react";
+import EditOffice from "../../Components/Main/Settings/EditOffice.js";
 
-const EditOfficeScreen = (props) => {
+const EditOfficeScreen = props => {
   return (
     <>
       <EditOffice {...props} />

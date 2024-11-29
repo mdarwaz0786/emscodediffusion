@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from "react";
 import {
   View,
   StyleSheet,
@@ -6,41 +6,41 @@ import {
   Text,
   TouchableOpacity,
   Image,
-} from 'react-native';
+} from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import Toast from "react-native-toast-message";
-import { API_BASE_URL } from "@env";
-import axios from 'axios';
-import { launchImageLibrary } from 'react-native-image-picker';
-import { useAuth } from '../../../Context/auth.context.js';
-import { Pressable, ScrollView } from 'react-native-gesture-handler';
-import getUserLocation from '../Home/utils/getUerLocation.js';
+import {API_BASE_URL} from "@env";
+import axios from "axios";
+import {launchImageLibrary} from "react-native-image-picker";
+import {useAuth} from "../../../Context/auth.context.js";
+import {Pressable, ScrollView} from "react-native-gesture-handler";
+import getUserLocation from "../Home/utils/getUerLocation.js";
 
-const AddOffice = ({ navigation }) => {
-  const [name, setName] = useState('');
+const AddOffice = ({navigation}) => {
+  const [name, setName] = useState("");
   const [logo, setLogo] = useState(null);
-  const [email, setEmail] = useState('');
-  const [contact, setContact] = useState('');
-  const [latitude, setLatitude] = useState('');
-  const [longitude, setLongitude] = useState('');
-  const [addressLine1, setAddressLine1] = useState('');
-  const [addressLine2, setAddressLine2] = useState('');
-  const [addressLine3, setAddressLine3] = useState('');
-  const { validToken } = useAuth();
+  const [email, setEmail] = useState("");
+  const [contact, setContact] = useState("");
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
+  const [addressLine1, setAddressLine1] = useState("");
+  const [addressLine2, setAddressLine2] = useState("");
+  const [addressLine3, setAddressLine3] = useState("");
+  const {validToken} = useAuth();
 
   async function fetchLatLong() {
     const position = await getUserLocation();
 
     if (!position) {
-      Toast.show({ type: "error", text1: "Please enable location" });
+      Toast.show({type: "error", text1: "Please enable location"});
       return;
-    };
+    }
 
-    const { latitude, longitude } = position;
+    const {latitude, longitude} = position;
 
     setLatitude(String(latitude));
     setLongitude(String(longitude));
-  };
+  }
 
   useEffect(() => {
     fetchLatLong();
@@ -49,14 +49,14 @@ const AddOffice = ({ navigation }) => {
   const selectLogo = () => {
     launchImageLibrary(
       {
-        mediaType: 'photo',
+        mediaType: "photo",
         quality: 1,
       },
-      (response) => {
+      response => {
         if (response.didCancel) {
-          Toast.show({ type: "info", text1: "Image selection canceled" });
+          Toast.show({type: "info", text1: "Image selection canceled"});
         } else if (response.errorCode) {
-          Toast.show({ type: "error", text1: "Image selection error" });
+          Toast.show({type: "error", text1: "Image selection error"});
         } else {
           setLogo(response.assets[0]);
         }
@@ -65,21 +65,28 @@ const AddOffice = ({ navigation }) => {
   };
 
   const handleSubmit = async () => {
-    if (!name || !email || !contact || !latitude || !longitude || !addressLine1) {
-      Toast.show({ type: "error", text1: "Please fill in all required fields" });
+    if (
+      !name ||
+      !email ||
+      !contact ||
+      !latitude ||
+      !longitude ||
+      !addressLine1
+    ) {
+      Toast.show({type: "error", text1: "Please fill in all required fields"});
       return;
-    };
+    }
 
     const formData = new FormData();
-    formData.append('name', name);
-    formData.append('email', email);
-    formData.append('contact', contact);
-    formData.append('latitude', latitude);
-    formData.append('longitude', longitude);
-    formData.append('addressLine1', addressLine1);
-    formData.append('addressLine2', addressLine2);
-    formData.append('addressLine3', addressLine3);
-    formData.append('logo', {
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("contact", contact);
+    formData.append("latitude", latitude);
+    formData.append("longitude", longitude);
+    formData.append("addressLine1", addressLine1);
+    formData.append("addressLine2", addressLine2);
+    formData.append("addressLine3", addressLine3);
+    formData.append("logo", {
       uri: logo.uri,
       type: logo.type,
       name: logo.fileName,
@@ -92,26 +99,29 @@ const AddOffice = ({ navigation }) => {
         {
           headers: {
             Authorization: validToken,
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
 
       if (response?.data?.success) {
-        Toast.show({ type: "success", text1: "Office added successfully" });
-        setName('');
+        Toast.show({type: "success", text1: "Office added successfully"});
+        setName("");
         setLogo(null);
-        setEmail('');
-        setContact('');
-        setLatitude('');
-        setLongitude('');
-        setAddressLine1('');
-        setAddressLine2('');
-        setAddressLine3('');
+        setEmail("");
+        setContact("");
+        setLatitude("");
+        setLongitude("");
+        setAddressLine1("");
+        setAddressLine2("");
+        setAddressLine3("");
       }
     } catch (error) {
-      console.error('Error:', error.message);
-      Toast.show({ type: "error", text1: error.response?.data?.message || 'An error occurred' });
+      console.error("Error:", error.message);
+      Toast.show({
+        type: "error",
+        text1: error.response?.data?.message || "An error occurred",
+      });
     }
   };
 
@@ -144,7 +154,9 @@ const AddOffice = ({ navigation }) => {
             <Text style={styles.logoButtonText}>Upload logo</Text>
           </TouchableOpacity>
 
-          {logo && <Image source={{ uri: logo.uri }} style={styles.logoPreview} />}
+          {logo && (
+            <Image source={{uri: logo.uri}} style={styles.logoPreview} />
+          )}
 
           <TextInput
             placeholder="Email"
@@ -235,14 +247,14 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingVertical: 5,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
     borderRadius: 5,
     marginBottom: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     color: "#777",
   },
   logoButton: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 10,
     paddingLeft: 16,
     borderWidth: 1,
@@ -251,8 +263,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   logoButtonText: {
-    color: '#777',
-    fontWeight: '400',
+    color: "#777",
+    fontWeight: "400",
   },
   logoPreview: {
     width: 100,
@@ -260,14 +272,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   submitButton: {
-    backgroundColor: '#A63ED3',
+    backgroundColor: "#A63ED3",
     padding: 10,
     borderRadius: 5,
-    alignItems: 'center',
+    alignItems: "center",
   },
   submitButtonText: {
-    color: '#fff',
-    fontWeight: '500',
+    color: "#fff",
+    fontWeight: "500",
   },
 });
 

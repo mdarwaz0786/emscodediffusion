@@ -1,8 +1,18 @@
 // Function to convert date from "YYYY-MM-DD" to "DD MMM YYYY"
-const formatDate = (dateString) => {
+const formatDate = dateString => {
   const months = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
   ];
 
   const [year, month, day] = dateString?.split("-").map(Number);

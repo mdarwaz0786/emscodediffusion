@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from "react-native";
+import React, {useState, useEffect} from "react";
+import {View, Text, FlatList, TouchableOpacity, StyleSheet} from "react-native";
 import axios from "axios";
-import { API_BASE_URL } from "@env";
-import { useAuth } from "../../../Context/auth.context.js";
+import {API_BASE_URL} from "@env";
+import {useAuth} from "../../../Context/auth.context.js";
 import Icon from "react-native-vector-icons/Feather";
 
-const Employee = ({ navigation }) => {
-  const { validToken } = useAuth();
+const Employee = ({navigation}) => {
+  const {validToken} = useAuth();
   const [employees, setEmployees] = useState([]);
 
   // Fetch all employees
@@ -33,14 +33,14 @@ const Employee = ({ navigation }) => {
   }, [validToken]);
 
   const navigateToAttendance = id => {
-    navigation.navigate("Attendance", { id });
+    navigation.navigate("Attendance", {id});
   };
 
   const navigateToSalary = id => {
-    navigation.navigate("Salary", { id });
+    navigation.navigate("Salary", {id});
   };
 
-  const renderEmployeeItem = ({ item }) => (
+  const renderEmployeeItem = ({item}) => (
     <View style={styles.employeeCard}>
       <View style={styles.heading}>
         <Text style={styles.employeeName}>{item?.name}</Text>

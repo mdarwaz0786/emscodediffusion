@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { View, FlatList, Text, StyleSheet } from 'react-native';
-import Calender from 'react-native-vector-icons/MaterialCommunityIcons';
-import { API_BASE_URL } from "@env";
-import { useAuth } from '../../Context/auth.context.js';
-import formatDate from '../../Helper/formatDate.js';
-import axios from 'axios';
+import React, {useEffect, useState} from "react";
+import {View, FlatList, Text, StyleSheet} from "react-native";
+import Calender from "react-native-vector-icons/MaterialCommunityIcons";
+import {API_BASE_URL} from "@env";
+import {useAuth} from "../../Context/auth.context.js";
+import formatDate from "../../Helper/formatDate.js";
+import axios from "axios";
 
 const NotificationScreen = () => {
   const [holidays, setHolidays] = useState([]);
-  const { validToken } = useAuth();
+  const {validToken} = useAuth();
 
   useEffect(() => {
     fetchUpcomingHoliday();
@@ -22,45 +22,51 @@ const NotificationScreen = () => {
           headers: {
             Authorization: validToken,
           },
-        }
+        },
       );
 
       if (response?.data?.success) {
         setHolidays(response?.data?.holiday);
       }
     } catch (error) {
-      console.error('Error while fetching upcoming holiday:', error.message);
+      console.error("Error while fetching upcoming holiday:", error.message);
     }
   };
 
   // Render each upcoming holiday
-  const renderItem = ({ item }) => (
+  const renderItem = ({item}) => (
     <View style={styles.notificationCard}>
       <View style={styles.cardHeader}>
-        <Calender name="calendar" size={22} color="#A63ED3" style={styles.icon} />
+        <Calender
+          name="calendar"
+          size={22}
+          color="#A63ED3"
+          style={styles.icon}
+        />
         <View style={styles.cardContent}>
           <Text style={styles.cardTitle}>{item?.reason}</Text>
           <Text style={styles.cardDate}>{formatDate(item?.date)}</Text>
         </View>
       </View>
-      <Text style={styles.cardDescription}>The office will be closed on {formatDate(item?.date)} for {item?.reason}.</Text>
+      <Text style={styles.cardDescription}>
+        The office will be closed on {formatDate(item?.date)} for {item?.reason}
+        .
+      </Text>
     </View>
   );
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Notifications</Text>
-      {
-        (holidays?.length === 0) && (
-          <View style={styles.centeredView}>
-            <Text style={styles.noHolidaysText}>No new notifications</Text>
-          </View>
-        )
-      }
+      {holidays?.length === 0 && (
+        <View style={styles.centeredView}>
+          <Text style={styles.noHolidaysText}>No new notifications</Text>
+        </View>
+      )}
       <FlatList
         data={holidays}
         renderItem={renderItem}
-        keyExtractor={(item) => item?._id}
+        keyExtractor={item => item?._id}
         contentContainerStyle={styles.listContainer}
       />
     </View>
@@ -74,21 +80,21 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    fontWeight: '400',
-    color: '#333',
+    fontWeight: "400",
+    color: "#333",
     marginBottom: 15,
     textAlign: "center",
   },
   notificationCard: {
     marginBottom: 16,
     borderRadius: 8,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 16,
     paddingTop: 12,
   },
   cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 2,
   },
   icon: {
@@ -99,28 +105,28 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 15,
-    fontWeight: '400',
-    color: '#333',
+    fontWeight: "400",
+    color: "#333",
   },
   cardDate: {
     fontSize: 12,
-    color: '#888',
+    color: "#888",
   },
   cardDescription: {
     fontSize: 14,
-    color: '#555',
+    color: "#555",
   },
   listContainer: {
     paddingBottom: 16,
   },
   noHolidaysText: {
     fontSize: 15,
-    color: '#aaa',
+    color: "#aaa",
   },
   centeredView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

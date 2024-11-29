@@ -1,12 +1,12 @@
 import "react-native-gesture-handler";
-import 'react-native-reanimated';
-import { AppRegistry, StatusBar } from "react-native";
-import { PaperProvider } from "react-native-paper";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import "react-native-reanimated";
+import {AppRegistry, StatusBar} from "react-native";
+import {PaperProvider} from "react-native-paper";
+import {SafeAreaProvider} from "react-native-safe-area-context";
 import App from "./App.js";
-import { name as appName } from "./app.json";
+import {name as appName} from "./app.json";
 import Toast from "react-native-toast-message";
-import { AuthProvider } from "./src/Context/auth.context.js";
+import {AuthProvider} from "./src/Context/auth.context.js";
 
 const Main = () => (
   <SafeAreaProvider>

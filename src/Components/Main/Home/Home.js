@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
   View,
   Text,
@@ -8,11 +8,11 @@ import {
   StyleSheet,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { useAuth } from "../../../Context/auth.context.js";
+import {useAuth} from "../../../Context/auth.context.js";
 import axios from "axios";
 import Toast from "react-native-toast-message";
-import { API_BASE_URL } from "@env";
-import { CommonActions, useNavigation } from "@react-navigation/native";
+import {API_BASE_URL} from "@env";
+import {CommonActions, useNavigation} from "@react-navigation/native";
 import formatTimeWithAmPm from "../../../Helper/formatTimeWithAmPm.js";
 import formatTimeToHoursMinutes from "../../../Helper/formatTimeToHoursMinutes.js";
 import getGreeting from "../../../Helper/generateGreeting.js";
@@ -23,12 +23,16 @@ import formatDate from "../../../Helper/formatDate.js";
 
 const Home = () => {
   const navigation = useNavigation();
-  const { team, validToken, isLoading } = useAuth();
+  const {team, validToken, isLoading} = useAuth();
   const [attendance, setAttendance] = useState([]);
   const [holidays, setHolidays] = useState([]);
   const [monthlyStatistic, setMonthlyStatistic] = useState("");
-  const [currentMonth, setCurrentMonth] = useState(new Date().toISOString().split("T")[0].slice(0, 7));
-  const [currentDate, setCurrentDate] = useState(new Date().toISOString().split("T")[0]);
+  const [currentMonth, setCurrentMonth] = useState(
+    new Date().toISOString().split("T")[0].slice(0, 7),
+  );
+  const [currentDate, setCurrentDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
   const [employeeId, setEmployeeId] = useState(team?._id);
 
   // Update employeeId, currentMonth and currentDate when the component mounts or team changes
@@ -40,70 +44,94 @@ const Home = () => {
   }, [team]);
 
   // Process Attendance API Request
-  const processAttendance = async (method, endpoint, data, successMessage, validToken) => {
+  const processAttendance = async (
+    method,
+    endpoint,
+    data,
+    successMessage,
+    validToken,
+  ) => {
     try {
       const axiosConfig = {
         method,
         url: `${API_BASE_URL}/api/v1/attendance/${endpoint}`,
         data,
-        headers: { Authorization: validToken },
+        headers: {Authorization: validToken},
       };
 
       const response = await axios(axiosConfig);
 
       if (response.data.success) {
         fetchAttendance();
-        Toast.show({ type: "success", text1: successMessage });
-      };
+        Toast.show({type: "success", text1: successMessage});
+      }
     } catch (error) {
       Toast.show({
         type: "error",
         text1: error?.message || "Failed to process attendance",
       });
-    };
+    }
   };
 
   // Handle Punch attendance
-  const handlePunchAction = async (actionType) => {
+  const handlePunchAction = async actionType => {
     try {
       const position = await getUserLocation();
 
       if (!position) {
-        Toast.show({ type: "error", text1: "Please enable location" });
+        Toast.show({type: "error", text1: "Please enable location"});
         return;
-      };
+      }
 
-      const { latitude, longitude } = position;
+      const {latitude, longitude} = position;
 
       // Ensure the function waits for the result of isWithinOfficeLocation
-      const isWithinOffice = await isWithinOfficeLocation(latitude, longitude, validToken);
+      const isWithinOffice = await isWithinOfficeLocation(
+        latitude,
+        longitude,
+        validToken,
+      );
 
       if (!isWithinOffice) {
-        Toast.show({ type: "error", text1: "Attendance can only be marked in office." });
+        Toast.show({
+          type: "error",
+          text1: "Attendance can only be marked in office.",
+        });
         return;
-      };
+      }
 
-      const { time, date, employeeId } = getAttendanceData(team);
+      const {time, date, employeeId} = getAttendanceData(team);
 
-      const requestData = actionType === "punchIn"
-        ? { employee: employeeId, attendanceDate: date, punchInTime: time }
-        : { employee: employeeId, attendanceDate: date, punchOutTime: time };
+      const requestData =
+        actionType === "punchIn"
+          ? {employee: employeeId, attendanceDate: date, punchInTime: time}
+          : {employee: employeeId, attendanceDate: date, punchOutTime: time};
 
       const apiMethod = actionType === "punchIn" ? "post" : "put";
-      const apiEndpoint = actionType === "punchIn" ? "create-attendance" : "update-attendance";
-      const successMessage = actionType === "punchIn" ? "Punch in successful" : "Punch out successful";
+      const apiEndpoint =
+        actionType === "punchIn" ? "create-attendance" : "update-attendance";
+      const successMessage =
+        actionType === "punchIn"
+          ? "Punch in successful"
+          : "Punch out successful";
 
-      await processAttendance(apiMethod, apiEndpoint, requestData, successMessage, validToken);
+      await processAttendance(
+        apiMethod,
+        apiEndpoint,
+        requestData,
+        successMessage,
+        validToken,
+      );
     } catch (error) {
-      Toast.show({ type: "error", text1: error.message });
-    };
+      Toast.show({type: "error", text1: error.message});
+    }
   };
 
   // Handle marked attendance
   const handleMarkedAttendance = () => {
     if (attendance[0]?.punchOut && attendance[0]?.punchIn) {
-      Toast.show({ type: "success", text1: "Attendance is marked for today." });
-    };
+      Toast.show({type: "success", text1: "Attendance is marked for today."});
+    }
   };
 
   // Get current date attendance for logged in employee
@@ -134,7 +162,7 @@ const Home = () => {
       }
     } catch (error) {
       console.error("Error while fetching attendance:", error.message);
-    };
+    }
   };
 
   // Get upcoming holiday
@@ -146,21 +174,21 @@ const Home = () => {
           headers: {
             Authorization: validToken,
           },
-        }
+        },
       );
 
       if (response?.data?.success) {
         setHolidays(response?.data?.holiday);
       }
     } catch (error) {
-      console.error('Error while fetching upcoming holiday:', error.message);
+      console.error("Error while fetching upcoming holiday:", error.message);
     }
   };
 
   useEffect(() => {
     if (employeeId && currentDate && validToken && !isLoading) {
       fetchAttendance();
-    };
+    }
   }, [employeeId, currentDate, validToken, isLoading]);
 
   // Get current month statistic for logged in employee
@@ -188,39 +216,42 @@ const Home = () => {
 
       if (response?.data?.success) {
         setMonthlyStatistic(response?.data?.attendance);
-      };
+      }
     } catch (error) {
       console.error("Error while fetching monthly statistic:", error.message);
-    };
+    }
   };
 
   useEffect(() => {
     if (employeeId && currentMonth && validToken && !isLoading) {
       fetchMonthlyStatistic();
-    };
+    }
   }, [employeeId, currentMonth, validToken, isLoading]);
 
   // Navigate to attendance detail screen
   const navigateToAttendance = () => {
     const routes = [
-      { name: "BottomTabNavigator" }, // Base route
+      {name: "BottomTabNavigator"}, // Base route
       {
         name: "EmployeeStack",
         params: {
           screen: "Attendance",
-          params: { id: employeeId },
+          params: {id: employeeId},
         },
       },
     ];
 
     // Index of Attendance in routes array
-    const attendanceIndex = routes.findIndex((route) => route.name === "EmployeeStack" && route.params?.screen === "Attendance");
+    const attendanceIndex = routes.findIndex(
+      route =>
+        route.name === "EmployeeStack" && route.params?.screen === "Attendance",
+    );
 
     navigation.dispatch(
       CommonActions.reset({
         index: attendanceIndex,
         routes,
-      })
+      }),
     );
   };
 
@@ -278,15 +309,15 @@ const Home = () => {
         {/* Today's Activity */}
         <View style={styles.activitySection}>
           <Text style={styles.sectionTitle}>Today’s Activity</Text>
-          <Text style={{ marginTop: -3, }}>
-            <Text style={{ color: attendance[0]?.punchIn ? "green" : "red" }}>
+          <Text style={{marginTop: -3}}>
+            <Text style={{color: attendance[0]?.punchIn ? "green" : "red"}}>
               {attendance[0]?.punchIn ? "✓" : "✗"}
             </Text>{" "}
             {formatTimeWithAmPm(attendance[0]?.punchInTime)}
             {attendance[0]?.punchIn ? " - Punch In" : " Punch In"}
           </Text>
           <Text>
-            <Text style={{ color: attendance[0]?.punchOut ? "green" : "red" }}>
+            <Text style={{color: attendance[0]?.punchOut ? "green" : "red"}}>
               {attendance[0]?.punchOut ? "✓" : "✗"}
             </Text>{" "}
             {formatTimeWithAmPm(attendance[0]?.punchOutTime)}
@@ -311,7 +342,7 @@ const Home = () => {
         {/* Today's Summary */}
         <View style={styles.summary}>
           <Text style={styles.summaryTitle}>Today’s Summary</Text>
-          <Text style={{ marginTop: -1 }}>
+          <Text style={{marginTop: -1}}>
             Total Hours Worked:{" "}
             {formatTimeToHoursMinutes(attendance[0]?.hoursWorked)}
           </Text>
@@ -323,15 +354,21 @@ const Home = () => {
           <Text style={styles.sectionTitle}>Monthly Statistics</Text>
           <View style={styles.statsRow}>
             <View style={styles.statBox}>
-              <Text style={styles.statNumber}>{monthlyStatistic?.employeePresentDays}</Text>
+              <Text style={styles.statNumber}>
+                {monthlyStatistic?.employeePresentDays}
+              </Text>
               <Text style={styles.statLabel}>Present Days</Text>
             </View>
             <View style={styles.statBox}>
-              <Text style={styles.statNumber}>{monthlyStatistic?.employeeAbsentDays}</Text>
+              <Text style={styles.statNumber}>
+                {monthlyStatistic?.employeeAbsentDays}
+              </Text>
               <Text style={styles.statLabel}>Absent Days</Text>
             </View>
             <View style={styles.statBox}>
-              <Text style={styles.statNumber}>{monthlyStatistic.employeeLeaveDays}</Text>
+              <Text style={styles.statNumber}>
+                {monthlyStatistic.employeeLeaveDays}
+              </Text>
               <Text style={styles.statLabel}>Leaves</Text>
             </View>
           </View>
@@ -343,14 +380,12 @@ const Home = () => {
           {holidays?.map((item, index) => (
             <Text
               key={item._id || index}
-              style={styles.notificationDescription}
-            >🔔 New holiday announced on {formatDate(item?.date)} for {item?.reason}.</Text>
+              style={styles.notificationDescription}>
+              🔔 New holiday announced on {formatDate(item?.date)} for{" "}
+              {item?.reason}.
+            </Text>
           ))}
-          {
-            (holidays?.length === 0) && (
-              <Text>🔔 No new notifications</Text>
-            )
-          }
+          {holidays?.length === 0 && <Text>🔔 No new notifications</Text>}
         </View>
       </ScrollView>
     </>
@@ -508,7 +543,7 @@ const styles = StyleSheet.create({
   },
   notificationDescription: {
     marginBottom: 5,
-  }
+  },
 });
 
 export default Home;

@@ -39,23 +39,20 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(true);
       const response = await axios.get(
         `${API_BASE_URL}/api/v1/team/loggedin-team`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
+        { headers: { Authorization: `Bearer ${token}` } },
       );
-      setTeam(response?.data?.team);
+      if (response?.data?.success) {
+        setTeam(response?.data?.team);
+      }
     } catch (error) {
-      if (error.response?.status === 401) {
+      if (error?.response?.status === 401) {
         Toast.show({
           type: "error",
           text1: "Session expired. Please log in again.",
         });
         logOutTeam();
       } else {
-        console.error(
-          "Error while fetching logged in employee:",
-          error.message,
-        );
+        console.log("Error while fetching logged in employee:", error.message);
       }
     } finally {
       setIsLoading(false);
@@ -72,7 +69,7 @@ export const AuthProvider = ({ children }) => {
           Toast.show({ type: "error", text1: "Please log in to continue" });
         }
       } catch (error) {
-        console.error("Error while fetching token:", error);
+        console.log("Error while fetching token:", error.message);
       } finally {
         setIsLoading(false);
       }

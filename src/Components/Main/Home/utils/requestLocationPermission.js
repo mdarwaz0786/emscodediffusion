@@ -1,4 +1,4 @@
-import { PermissionsAndroid } from 'react-native';
+import {PermissionsAndroid} from "react-native";
 
 // Get location permission from user
 const requestLocationPermission = async () => {
@@ -6,18 +6,18 @@ const requestLocationPermission = async () => {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
       {
-        title: 'Location Permission',
-        message: 'This app needs access to your location.',
-        buttonNeutral: 'Ask Me Later',
-        buttonNegative: 'Cancel',
-        buttonPositive: 'OK',
+        title: "Location Permission",
+        message: "This app needs access to your location.",
+        buttonNeutral: "Ask Me Later",
+        buttonNegative: "Cancel",
+        buttonPositive: "OK",
       },
     );
     return granted === PermissionsAndroid.RESULTS.GRANTED;
   } catch (error) {
     console.warn(error);
     return false;
-  };
+  }
 };
 
 export default requestLocationPermission;

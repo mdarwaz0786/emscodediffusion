@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
-import { Picker } from "@react-native-picker/picker";
+import React, {useState, useEffect} from "react";
+import {View, Text, StyleSheet, ScrollView, Pressable} from "react-native";
+import {Picker} from "@react-native-picker/picker";
 import axios from "axios";
-import { API_BASE_URL } from "@env";
-import { useAuth } from "../../../Context/auth.context.js";
+import {API_BASE_URL} from "@env";
+import {useAuth} from "../../../Context/auth.context.js";
 import Icon from "react-native-vector-icons/Feather";
-import Close from 'react-native-vector-icons/Ionicons';
-import { useNavigation } from "@react-navigation/native";
+import Close from "react-native-vector-icons/Ionicons";
+import {useNavigation} from "@react-navigation/native";
 import formatTimeWithAmPm from "../../../Helper/formatTimeWithAmPm.js";
 import formatTimeToHoursMinutes from "../../../Helper/formatTimeToHoursMinutes.js";
 import formatDate from "../../../Helper/formatDate.js";
-import { Modal, Portal, Button } from "react-native-paper";
+import {Modal, Portal, Button} from "react-native-paper";
 
-const Attendance = ({ route }) => {
+const Attendance = ({route}) => {
   const id = route?.params?.id;
-  const { validToken, isLoading } = useAuth();
+  const {validToken, isLoading} = useAuth();
   const [attendance, setAttendance] = useState([]);
   const [employee, setEmployee] = useState("");
   const currentYear = new Date().getFullYear();
@@ -35,13 +35,16 @@ const Attendance = ({ route }) => {
   }, [id]);
 
   // Fetch single employee
-  const fetchSingleEmployee = async (id) => {
+  const fetchSingleEmployee = async id => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/v1/team/single-team/${id}`, {
-        headers: {
-          Authorization: validToken,
+      const response = await axios.get(
+        `${API_BASE_URL}/api/v1/team/single-team/${id}`,
+        {
+          headers: {
+            Authorization: validToken,
+          },
         },
-      });
+      );
 
       if (response?.data?.success) {
         setEmployee(response?.data?.team);
@@ -83,13 +86,13 @@ const Attendance = ({ route }) => {
         setAttendance(response?.data?.attendance);
       } else {
         setAttendance([]);
-      };
+      }
     } catch (error) {
       console.error(
         "Error while fetching attendance:",
         error?.response?.data?.message,
       );
-    };
+    }
   };
 
   useEffect(() => {
@@ -124,16 +127,16 @@ const Attendance = ({ route }) => {
 
       if (response?.data?.success) {
         setAttendanceSummary(response?.data?.attendance);
-      };
+      }
     } catch (error) {
       console.error("Error while fetching monthly statistic:", error.message);
-    };
+    }
   };
 
   useEffect(() => {
     if (employeeId && month && year && validToken && !isLoading) {
       fetchMonthlyStatistic();
-    };
+    }
   }, [employeeId, month, year, validToken, isLoading]);
 
   // Function to reset filters to initial values
@@ -171,7 +174,7 @@ const Attendance = ({ route }) => {
               selectedValue={year}
               onValueChange={itemValue => setYear(itemValue)}
               style={styles.picker}>
-              {Array.from({ length: 5 }, (_, index) => {
+              {Array.from({length: 5}, (_, index) => {
                 const yearOption = currentYear - index;
                 return (
                   <Picker.Item
@@ -191,7 +194,7 @@ const Attendance = ({ route }) => {
               selectedValue={month}
               onValueChange={itemValue => setMonth(itemValue)}
               style={styles.picker}>
-              {Array.from({ length: 12 }, (_, index) => (
+              {Array.from({length: 12}, (_, index) => (
                 <Picker.Item
                   key={index}
                   label={new Date(0, index).toLocaleString("default", {
@@ -207,27 +210,30 @@ const Attendance = ({ route }) => {
       </View>
 
       {/* Employee */}
-      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", padding: 10, paddingTop: 0, }}>
-        <Text style={{ fontSize: 15, fontWeight: "400" }}>
-          {employee?.name}
-        </Text>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: 10,
+          paddingTop: 0,
+        }}>
+        <Text style={{fontSize: 15, fontWeight: "400"}}>{employee?.name}</Text>
         {/* Summary Button */}
         <Pressable
           style={{
             paddingVertical: 3,
             paddingHorizontal: 8,
-            backgroundColor: '#007bff',
+            backgroundColor: "#007bff",
             borderRadius: 5,
           }}
-          onPress={() => setModalVisible(true)}
-        >
+          onPress={() => setModalVisible(true)}>
           <Text
             style={{
-              color: '#fff',
+              color: "#fff",
               fontSize: 13,
-              fontWeight: '400',
-            }}
-          >
+              fontWeight: "400",
+            }}>
             Summary
           </Text>
         </Pressable>
@@ -237,7 +243,8 @@ const Attendance = ({ route }) => {
       <ScrollView style={styles.container}>
         {attendance?.length === 0 ? (
           <Text style={styles.emptyText}>
-            No attendance records found for {employee?.name} for the selected month and year.
+            No attendance records found for {employee?.name} for the selected
+            month and year.
           </Text>
         ) : (
           attendance?.map(item => (
@@ -250,12 +257,18 @@ const Attendance = ({ route }) => {
                 <View
                   style={[
                     styles.statusBadge,
-                    item?.status === "Present" ? styles.present : item?.status === "Absent" ? styles.absent : styles.holiday,
+                    item?.status === "Present"
+                      ? styles.present
+                      : item?.status === "Absent"
+                      ? styles.absent
+                      : styles.holiday,
                   ]}>
                   <Text style={styles.statusBadgeText}>{item?.status}</Text>
                 </View>
               </View>
-              <Text style={styles.punchInOut}>Punch In: {formatTimeWithAmPm(item?.punchInTime)}</Text>
+              <Text style={styles.punchInOut}>
+                Punch In: {formatTimeWithAmPm(item?.punchInTime)}
+              </Text>
               <Text style={styles.punchInOut}>
                 Punch Out: {formatTimeWithAmPm(item?.punchOutTime)}
               </Text>
@@ -263,14 +276,29 @@ const Attendance = ({ route }) => {
                 Hours Worked: {formatTimeToHoursMinutes(item?.hoursWorked)}
               </Text>
               <View style={styles.statusContainer}>
-                <Text style={styles.statusText}>Late In: {item?.lateIn === "00:00" ? "On Time" : item?.lateIn ? formatTimeToHoursMinutes(item?.lateIn) : ""} </Text>
+                <Text style={styles.statusText}>
+                  Late In:{" "}
+                  {item?.lateIn === "00:00"
+                    ? "On Time"
+                    : item?.lateIn
+                    ? formatTimeToHoursMinutes(item?.lateIn)
+                    : ""}{" "}
+                </Text>
                 <View
                   style={[
                     styles.statusBadge,
-                    item?.lateIn === "00:00" ? styles.onTime : item?.lateIn || item?.status === "Absent" ? styles.late : styles.holiday,
+                    item?.lateIn === "00:00"
+                      ? styles.onTime
+                      : item?.lateIn || item?.status === "Absent"
+                      ? styles.late
+                      : styles.holiday,
                   ]}>
                   <Text style={styles.statusBadgeText}>
-                    {item?.lateIn === "00:00" ? "On Time" : item?.lateIn ? "Late" : "X"}
+                    {item?.lateIn === "00:00"
+                      ? "On Time"
+                      : item?.lateIn
+                      ? "Late"
+                      : "X"}
                   </Text>
                 </View>
               </View>
@@ -290,49 +318,57 @@ const Attendance = ({ route }) => {
             marginHorizontal: 20,
             borderRadius: 10,
             elevation: 5,
-          }}
-        >
-          <Text style={{ fontSize: 17, fontWeight: "400", marginBottom: 10, textAlign: "center" }}>
+          }}>
+          <Text
+            style={{
+              fontSize: 17,
+              fontWeight: "400",
+              marginBottom: 10,
+              textAlign: "center",
+            }}>
             Attendance Summary
           </Text>
           {attendanceSummary ? (
             <>
-              <Text style={{ fontSize: 14, marginBottom: 5 }}>
+              <Text style={{fontSize: 14, marginBottom: 5}}>
                 Total Sundays: {attendanceSummary?.totalSundays}
               </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5 }}>
+              <Text style={{fontSize: 14, marginBottom: 5}}>
                 Total Holidays: {attendanceSummary?.totalHolidays}
               </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5 }}>
-                Total Present Days: {attendanceSummary?.employeePresentDays}/{attendanceSummary.companyWorkingDays}
+              <Text style={{fontSize: 14, marginBottom: 5}}>
+                Total Present Days: {attendanceSummary?.employeePresentDays}/
+                {attendanceSummary.companyWorkingDays}
               </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5 }}>
+              <Text style={{fontSize: 14, marginBottom: 5}}>
                 Total Absent Days: {attendanceSummary?.employeeAbsentDays}
               </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5 }}>
+              <Text style={{fontSize: 14, marginBottom: 5}}>
                 Total Leave Days: {attendanceSummary?.employeeLeaveDays}
               </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5 }}>
-                Total Hours Worked: {attendanceSummary?.employeeWorkingHours}/{attendanceSummary.companyWorkingHours}
+              <Text style={{fontSize: 14, marginBottom: 5}}>
+                Total Hours Worked: {attendanceSummary?.employeeWorkingHours}/
+                {attendanceSummary.companyWorkingHours}
               </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5 }}>
+              <Text style={{fontSize: 14, marginBottom: 5}}>
                 Total Late in Days: {attendanceSummary?.employeeLateInDays}
               </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5 }}>
-                Average Punch In Time: {formatTimeWithAmPm(attendanceSummary?.averagePunchInTime)}
+              <Text style={{fontSize: 14, marginBottom: 5}}>
+                Average Punch In Time:{" "}
+                {formatTimeWithAmPm(attendanceSummary?.averagePunchInTime)}
               </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5 }}>
-                Average Punch Out Time: {formatTimeWithAmPm(attendanceSummary?.averagePunchOutTime)}
+              <Text style={{fontSize: 14, marginBottom: 5}}>
+                Average Punch Out Time:{" "}
+                {formatTimeWithAmPm(attendanceSummary?.averagePunchOutTime)}
               </Text>
             </>
           ) : (
-            <Text style={{ fontSize: 14, marginBottom: 10 }}>No Data</Text>
+            <Text style={{fontSize: 14, marginBottom: 10}}>No Data</Text>
           )}
           <Button
             mode="contained"
             onPress={() => setModalVisible(false)}
-            style={{ marginTop: 10, backgroundColor: "#B22222" }}
-          >
+            style={{marginTop: 10, backgroundColor: "#B22222"}}>
             <Close name="close" size={25} />
           </Button>
         </Modal>

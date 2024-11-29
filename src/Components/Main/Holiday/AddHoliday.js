@@ -1,35 +1,35 @@
-import React, { useState } from 'react';
+import React, {useState} from "react";
 import {
   View,
   StyleSheet,
   TextInput,
   Text,
   TouchableOpacity,
-} from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+} from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import Icon from "react-native-vector-icons/Feather";
 import Toast from "react-native-toast-message";
-import { API_BASE_URL } from "@env";
-import axios from 'axios';
-import { useAuth } from '../../../Context/auth.context.js';
+import {API_BASE_URL} from "@env";
+import axios from "axios";
+import {useAuth} from "../../../Context/auth.context.js";
 
-const AddHoliday = ({ navigation }) => {
-  const [reason, setReason] = useState('');
+const AddHoliday = ({navigation}) => {
+  const [reason, setReason] = useState("");
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
-  const { validToken } = useAuth();
+  const {validToken} = useAuth();
 
   const handleSubmit = async () => {
     if (!reason || !date) {
-      Toast.show({ type: "error", text1: "Please fill in all fields" });
+      Toast.show({type: "error", text1: "Please fill in all fields"});
       return;
-    };
+    }
 
-    const formattedDate = date.toISOString().split('T')[0];
+    const formattedDate = date.toISOString().split("T")[0];
 
     const holidayData = {
       reason,
-      type: 'Holiday',
+      type: "Holiday",
       date: formattedDate,
     };
 
@@ -40,19 +40,19 @@ const AddHoliday = ({ navigation }) => {
         {
           headers: {
             Authorization: validToken,
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       if (response?.data?.success) {
-        Toast.show({ type: "success", text1: "Holiday added successfully" });
-        setReason('');
+        Toast.show({type: "success", text1: "Holiday added successfully"});
+        setReason("");
         setDate(new Date());
       }
     } catch (error) {
-      console.error('Error:', error);
-      Toast.show({ type: "error", text1: error.response.data.message });
+      console.error("Error:", error);
+      Toast.show({type: "error", text1: error.response.data.message});
     }
   };
 
@@ -89,15 +89,13 @@ const AddHoliday = ({ navigation }) => {
         />
 
         {/* Holiday Input */}
-        <TextInput
-          value="Holiday"
-          editable={false}
-          style={styles.input}
-        />
+        <TextInput value="Holiday" editable={false} style={styles.input} />
 
         {/* Date Picker */}
-        <TouchableOpacity style={[styles.input, styles.dateInput]} onPress={showDatePicker}>
-          <Text>{date.toISOString().split('T')[0]}</Text>
+        <TouchableOpacity
+          style={[styles.input, styles.dateInput]}
+          onPress={showDatePicker}>
+          <Text>{date.toISOString().split("T")[0]}</Text>
         </TouchableOpacity>
 
         {showPicker && (
@@ -142,24 +140,24 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingVertical: 5,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
     borderRadius: 5,
     marginBottom: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     color: "#777",
   },
   dateInput: {
     paddingVertical: 10,
   },
   submitButton: {
-    backgroundColor: '#A63ED3',
+    backgroundColor: "#A63ED3",
     padding: 10,
     borderRadius: 5,
-    alignItems: 'center',
+    alignItems: "center",
   },
   submitButtonText: {
-    color: '#fff',
-    fontWeight: '500',
+    color: "#fff",
+    fontWeight: "500",
   },
 });
 

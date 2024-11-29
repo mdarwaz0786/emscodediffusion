@@ -5,13 +5,13 @@ const getGreeting = () => {
 
   // Determine the greeting based on the time of day
   if (currentHour >= 6 && currentHour < 12) {
-    return 'Good Morning';
+    return "Good Morning";
   } else if (currentHour >= 12 && currentHour < 18) {
-    return 'Good Afternoon';
+    return "Good Afternoon";
   } else if (currentHour >= 18 && currentHour < 22) {
-    return 'Good Evening';
+    return "Good Evening";
   } else {
-    return 'Good Night';
+    return "Good Night";
   }
 };
 

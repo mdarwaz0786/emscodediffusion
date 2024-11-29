@@ -1,7 +1,7 @@
 import React from "react";
-import { ActivityIndicator, View } from "react-native";
-import { createDrawerNavigator } from "@react-navigation/drawer";
-import { useAuth } from "../../Context/auth.context.js";
+import {ActivityIndicator, View} from "react-native";
+import {createDrawerNavigator} from "@react-navigation/drawer";
+import {useAuth} from "../../Context/auth.context.js";
 import CustomDrawerNavigator from "./CustomDrawerNavigator.js";
 import BottomTabNavigator from "../BottomTab/BottomTabNavigator.js";
 import LoginScreen from "../../Screens/Auth/LoginScreen.js";
@@ -16,11 +16,11 @@ import SettingsStack from "../Stack/SettingsStack/SettingsStack.js";
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {
-  const { isLoggedIn, isLoading } = useAuth();
+  const {isLoggedIn, isLoading} = useAuth();
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
         <ActivityIndicator size="large" color="#A63ED3" />
       </View>
     );
@@ -39,7 +39,10 @@ const DrawerNavigator = () => {
       }}>
       {isLoggedIn ? (
         <>
-          <Drawer.Screen name="BottomTabNavigator" component={BottomTabNavigator} />
+          <Drawer.Screen
+            name="BottomTabNavigator"
+            component={BottomTabNavigator}
+          />
           <Drawer.Screen name="EmployeeStack" component={EmployeeStack} />
           <Drawer.Screen name="HolidayStack" component={HolidayStack} />
           <Drawer.Screen name="SettingsStack" component={SettingsStack} />

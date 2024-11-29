@@ -1,4 +1,4 @@
-import { PermissionsAndroid } from 'react-native';
+import {PermissionsAndroid} from "react-native";
 
 // Request storage permissions from user
 const requestStoragePermission = async () => {
@@ -11,10 +11,13 @@ const requestStoragePermission = async () => {
         buttonNeutral: "Ask Me Later",
         buttonNegative: "Cancel",
         buttonPositive: "OK",
-      }
+      },
     );
     if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-      Alert.alert("Permission denied", "Cannot save files without files and media permission.");
+      Alert.alert(
+        "Permission denied",
+        "Cannot save files without files and media permission.",
+      );
     }
   } catch (error) {
     console.warn(error.message);

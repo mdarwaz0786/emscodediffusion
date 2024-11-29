@@ -1,5 +1,5 @@
 import React from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/Ionicons";
 import HomeScreen from "../../Screens/Home/HomeScreen.js";
 import NotificationsScreen from "../../Screens/Notifications/NotificationScreen.js";
@@ -9,7 +9,6 @@ import ProfileScreen from "../../Screens/Profile/ProfileScreen.js";
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator = () => {
-
   const icons = {
     Home: "home-outline",
     Profile: "person-outline",
@@ -21,9 +20,9 @@ const BottomTabNavigator = () => {
   return (
     <Tab.Navigator
       initialRouteName="Home"
-      screenOptions={({ route }) => ({
+      screenOptions={({route}) => ({
         headerShown: false,
-        tabBarIcon: ({ color, size }) => {
+        tabBarIcon: ({color, size}) => {
           const iconName = icons[route.name];
           return <Icon name={iconName} size={23} color={color} />;
         },
