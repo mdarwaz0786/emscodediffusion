@@ -2,9 +2,12 @@ import React from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import { CommonActions, useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
+import { useAuth } from "../../Context/auth.context.js";
 
 const CustomDrawerNavigator = () => {
   const navigation = useNavigation();
+  const { team } = useAuth();
+  const fieldPermissions = team?.role?.permissions?.attendance?.fields;
 
   const drawerItems = [
     {
@@ -12,40 +15,50 @@ const CustomDrawerNavigator = () => {
       icon: "person-outline",
       route: "EmployeeStack",
       resetScreen: "Employee",
+      show: fieldPermissions?.employee?.show,
     },
     {
       label: "Holiday",
       icon: "sunny-outline",
       route: "HolidayStack",
       resetScreen: "Holiday",
+      show: fieldPermissions?.holiday?.show,
     },
     {
       label: "Settings",
       icon: "settings-outline",
       route: "SettingsStack",
       resetScreen: "Settings",
+      show: fieldPermissions?.settings?.show,
     },
     {
       label: "About Us",
       icon: "information-circle-outline",
       route: "About",
+      show: true,
     },
     {
       label: "Contact Us",
       icon: "call-outline",
       route: "Contact",
+      show: true,
     },
     {
       label: "Help",
       icon: "help-circle-outline",
       route: "Help",
+      show: true,
     },
     {
       label: "Logout",
       icon: "log-out-outline",
       route: "Logout",
+      show: true,
     },
   ];
+
+  // Filter drawer items based on the permissions
+  const visibleDrawerItems = drawerItems.filter((item) => item.show);
 
   // Handle navigation
   const handleNavigation = (item) => {
@@ -74,7 +87,7 @@ const CustomDrawerNavigator = () => {
         <Text style={styles.headerText}>Employee Management System</Text>
       </View>
       <View style={styles.sidebar}>
-        {drawerItems.map((item, index) => (
+        {visibleDrawerItems.map((item, index) => (
           <Pressable
             key={index}
             style={styles.item}

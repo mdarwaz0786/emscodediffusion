@@ -341,7 +341,7 @@ const Home = () => {
         <View style={styles.notifications}>
           <Text style={styles.sectionTitle}>Notifications</Text>
           {holidays?.map((item) => (
-            <Text>🔔 New holiday announced on {formatDate(item?.date)} for {item?.reason}.</Text>
+            <Text style={styles.notificationDescription}>🔔 New holiday announced on {formatDate(item?.date)} for {item?.reason}.</Text>
           ))}
           {
             (holidays?.length === 0) && (
@@ -503,6 +503,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 16,
   },
+  notificationDescription: {
+    marginBottom: 5,
+  }
 });
 
 export default Home;
