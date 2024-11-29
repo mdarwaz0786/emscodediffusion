@@ -235,7 +235,7 @@ const Attendance = ({ route }) => {
 
       {/* Scrollable Attendance List */}
       <ScrollView style={styles.container}>
-        {attendance.length === 0 ? (
+        {attendance?.length === 0 ? (
           <Text style={styles.emptyText}>
             No attendance records found for {employee?.name} for the selected month and year.
           </Text>
@@ -267,7 +267,7 @@ const Attendance = ({ route }) => {
                 <View
                   style={[
                     styles.statusBadge,
-                    item?.lateIn === "00:00" ? styles.onTime : item?.lateIn ? styles.late : styles.holiday,
+                    item?.lateIn === "00:00" ? styles.onTime : item?.lateIn || item?.status === "Absent" ? styles.late : styles.holiday,
                   ]}>
                   <Text style={styles.statusBadgeText}>
                     {item?.lateIn === "00:00" ? "On Time" : item?.lateIn ? "Late" : "X"}
