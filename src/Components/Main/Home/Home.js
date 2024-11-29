@@ -340,8 +340,11 @@ const Home = () => {
         {/* Notifications */}
         <View style={styles.notifications}>
           <Text style={styles.sectionTitle}>Notifications</Text>
-          {holidays?.map((item) => (
-            <Text style={styles.notificationDescription}>🔔 New holiday announced on {formatDate(item?.date)} for {item?.reason}.</Text>
+          {holidays?.map((item, index) => (
+            <Text
+              key={item._id || index}
+              style={styles.notificationDescription}
+            >🔔 New holiday announced on {formatDate(item?.date)} for {item?.reason}.</Text>
           ))}
           {
             (holidays?.length === 0) && (
