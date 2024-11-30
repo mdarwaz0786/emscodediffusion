@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from "react-native";
-import axios from "axios";
-import { API_BASE_URL } from "@env";
-import { useAuth } from "../../../Context/auth.context.js";
-import Icon from "react-native-vector-icons/Feather";
-import { ActivityIndicator } from "react-native-paper";
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import axios from 'axios';
+import { API_BASE_URL } from '@env';
+import { useAuth } from '../../../Context/auth.context.js';
+import Icon from 'react-native-vector-icons/Feather';
 
 const Employee = ({ navigation }) => {
   const { validToken } = useAuth();
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [visiblePopupId, setVisiblePopupId] = useState(null);
 
   // Fetch all employees
   const fetchAllEmployees = async () => {
@@ -37,66 +37,84 @@ const Employee = ({ navigation }) => {
     }
   }, [validToken]);
 
-  const navigateToAttendance = id => {
-    navigation.navigate("Attendance", { id });
+  const navigateToAttendance = (id) => {
+    navigation.navigate('Attendance', { id });
   };
 
-  const navigateToSalary = id => {
-    navigation.navigate("Salary", { id });
+  const navigateToSalary = (id) => {
+    navigation.navigate('Salary', { id });
+  };
+
+  const handleBackgroundPress = () => {
+    setVisiblePopupId(null); // Close the popup when background is pressed
   };
 
   const renderEmployeeItem = ({ item }) => (
     <View style={styles.employeeCard}>
       <View style={styles.heading}>
-        <Text style={styles.employeeName}>{item?.name}</Text>
-        <Text style={styles.employeeRole}>{item?.role?.name}</Text>
-      </View>
-      <View style={styles.buttonContainer}>
+        <View style={styles.nameRoleContainer}>
+          <Text style={styles.employeeName}>{item?.name}</Text>
+          <Text style={styles.employeeRole}>{item?.role?.name}</Text>
+        </View>
         <TouchableOpacity
-          style={styles.attendanceButton}
-          onPress={() => navigateToAttendance(item?._id)}>
-          <Text style={styles.attendanceButtonText}>View Attendance</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.salaryButton}
-          onPress={() => navigateToSalary(item?._id)}>
-          <Text style={styles.salaryButtonText}>View Salary</Text>
+          style={styles.optionsButton}
+          onPress={() => setVisiblePopupId(visiblePopupId === item._id ? null : item._id)}
+        >
+          <Icon name="more-vertical" size={20} color="#000" />
         </TouchableOpacity>
       </View>
+
+      {visiblePopupId === item._id && (
+        <View style={styles.popupMenu}>
+          <TouchableOpacity
+            onPress={() => {
+              setVisiblePopupId(null);
+              navigateToAttendance(item?._id);
+            }}
+            style={styles.popupOption}
+          >
+            <Text style={styles.popupOptionText}>Attendance</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setVisiblePopupId(null);
+              navigateToSalary(item?._id);
+            }}
+            style={styles.popupOption}
+          >
+            <Text style={styles.popupOptionText}>Salary</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 
   return (
-    <>
-      {/* Header */}
-      <View style={styles.header}>
-        <Icon
-          name="arrow-left"
-          size={20}
-          color="#000"
-          onPress={() => navigation.goBack()}
-        />
-        <Text style={styles.headerTitle}>Employee</Text>
-      </View>
+    <TouchableWithoutFeedback onPress={handleBackgroundPress}>
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Icon name="arrow-left" size={20} color="#000" onPress={() => navigation.goBack()} />
+          <Text style={styles.headerTitle}>Employee</Text>
+        </View>
 
-      {loading ? (
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-          <ActivityIndicator size="small" color="#A63ED3" />
-        </View>
-      ) : employees?.length === 0 ? (
-        <View style={styles.centeredView}>
-          <Text style={styles.noHolidaysText}>Employee not found</Text>
-        </View>
-      ) : (
-        <View style={styles.container}>
+        {loading ? (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <ActivityIndicator size="small" color="#A63ED3" />
+          </View>
+        ) : employees?.length === 0 ? (
+          <View style={styles.centeredView}>
+            <Text style={styles.noHolidaysText}>Employee not found</Text>
+          </View>
+        ) : (
           <FlatList
             data={employees}
             renderItem={renderEmployeeItem}
-            keyExtractor={item => item?._id}
+            keyExtractor={(item) => item?._id}
           />
-        </View>
-      )}
-    </>
+        )}
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -107,68 +125,80 @@ const styles = StyleSheet.create({
     paddingTop: 4,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
     columnGap: 100,
     padding: 12,
     marginBottom: 10,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     elevation: 1,
   },
   headerTitle: {
     fontSize: 16,
-    fontWeight: "400",
-    color: "#000",
+    fontWeight: '400',
+    color: '#000',
   },
   employeeCard: {
-    backgroundColor: "#ffffff",
+    backgroundColor: '#ffffff',
     padding: 10,
     marginBottom: 12,
     borderRadius: 8,
+    zIndex: 1,
   },
   heading: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 7,
+  },
+  nameRoleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    zIndex: 1,
   },
   employeeName: {
     fontSize: 14,
-    fontWeight: "400",
-    color: "#555",
+    fontWeight: '400',
+    color: '#555',
+    marginRight: 10,
   },
   employeeRole: {
     fontSize: 13,
-    color: "#888",
+    color: '#888',
   },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+  optionsButton: {
+    padding: 5,
   },
-  attendanceButton: {
-    backgroundColor: "#4CAF50",
-    paddingHorizontal: 6,
+  popupMenu: {
+    backgroundColor: '#fff',
     borderRadius: 5,
-    alignItems: "center",
+    elevation: 5,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    right: 60,
+    minWidth: 120,
+    zIndex: 999,
+    height: 68,
     justifyContent: "center",
   },
-  attendanceButtonText: {
-    fontSize: 13,
-    color: "#fff",
-    fontWeight: "400",
-  },
-  salaryButton: {
-    backgroundColor: "#2196F3",
-    paddingHorizontal: 7,
+  popupOption: {
     paddingVertical: 5,
-    borderRadius: 5,
-    alignItems: "center",
-    justifyContent: "center",
+    paddingHorizontal: 10,
   },
-  salaryButtonText: {
-    fontSize: 13,
-    color: "#fff",
-    fontWeight: "400",
+  popupOptionText: {
+    fontSize: 14,
+    color: '#000',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noHolidaysText: {
+    fontSize: 16,
+    color: '#888',
   },
 });
 
