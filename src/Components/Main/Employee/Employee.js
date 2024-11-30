@@ -4,14 +4,17 @@ import axios from "axios";
 import { API_BASE_URL } from "@env";
 import { useAuth } from "../../../Context/auth.context.js";
 import Icon from "react-native-vector-icons/Feather";
+import { ActivityIndicator } from "react-native-paper";
 
 const Employee = ({ navigation }) => {
   const { validToken } = useAuth();
   const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Fetch all employees
   const fetchAllEmployees = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(`${API_BASE_URL}/api/v1/team/all-team`, {
         headers: {
           Authorization: validToken,
@@ -23,6 +26,8 @@ const Employee = ({ navigation }) => {
       }
     } catch (error) {
       console.log(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -74,13 +79,23 @@ const Employee = ({ navigation }) => {
         <Text style={styles.headerTitle}>Employee</Text>
       </View>
 
-      <View style={styles.container}>
-        <FlatList
-          data={employees}
-          renderItem={renderEmployeeItem}
-          keyExtractor={item => item?._id}
-        />
-      </View>
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="small" color="#A63ED3" />
+        </View>
+      ) : employees?.length === 0 ? (
+        <View style={styles.centeredView}>
+          <Text style={styles.noHolidaysText}>Employee not found</Text>
+        </View>
+      ) : (
+        <View style={styles.container}>
+          <FlatList
+            data={employees}
+            renderItem={renderEmployeeItem}
+            keyExtractor={item => item?._id}
+          />
+        </View>
+      )}
     </>
   );
 };

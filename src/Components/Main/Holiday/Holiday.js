@@ -1,15 +1,17 @@
-import React, {useState, useEffect} from "react";
-import {View, Text, StyleSheet, TouchableOpacity, FlatList} from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
 import axios from "axios";
 import Icon from "react-native-vector-icons/Feather";
-import {API_BASE_URL} from "@env";
-import {useAuth} from "../../../Context/auth.context.js";
+import { API_BASE_URL } from "@env";
+import { useAuth } from "../../../Context/auth.context.js";
 import Calender from "react-native-vector-icons/MaterialCommunityIcons";
 import formatDate from "../../../Helper/formatDate.js";
+import { ActivityIndicator } from "react-native-paper";
 
-const Holiday = ({navigation}) => {
+const Holiday = ({ navigation }) => {
   const [holidays, setHolidays] = useState([]);
-  const {validToken} = useAuth();
+  const [loading, setLoading] = useState(true);
+  const { validToken } = useAuth();
 
   useEffect(() => {
     fetchUpcomingHoliday();
@@ -17,6 +19,7 @@ const Holiday = ({navigation}) => {
 
   const fetchUpcomingHoliday = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(
         `${API_BASE_URL}/api/v1/holiday/upcoming-holiday`,
         {
@@ -31,11 +34,13 @@ const Holiday = ({navigation}) => {
       }
     } catch (error) {
       console.error("Error while fetching upcoming holiday:", error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   // Render each upcoming holiday
-  const renderItem = ({item}) => (
+  const renderItem = ({ item }) => (
     <View style={styles.notificationCard}>
       <View style={styles.cardHeader}>
         <Calender
@@ -50,8 +55,7 @@ const Holiday = ({navigation}) => {
         </View>
       </View>
       <Text style={styles.cardDescription}>
-        The office will be closed on {formatDate(item?.date)} for {item?.reason}
-        .
+        The office will be closed on {formatDate(item?.date)} for {item?.reason}.
       </Text>
     </View>
   );
@@ -78,17 +82,21 @@ const Holiday = ({navigation}) => {
 
         <Text style={styles.pageTitle}>Upcoming holidays</Text>
 
-        {holidays?.length > 0 ? (
+        {loading ? (
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <ActivityIndicator size="small" color="#A63ED3" />
+          </View>
+        ) : holidays?.length === 0 ? (
+          <View style={styles.centeredView}>
+            <Text style={styles.noHolidaysText}>No upcoming holidays</Text>
+          </View>
+        ) : (
           <FlatList
             data={holidays}
             renderItem={renderItem}
             keyExtractor={item => item?._id}
             contentContainerStyle={styles.listContainer}
           />
-        ) : (
-          <View style={styles.centeredView}>
-            <Text style={styles.noHolidaysText}>No upcoming holidays</Text>
-          </View>
         )}
       </View>
     </>

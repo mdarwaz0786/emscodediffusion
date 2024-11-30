@@ -83,13 +83,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 15,
     fontSize: 13,
+    borderColor: "#ddd",
+    borderWidth: 1,
   },
   textArea: {
     height: 120,
     textAlignVertical: "top",
   },
   button: {
-    backgroundColor: "#007BFF",
+    backgroundColor: "#A63ED3",
     paddingVertical: 10,
     paddingHorizontal: 30,
     borderRadius: 8,

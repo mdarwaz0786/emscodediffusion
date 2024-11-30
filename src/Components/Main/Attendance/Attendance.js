@@ -1,20 +1,20 @@
-import React, {useState, useEffect} from "react";
-import {View, Text, StyleSheet, ScrollView, Pressable} from "react-native";
-import {Picker} from "@react-native-picker/picker";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
-import {API_BASE_URL} from "@env";
-import {useAuth} from "../../../Context/auth.context.js";
+import { API_BASE_URL } from "@env";
+import { useAuth } from "../../../Context/auth.context.js";
 import Icon from "react-native-vector-icons/Feather";
 import Close from "react-native-vector-icons/Ionicons";
-import {useNavigation} from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import formatTimeWithAmPm from "../../../Helper/formatTimeWithAmPm.js";
 import formatTimeToHoursMinutes from "../../../Helper/formatTimeToHoursMinutes.js";
 import formatDate from "../../../Helper/formatDate.js";
-import {Modal, Portal, Button} from "react-native-paper";
+import { Modal, Portal, Button, ActivityIndicator } from "react-native-paper";
 
-const Attendance = ({route}) => {
+const Attendance = ({ route }) => {
   const id = route?.params?.id;
-  const {validToken, isLoading} = useAuth();
+  const { validToken, isLoading } = useAuth();
   const [attendance, setAttendance] = useState([]);
   const [employee, setEmployee] = useState("");
   const currentYear = new Date().getFullYear();
@@ -25,6 +25,7 @@ const Attendance = ({route}) => {
   const [attendanceSummary, setAttendanceSummary] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(true);
 
   // Update employeeId, month and date when the component mounts
   useEffect(() => {
@@ -57,6 +58,8 @@ const Attendance = ({route}) => {
   // Fetch Attendance of selected month, year and employee
   const fetchAttendance = async () => {
     try {
+      setLoading(true);
+
       const params = {};
 
       if (month) {
@@ -92,6 +95,8 @@ const Attendance = ({route}) => {
         "Error while fetching attendance:",
         error?.response?.data?.message,
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -174,7 +179,7 @@ const Attendance = ({route}) => {
               selectedValue={year}
               onValueChange={itemValue => setYear(itemValue)}
               style={styles.picker}>
-              {Array.from({length: 5}, (_, index) => {
+              {Array.from({ length: 5 }, (_, index) => {
                 const yearOption = currentYear - index;
                 return (
                   <Picker.Item
@@ -194,7 +199,7 @@ const Attendance = ({route}) => {
               selectedValue={month}
               onValueChange={itemValue => setMonth(itemValue)}
               style={styles.picker}>
-              {Array.from({length: 12}, (_, index) => (
+              {Array.from({ length: 12 }, (_, index) => (
                 <Picker.Item
                   key={index}
                   label={new Date(0, index).toLocaleString("default", {
@@ -218,7 +223,7 @@ const Attendance = ({route}) => {
           padding: 10,
           paddingTop: 0,
         }}>
-        <Text style={{fontSize: 15, fontWeight: "400"}}>{employee?.name}</Text>
+        <Text style={{ fontSize: 15, fontWeight: "400" }}>{employee?.name}</Text>
         {/* Summary Button */}
         <Pressable
           style={{
@@ -241,10 +246,13 @@ const Attendance = ({route}) => {
 
       {/* Scrollable Attendance List */}
       <ScrollView style={styles.container}>
-        {attendance?.length === 0 ? (
-          <Text style={styles.emptyText}>
-            No attendance records found for {employee?.name} for the selected
-            month and year.
+        {loading ? (
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <ActivityIndicator size="small" color="#A63ED3" />
+          </View>
+        ) : attendance?.length === 0 ? (
+          <Text style={{ textAlign: "center" }}>
+            Attendance records not found.
           </Text>
         ) : (
           attendance?.map(item => (
@@ -260,8 +268,8 @@ const Attendance = ({route}) => {
                     item?.status === "Present"
                       ? styles.present
                       : item?.status === "Absent"
-                      ? styles.absent
-                      : styles.holiday,
+                        ? styles.absent
+                        : styles.holiday,
                   ]}>
                   <Text style={styles.statusBadgeText}>{item?.status}</Text>
                 </View>
@@ -281,8 +289,8 @@ const Attendance = ({route}) => {
                   {item?.lateIn === "00:00"
                     ? "On Time"
                     : item?.lateIn
-                    ? formatTimeToHoursMinutes(item?.lateIn)
-                    : ""}{" "}
+                      ? formatTimeToHoursMinutes(item?.lateIn)
+                      : ""}{" "}
                 </Text>
                 <View
                   style={[
@@ -290,15 +298,15 @@ const Attendance = ({route}) => {
                     item?.lateIn === "00:00"
                       ? styles.onTime
                       : item?.lateIn || item?.status === "Absent"
-                      ? styles.late
-                      : styles.holiday,
+                        ? styles.late
+                        : styles.holiday,
                   ]}>
                   <Text style={styles.statusBadgeText}>
                     {item?.lateIn === "00:00"
                       ? "On Time"
                       : item?.lateIn
-                      ? "Late"
-                      : "X"}
+                        ? "Late"
+                        : "X"}
                   </Text>
                 </View>
               </View>
@@ -330,45 +338,45 @@ const Attendance = ({route}) => {
           </Text>
           {attendanceSummary ? (
             <>
-              <Text style={{fontSize: 14, marginBottom: 5}}>
+              <Text style={{ fontSize: 14, marginBottom: 5 }}>
                 Total Sundays: {attendanceSummary?.totalSundays}
               </Text>
-              <Text style={{fontSize: 14, marginBottom: 5}}>
+              <Text style={{ fontSize: 14, marginBottom: 5 }}>
                 Total Holidays: {attendanceSummary?.totalHolidays}
               </Text>
-              <Text style={{fontSize: 14, marginBottom: 5}}>
+              <Text style={{ fontSize: 14, marginBottom: 5 }}>
                 Total Present Days: {attendanceSummary?.employeePresentDays}/
                 {attendanceSummary.companyWorkingDays}
               </Text>
-              <Text style={{fontSize: 14, marginBottom: 5}}>
+              <Text style={{ fontSize: 14, marginBottom: 5 }}>
                 Total Absent Days: {attendanceSummary?.employeeAbsentDays}
               </Text>
-              <Text style={{fontSize: 14, marginBottom: 5}}>
+              <Text style={{ fontSize: 14, marginBottom: 5 }}>
                 Total Leave Days: {attendanceSummary?.employeeLeaveDays}
               </Text>
-              <Text style={{fontSize: 14, marginBottom: 5}}>
+              <Text style={{ fontSize: 14, marginBottom: 5 }}>
                 Total Hours Worked: {attendanceSummary?.employeeWorkingHours}/
                 {attendanceSummary.companyWorkingHours}
               </Text>
-              <Text style={{fontSize: 14, marginBottom: 5}}>
+              <Text style={{ fontSize: 14, marginBottom: 5 }}>
                 Total Late in Days: {attendanceSummary?.employeeLateInDays}
               </Text>
-              <Text style={{fontSize: 14, marginBottom: 5}}>
+              <Text style={{ fontSize: 14, marginBottom: 5 }}>
                 Average Punch In Time:{" "}
                 {formatTimeWithAmPm(attendanceSummary?.averagePunchInTime)}
               </Text>
-              <Text style={{fontSize: 14, marginBottom: 5}}>
+              <Text style={{ fontSize: 14, marginBottom: 5 }}>
                 Average Punch Out Time:{" "}
                 {formatTimeWithAmPm(attendanceSummary?.averagePunchOutTime)}
               </Text>
             </>
           ) : (
-            <Text style={{fontSize: 14, marginBottom: 10}}>No Data</Text>
+            <Text style={{ fontSize: 14, marginBottom: 10 }}>No Data</Text>
           )}
           <Button
             mode="contained"
             onPress={() => setModalVisible(false)}
-            style={{marginTop: 10, backgroundColor: "#B22222"}}>
+            style={{ marginTop: 10, backgroundColor: "#B22222" }}>
             <Close name="close" size={25} />
           </Button>
         </Modal>
@@ -486,12 +494,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "400",
     color: "#2D6A4F",
-  },
-  emptyText: {
-    fontSize: 14,
-    color: "#999",
-    textAlign: "center",
-    marginTop: -3,
   },
 });
 

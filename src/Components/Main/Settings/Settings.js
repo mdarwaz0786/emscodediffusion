@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,16 +7,23 @@ import {
   ScrollView,
   Image,
   Pressable,
+  TextInput,
+  ActivityIndicator,
+  Modal,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
-import {API_BASE_URL} from "@env";
+import { API_BASE_URL } from "@env";
 import axios from "axios";
-import {useAuth} from "../../../Context/auth.context.js";
+import { useAuth } from "../../../Context/auth.context.js";
 
-const Settings = ({navigation}) => {
-  const {validToken} = useAuth();
+const Settings = ({ navigation }) => {
+  const { validToken } = useAuth();
   const [office, setOffice] = useState([]);
   const [popupVisible, setPopupVisible] = useState(null);
+  const [confirmationVisible, setConfirmationVisible] = useState(false);
+  const [confirmationText, setConfirmationText] = useState("");
+  const [officeToDelete, setOfficeToDelete] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchOfficeLocation();
@@ -24,6 +31,7 @@ const Settings = ({navigation}) => {
 
   const fetchOfficeLocation = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(
         `${API_BASE_URL}/api/v1/officeLocation/all-officeLocation`,
         {
@@ -38,30 +46,40 @@ const Settings = ({navigation}) => {
       }
     } catch (error) {
       console.error("Error while fetching office location:", error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleDelete = async id => {
-    try {
-      await axios.delete(
-        `${API_BASE_URL}/api/v1/officeLocation/delete-officeLocation/${id}`,
-        {
-          headers: {
-            Authorization: validToken,
-          },
-        },
-      );
-      fetchOfficeLocation();
-      setPopupVisible(null);
-    } catch (error) {
-      console.error("Error while deleting office location:", error.message);
+  const handleDelete = async () => {
+    if (confirmationText.toLowerCase() === "yes" && officeToDelete) {
+      try {
+        await axios.delete(
+          `${API_BASE_URL}/api/v1/officeLocation/delete-officeLocation/${officeToDelete}`,
+          {
+            headers: {
+              Authorization: validToken,
+            },
+          }
+        );
+        fetchOfficeLocation();
+      } catch (error) {
+        console.error("Error while deleting office location:", error.message);
+      } finally {
+        setConfirmationVisible(false);
+        setPopupVisible(null);
+        setOfficeToDelete(null);
+        setConfirmationText("");
+      }
+    } else {
+      alert("Please type 'yes' to confirm deletion.");
     }
   };
 
   const renderOfficeCard = item => (
     <View style={styles.card} key={item?._id}>
       <View style={styles.cardHeader}>
-        {item?.logo && <Image source={{uri: item?.logo}} style={styles.logo} />}
+        {item?.logo && <Image source={{ uri: item?.logo }} style={styles.logo} />}
         <Pressable
           onPress={() =>
             setPopupVisible(popupVisible === item?._id ? null : item?._id)
@@ -89,13 +107,17 @@ const Settings = ({navigation}) => {
             style={styles.popupOption}
             onPress={() => {
               setPopupVisible(null);
-              navigation.navigate("EditOffice", {id: item?._id});
+              navigation.navigate("EditOffice", { id: item?._id });
             }}>
             <Text style={styles.popupOptionText}>Edit</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.popupOption, styles.deleteOption]}
-            onPress={() => handleDelete(item?._id)}>
+            onPress={() => {
+              setOfficeToDelete(item?._id);
+              setConfirmationVisible(true);
+            }}
+          >
             <Text style={styles.popupOptionText}>Delete</Text>
           </TouchableOpacity>
         </View>
@@ -126,14 +148,66 @@ const Settings = ({navigation}) => {
 
         {/* Office Locations */}
         <Text style={styles.pageTitle}>Offices</Text>
-        <ScrollView
-          contentContainerStyle={[styles.cardContainer, {flexGrow: 1}]}
-          keyboardShouldPersistTaps="handled">
-          <Pressable onPress={() => setPopupVisible(null)}>
-            {office.map(item => renderOfficeCard(item))}
-          </Pressable>
-        </ScrollView>
+        {loading ? (
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <ActivityIndicator size="small" color="#A63ED3" />
+          </View>
+        ) : office?.length === 0 ? (
+          <Text style={{ textAlign: "center" }}>
+            Office not found.
+          </Text>
+        ) : (
+          <ScrollView
+            contentContainerStyle={[styles.cardContainer, { flexGrow: 1 }]}
+            keyboardShouldPersistTaps="handled">
+            <Pressable onPress={() => setPopupVisible(null)}>
+              {office?.map(item => renderOfficeCard(item))}
+            </Pressable>
+          </ScrollView>
+        )}
       </View>
+
+      {/* Confirmation Modal */}
+      <Modal
+        visible={confirmationVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => {
+          setConfirmationVisible(false);
+          setConfirmationText("");
+        }}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Confirm Deletion</Text>
+            <Text style={styles.modalText}>
+              Type <Text style={styles.modalHighlight}>"yes"</Text> to confirm the deletion.
+            </Text>
+            <TextInput
+              style={styles.modalInput}
+              value={confirmationText}
+              onChangeText={setConfirmationText}
+              placeholder="Type here"
+              placeholderTextColor="#aaa"
+            />
+            <View style={styles.modalButtons}>
+              <TouchableOpacity style={styles.modalButton} onPress={handleDelete}>
+                <Text style={styles.modalButtonText}>Confirm</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={() => {
+                  setConfirmationVisible(false);
+                  setPopupVisible(null);
+                  setConfirmationText("");
+                }}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 };
@@ -226,6 +300,70 @@ const styles = StyleSheet.create({
   deleteOption: {
     borderTopWidth: 1,
     borderTopColor: "#eee",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    width: "90%",
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontWeight: "400",
+    color: "#000",
+    marginBottom: 10,
+  },
+  modalText: {
+    fontSize: 15,
+    color: "#555",
+    marginBottom: 15,
+    textAlign: "center",
+  },
+  modalHighlight: {
+    fontWeight: "500",
+    color: "#A63ED3",
+  },
+  modalInput: {
+    width: "100%",
+    height: 40,
+    borderColor: "#ddd",
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+    fontSize: 14,
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  modalButton: {
+    flex: 1,
+    padding: 10,
+    marginHorizontal: 5,
+    backgroundColor: "#A63ED3",
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  cancelButton: {
+    backgroundColor: "#ccc",
+  },
+  modalButtonText: {
+    color: "#fff",
+    fontWeight: "500",
   },
 });
 
