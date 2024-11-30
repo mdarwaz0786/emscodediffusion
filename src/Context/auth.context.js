@@ -18,8 +18,23 @@ export const AuthProvider = ({ children }) => {
     try {
       await AsyncStorage.setItem("token", serverToken);
       setToken(serverToken);
+
+      const response = await axios.get(
+        `${API_BASE_URL}/api/v1/team/loggedin-team`,
+        { headers: { Authorization: `Bearer ${serverToken}` } },
+      );
+
+      if (response?.data?.success) {
+        setTeam(response?.data?.team);
+      } else {
+        Toast.show({ type: "error", text1: "Failed to fetch user details" });
+      }
     } catch (error) {
-      console.error("Error while storing token:", error.message);
+      console.error(
+        "Error while storing token or fetching user details:",
+        error.message,
+      );
+      Toast.show({ type: "error", text1: "Login failed. Please try again." });
     }
   };
 
@@ -34,25 +49,32 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const loggedInTeam = async () => {
+  const initializeAuth = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get(
-        `${API_BASE_URL}/api/v1/team/loggedin-team`,
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
-      if (response?.data?.success) {
-        setTeam(response?.data?.team);
+      const storedToken = await AsyncStorage.getItem("token");
+
+      if (storedToken) {
+        setToken(storedToken);
+        const response = await axios.get(
+          `${API_BASE_URL}/api/v1/team/loggedin-team`,
+          { headers: { Authorization: `Bearer ${storedToken}` } },
+        );
+
+        if (response?.data?.success) {
+          setTeam(response?.data?.team);
+        }
+      } else {
+        Toast.show({ type: "error", text1: "Please log in to continue" });
       }
     } catch (error) {
+      console.log("Error during initializing auth:", error.message);
       if (error?.response?.status === 401) {
         Toast.show({
           type: "error",
           text1: "Session expired. Please log in again.",
         });
-        logOutTeam();
-      } else {
-        console.log("Error while fetching logged in employee:", error.message);
+        await AsyncStorage.removeItem("token");
       }
     } finally {
       setIsLoading(false);
@@ -60,29 +82,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const fetchToken = async () => {
-      try {
-        const storedToken = await AsyncStorage.getItem("token");
-        if (storedToken) {
-          setToken(storedToken);
-        } else {
-          Toast.show({ type: "error", text1: "Please log in to continue" });
-        }
-      } catch (error) {
-        console.log("Error while fetching token:", error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchToken();
+    initializeAuth();
   }, []);
-
-  useEffect(() => {
-    if (token) {
-      loggedInTeam();
-    }
-  }, [token]);
 
   return (
     <AuthContext.Provider
