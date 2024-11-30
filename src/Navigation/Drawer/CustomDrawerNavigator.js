@@ -1,12 +1,12 @@
 import React from "react";
-import {View, Text, StyleSheet, ScrollView, Pressable} from "react-native";
-import {CommonActions, useNavigation} from "@react-navigation/native";
+import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
+import { CommonActions, useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
-import {useAuth} from "../../Context/auth.context.js";
+import { useAuth } from "../../Context/auth.context.js";
 
 const CustomDrawerNavigator = () => {
   const navigation = useNavigation();
-  const {team} = useAuth();
+  const { team } = useAuth();
   const fieldPermissions = team?.role?.permissions?.attendance?.fields;
 
   const drawerItems = [
@@ -63,7 +63,7 @@ const CustomDrawerNavigator = () => {
   // Handle navigation
   const handleNavigation = item => {
     if (item.resetScreen) {
-      const routes = [{name: item.route, params: {screen: item.resetScreen}}];
+      const routes = [{ name: item.route, params: { screen: item.resetScreen } }];
 
       // Dynamic index calculation
       const targetIndex = routes.findIndex(
