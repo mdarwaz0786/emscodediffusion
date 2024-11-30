@@ -52,7 +52,6 @@ const ContactUsScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: "#f5f5f5",
     alignItems: "center",
     padding: 20,
   },
