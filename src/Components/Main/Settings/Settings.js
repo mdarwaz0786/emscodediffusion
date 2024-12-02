@@ -12,6 +12,7 @@ import {
   Modal,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
+import Toast from "react-native-toast-message";
 import { API_BASE_URL } from "@env";
 import axios from "axios";
 import { useAuth } from "../../../Context/auth.context.js";
@@ -24,10 +25,6 @@ const Settings = ({ navigation }) => {
   const [confirmationText, setConfirmationText] = useState("");
   const [officeToDelete, setOfficeToDelete] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchOfficeLocation();
-  }, []);
 
   const fetchOfficeLocation = async () => {
     try {
@@ -51,10 +48,16 @@ const Settings = ({ navigation }) => {
     }
   };
 
+  useEffect(() => {
+    if (validToken) {
+      fetchOfficeLocation();
+    }
+  }, [validToken]);
+
   const handleDelete = async () => {
     if (confirmationText.toLowerCase() === "yes" && officeToDelete) {
       try {
-        await axios.delete(
+        const response = await axios.delete(
           `${API_BASE_URL}/api/v1/officeLocation/delete-officeLocation/${officeToDelete}`,
           {
             headers: {
@@ -62,7 +65,11 @@ const Settings = ({ navigation }) => {
             },
           }
         );
-        fetchOfficeLocation();
+
+        if (response?.data?.success) {
+          fetchOfficeLocation();
+          Toast.show({ type: "success", text1: "Deleted successfully" });
+        }
       } catch (error) {
         console.error("Error while deleting office location:", error.message);
       } finally {
@@ -80,12 +87,12 @@ const Settings = ({ navigation }) => {
     <View style={styles.card} key={item?._id}>
       <View style={styles.cardHeader}>
         {item?.logo && <Image source={{ uri: item?.logo }} style={styles.logo} />}
-        <Pressable
+        <TouchableOpacity
           onPress={() =>
             setPopupVisible(popupVisible === item?._id ? null : item?._id)
           }>
           <Icon name="more-vertical" size={20} color="#333" />
-        </Pressable>
+        </TouchableOpacity>
       </View>
       <Text style={styles.cardDetail}>Name: {item?.name}</Text>
       <Text style={styles.cardDetail}>Email: {item?.email}</Text>
@@ -150,7 +157,7 @@ const Settings = ({ navigation }) => {
         <Text style={styles.pageTitle}>Offices</Text>
         {loading ? (
           <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator size="small" color="#A63ED3" />
+            <ActivityIndicator size="large" color="#A63ED3" />
           </View>
         ) : office?.length === 0 ? (
           <Text style={{ textAlign: "center" }}>
@@ -229,23 +236,25 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 16,
+    padding: 10,
   },
   addButton: {
     backgroundColor: "#A63ED3",
-    padding: 12,
+    padding: 8,
     borderRadius: 5,
     alignItems: "center",
     marginBottom: 16,
+    marginTop: 5,
   },
   addButtonText: {
     color: "#fff",
-    fontWeight: "500",
+    fontWeight: "400",
   },
   pageTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "400",
-    marginBottom: 12,
+    marginBottom: 8,
+    marginTop: 8,
     textAlign: "center",
     color: "#333",
   },

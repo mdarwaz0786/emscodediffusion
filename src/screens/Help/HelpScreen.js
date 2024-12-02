@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Linking } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 
 const HelpScreen = ({ navigation }) => {
@@ -48,7 +48,9 @@ const HelpScreen = ({ navigation }) => {
 
         <View style={styles.linkContainer}>
           <Text style={styles.subHeader}>Useful Links</Text>
-          <Text style={styles.link}>
+          <Text style={styles.link}
+            onPress={() => Linking.openURL("https://www.codediffusion.in")}
+          >
             👉 Visit our [Website] (https://www.codediffusion.in) for more information.
           </Text>
         </View>
@@ -64,7 +66,7 @@ const HelpScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    padding: 20,
+    padding: 10,
   },
   header: {
     flexDirection: "row",
@@ -81,28 +83,25 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   subHeader: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "400",
     color: "#000",
-    marginBottom: 10,
+    marginBottom: 5,
     textAlign: "center",
   },
   faqContainer: {
-    marginBottom: 10,
+    marginBottom: 5,
   },
   faqQuestion: {
     fontSize: 15,
     fontWeight: "400",
-    color: "#444",
+    color: "#333",
     marginBottom: 5,
   },
   faqAnswer: {
     fontSize: 14,
     color: "#666",
     marginBottom: 15,
-    paddingLeft: 10,
-    borderLeftWidth: 2,
-    borderLeftColor: "#ddd",
   },
   text: {
     fontSize: 14,
@@ -114,7 +113,7 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   linkContainer: {
-    marginTop: 30,
+    marginTop: 20,
   },
   link: {
     fontSize: 14,
@@ -123,10 +122,9 @@ const styles = StyleSheet.create({
   },
   footer: {
     fontSize: 15,
-    color: "#333",
+    color: "#555",
     fontWeight: "400",
-    marginTop: 30,
-    textAlign: "center",
+    marginTop: 20,
   },
 });
 

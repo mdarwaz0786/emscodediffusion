@@ -84,7 +84,7 @@ const Holiday = ({ navigation }) => {
 
         {loading ? (
           <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator size="small" color="#A63ED3" />
+            <ActivityIndicator size="large" color="#A63ED3" />
           </View>
         ) : holidays?.length === 0 ? (
           <View style={styles.centeredView}>
@@ -119,11 +119,12 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   pageTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "400",
-    marginBottom: 12,
+    marginBottom: 10,
     textAlign: "center",
-    color: "#555",
+    color: "#333",
+    marginTop: 8
   },
   addButton: {
     backgroundColor: "#A63ED3",
@@ -131,6 +132,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
     marginBottom: 18,
+    marginTop: 5,
   },
   addButtonText: {
     color: "#fff",
@@ -138,7 +140,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 16,
+    padding: 10,
   },
   notificationCard: {
     marginBottom: 16,
@@ -159,7 +161,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cardTitle: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: "400",
     color: "#333",
   },

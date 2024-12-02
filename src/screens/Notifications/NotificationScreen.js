@@ -11,10 +11,6 @@ const NotificationScreen = () => {
   const [loading, setLoading] = useState(true);
   const { validToken } = useAuth();
 
-  useEffect(() => {
-    fetchUpcomingHoliday();
-  }, []);
-
   const fetchUpcomingHoliday = async () => {
     try {
       setLoading(true);
@@ -36,6 +32,12 @@ const NotificationScreen = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (validToken) {
+      fetchUpcomingHoliday();
+    }
+  }, [validToken]);
 
   const renderItem = ({ item }) => (
     <View style={styles.notificationCard}>
@@ -83,13 +85,13 @@ const NotificationScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: 10,
   },
   title: {
     fontSize: 16,
     fontWeight: "400",
     color: "#333",
-    marginBottom: 15,
+    marginBottom: 10,
     textAlign: "center",
   },
   notificationCard: {

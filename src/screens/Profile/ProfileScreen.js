@@ -1,11 +1,11 @@
 import React from "react";
-import {View, Text, ScrollView, StyleSheet} from "react-native";
-import {useAuth} from "../../Context/auth.context.js";
+import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { useAuth } from "../../Context/auth.context.js";
 import formatTimeToHoursMinutes from "../../Helper/formatTimeToHoursMinutes.js";
 import formatDate from "../../Helper/formatDate.js";
 
 const ProfileScreen = () => {
-  const {team} = useAuth();
+  const { team } = useAuth();
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -38,7 +38,7 @@ const ProfileScreen = () => {
   );
 };
 
-const DetailRow = ({label, value}) => (
+const DetailRow = ({ label, value }) => (
   <View style={styles.detailRow}>
     <Text style={styles.detailLabel}>{label}:</Text>
     <Text style={styles.detailValue}>{value || "Not available"}</Text>
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     alignItems: "center",
     backgroundColor: "#f8f9fa",
-    padding: 20,
+    padding: 10,
   },
   detailsCard: {
     backgroundColor: "#ffffff",
@@ -61,12 +61,12 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   name: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: "400",
     color: "#343a40",
   },
   designation: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#6c757d",
   },
   infoCard: {
@@ -82,11 +82,11 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   detailLabel: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#495057",
   },
   detailValue: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#495057",
   },
 });

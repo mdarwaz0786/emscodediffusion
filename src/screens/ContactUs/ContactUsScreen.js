@@ -74,12 +74,13 @@ const styles = StyleSheet.create({
     color: "#666",
     textAlign: "center",
     marginBottom: 20,
-    lineHeight: 22,
+    lineHeight: 20,
   },
   input: {
     width: "100%",
     backgroundColor: "#fff",
-    padding: 10,
+    padding: 8,
+    paddingLeft: 16,
     borderRadius: 8,
     marginBottom: 15,
     fontSize: 13,
@@ -89,6 +90,7 @@ const styles = StyleSheet.create({
   textArea: {
     height: 120,
     textAlignVertical: "top",
+    paddingLeft: 16,
   },
   button: {
     backgroundColor: "#A63ED3",

@@ -68,7 +68,7 @@ const AboutUsScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    padding: 20,
+    padding: 10,
   },
   header: {
     flexDirection: "row",
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   bannerContainer: {
     flexDirection: "column",
     alignItems: "center",
-    marginTop: -20,
+    marginTop: -10,
   },
   banner: {
     width: "115%",
@@ -97,19 +97,19 @@ const styles = StyleSheet.create({
   subHeader: {
     fontSize: 15,
     fontWeight: "400",
-    color: "#000",
-    marginTop: 20,
-    marginBottom: 10,
+    color: "#333",
+    marginTop: 10,
+    marginBottom: 5,
   },
   text: {
     fontSize: 14,
     color: "#666",
     lineHeight: 22,
-    marginBottom: 15,
+    marginBottom: 10,
     textAlign: "justify",
   },
   list: {
-    marginBottom: 15,
+    marginBottom: 10,
   },
   listItem: {
     fontSize: 14,
@@ -118,10 +118,9 @@ const styles = StyleSheet.create({
   },
   footer: {
     fontSize: 15,
-    color: "#333",
+    color: "#555",
     fontWeight: "400",
-    marginTop: 30,
-    textAlign: "center",
+    marginTop: 10,
   },
 });
 

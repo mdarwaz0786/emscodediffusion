@@ -46,25 +46,28 @@ const Employee = ({ navigation }) => {
   };
 
   const handleBackgroundPress = () => {
-    setVisiblePopupId(null); // Close the popup when background is pressed
+    setVisiblePopupId(null);
   };
 
   const renderEmployeeItem = ({ item }) => (
     <View style={styles.employeeCard}>
       <View style={styles.heading}>
-        <View style={styles.nameRoleContainer}>
+        <TouchableOpacity
+          style={styles.nameRoleContainer}
+          onPress={() => setVisiblePopupId(visiblePopupId === item?._id ? null : item?._id)}
+        >
           <Text style={styles.employeeName}>{item?.name}</Text>
-          <Text style={styles.employeeRole}>{item?.role?.name}</Text>
-        </View>
+          <Text style={styles.employeeRole}>{item?.designation?.name}</Text>
+        </TouchableOpacity>
         <TouchableOpacity
           style={styles.optionsButton}
-          onPress={() => setVisiblePopupId(visiblePopupId === item._id ? null : item._id)}
+          onPress={() => setVisiblePopupId(visiblePopupId === item?._id ? null : item?._id)}
         >
           <Icon name="more-vertical" size={20} color="#000" />
         </TouchableOpacity>
       </View>
 
-      {visiblePopupId === item._id && (
+      {visiblePopupId === item?._id && (
         <View style={styles.popupMenu}>
           <TouchableOpacity
             onPress={() => {
@@ -90,31 +93,33 @@ const Employee = ({ navigation }) => {
   );
 
   return (
-    <TouchableWithoutFeedback onPress={handleBackgroundPress}>
-      <View style={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Icon name="arrow-left" size={20} color="#000" onPress={() => navigation.goBack()} />
-          <Text style={styles.headerTitle}>Employee</Text>
-        </View>
-
-        {loading ? (
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <ActivityIndicator size="small" color="#A63ED3" />
-          </View>
-        ) : employees?.length === 0 ? (
-          <View style={styles.centeredView}>
-            <Text style={styles.noHolidaysText}>Employee not found</Text>
-          </View>
-        ) : (
-          <FlatList
-            data={employees}
-            renderItem={renderEmployeeItem}
-            keyExtractor={(item) => item?._id}
-          />
-        )}
+    <>
+      {/* Header */}
+      <View style={styles.header}>
+        <Icon name="arrow-left" size={20} color="#000" onPress={() => navigation.goBack()} />
+        <Text style={styles.headerTitle}>Employee</Text>
       </View>
-    </TouchableWithoutFeedback>
+
+      <TouchableWithoutFeedback onPress={handleBackgroundPress}>
+        <View style={styles.container}>
+          {loading ? (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <ActivityIndicator size="large" color="#A63ED3" />
+            </View>
+          ) : employees?.length === 0 ? (
+            <View style={styles.centeredView}>
+              <Text style={styles.noHolidaysText}>Employee not found</Text>
+            </View>
+          ) : (
+            <FlatList
+              data={employees}
+              renderItem={renderEmployeeItem}
+              keyExtractor={(item) => item?._id}
+            />
+          )}
+        </View>
+      </TouchableWithoutFeedback>
+    </>
   );
 };
 
@@ -122,7 +127,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-    paddingTop: 4,
+    paddingTop: 2,
   },
   header: {
     flexDirection: 'row',
@@ -150,12 +155,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 7,
   },
   nameRoleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    zIndex: 1,
+    justifyContent: "space-between",
   },
   employeeName: {
     fontSize: 14,
@@ -180,7 +184,7 @@ const styles = StyleSheet.create({
     right: 60,
     minWidth: 120,
     zIndex: 999,
-    height: 68,
+    height: 60,
     justifyContent: "center",
   },
   popupOption: {
