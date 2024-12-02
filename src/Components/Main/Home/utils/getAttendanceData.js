@@ -4,7 +4,7 @@ const getAttendanceData = team => {
   const date = new Date().toISOString().split("T")[0];
   const employeeId = team?._id;
 
-  return {time, date, employeeId};
+  return { time, date, employeeId };
 };
 
 export default getAttendanceData;

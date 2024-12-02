@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
@@ -9,19 +9,19 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Icon from "react-native-vector-icons/Feather";
 import Toast from "react-native-toast-message";
-import {API_BASE_URL} from "@env";
+import { API_BASE_URL } from "@env";
 import axios from "axios";
-import {useAuth} from "../../../Context/auth.context.js";
+import { useAuth } from "../../../Context/auth.context.js";
 
-const AddHoliday = ({navigation}) => {
+const AddHoliday = ({ navigation }) => {
   const [reason, setReason] = useState("");
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
-  const {validToken} = useAuth();
+  const { validToken } = useAuth();
 
   const handleSubmit = async () => {
     if (!reason || !date) {
-      Toast.show({type: "error", text1: "All fields are required"});
+      Toast.show({ type: "error", text1: "All fields are required" });
       return;
     }
 
@@ -48,12 +48,12 @@ const AddHoliday = ({navigation}) => {
       if (response?.data?.success) {
         setReason("");
         setDate(new Date());
-        Toast.show({type: "success", text1: "Submitted successfully"});
+        Toast.show({ type: "success", text1: "Submitted successfully" });
         navigation.goBack();
       }
     } catch (error) {
       console.error("Error:", error);
-      Toast.show({type: "error", text1: error.response.data.message});
+      Toast.show({ type: "error", text1: error.response.data.message });
     }
   };
 
@@ -81,8 +81,8 @@ const AddHoliday = ({navigation}) => {
       </View>
 
       <View style={styles.container}>
-        <Text style={{marginBottom: 5, color: "#555"}}>
-          Reason <Text style={{color: "red"}}>*</Text>
+        <Text style={{ marginBottom: 5, color: "#555" }}>
+          Reason <Text style={{ color: "red" }}>*</Text>
         </Text>
         {/* Reason Input */}
         <TextInput
@@ -91,8 +91,8 @@ const AddHoliday = ({navigation}) => {
           style={styles.input}
         />
 
-        <Text style={{marginBottom: 5, color: "#555"}}>
-          Date <Text style={{color: "red"}}>*</Text>
+        <Text style={{ marginBottom: 5, color: "#555" }}>
+          Date <Text style={{ color: "red" }}>*</Text>
         </Text>
         {/* Date Picker */}
         <TouchableOpacity

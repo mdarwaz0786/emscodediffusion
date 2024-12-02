@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   FlatList,
@@ -7,16 +7,18 @@ import {
   ActivityIndicator,
 } from "react-native";
 import Calender from "react-native-vector-icons/MaterialCommunityIcons";
-import {API_BASE_URL} from "@env";
-import {useAuth} from "../../Context/auth.context.js";
+import { API_BASE_URL } from "@env";
+import { useAuth } from "../../Context/auth.context.js";
 import formatDate from "../../Helper/formatDate.js";
 import axios from "axios";
 
 const NotificationScreen = () => {
   const [holidays, setHolidays] = useState([]);
   const [loading, setLoading] = useState(true);
-  const {validToken} = useAuth();
+  const [refreshing, setRefreshing] = useState(false);
+  const { validToken } = useAuth();
 
+  // Fetch holidays
   const fetchUpcomingHoliday = async () => {
     try {
       setLoading(true);
@@ -36,6 +38,7 @@ const NotificationScreen = () => {
       console.error("Error while fetching upcoming holiday:", error.message);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -45,7 +48,12 @@ const NotificationScreen = () => {
     }
   }, [validToken]);
 
-  const renderItem = ({item}) => (
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchUpcomingHoliday();
+  };
+
+  const renderItem = ({ item }) => (
     <View style={styles.notificationCard}>
       <View style={styles.cardHeader}>
         <Calender
@@ -60,8 +68,7 @@ const NotificationScreen = () => {
         </View>
       </View>
       <Text style={styles.cardDescription}>
-        The office will be closed on {formatDate(item?.date)} for {item?.reason}
-        .
+        The office will be closed on {formatDate(item?.date)} for {item?.reason}.
       </Text>
     </View>
   );
@@ -69,8 +76,8 @@ const NotificationScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Notifications</Text>
-      {loading ? (
-        <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+      {loading && !refreshing ? (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
           <ActivityIndicator size="large" color="#A63ED3" />
         </View>
       ) : holidays?.length === 0 ? (
@@ -81,8 +88,10 @@ const NotificationScreen = () => {
         <FlatList
           data={holidays}
           renderItem={renderItem}
-          keyExtractor={item => item?._id}
+          keyExtractor={(item) => item?._id}
           contentContainerStyle={styles.listContainer}
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
         />
       )}
     </View>

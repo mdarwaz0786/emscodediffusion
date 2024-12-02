@@ -1,5 +1,5 @@
 import axios from "axios";
-import {API_BASE_URL} from "@env";
+import { API_BASE_URL } from "@env";
 
 // Convert degrees to radians
 const toRadians = degree => degree * (Math.PI / 180);
@@ -13,9 +13,9 @@ const getDistance = (lat1, lon1, lat2, lon2) => {
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(toRadians(lat1)) *
-      Math.cos(toRadians(lat2)) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
+    Math.cos(toRadians(lat2)) *
+    Math.sin(dLon / 2) *
+    Math.sin(dLon / 2);
 
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c * 1000; // Distance in meters
@@ -43,7 +43,7 @@ const isWithinOfficeLocation = async (
       const officeLocations = response?.data?.officeLocation;
 
       // Check if user is within range of any office
-      return officeLocations.some(({latitude, longitude}) => {
+      return officeLocations.some(({ latitude, longitude }) => {
         const lat = parseFloat(latitude);
         const lon = parseFloat(longitude);
 

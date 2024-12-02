@@ -1,17 +1,17 @@
-import React, {useState, useEffect} from "react";
-import {View, Text, StyleSheet, TouchableOpacity, FlatList} from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
 import axios from "axios";
 import Icon from "react-native-vector-icons/Feather";
-import {API_BASE_URL} from "@env";
-import {useAuth} from "../../../Context/auth.context.js";
+import { API_BASE_URL } from "@env";
+import { useAuth } from "../../../Context/auth.context.js";
 import Calender from "react-native-vector-icons/MaterialCommunityIcons";
 import formatDate from "../../../Helper/formatDate.js";
-import {ActivityIndicator} from "react-native-paper";
+import { ActivityIndicator } from "react-native-paper";
 
-const Holiday = ({navigation}) => {
+const Holiday = ({ navigation }) => {
   const [holidays, setHolidays] = useState([]);
   const [loading, setLoading] = useState(true);
-  const {validToken} = useAuth();
+  const { validToken } = useAuth();
 
   useEffect(() => {
     fetchUpcomingHoliday();
@@ -40,7 +40,7 @@ const Holiday = ({navigation}) => {
   };
 
   // Render each upcoming holiday
-  const renderItem = ({item}) => (
+  const renderItem = ({ item }) => (
     <View style={styles.notificationCard}>
       <View style={styles.cardHeader}>
         <Calender
@@ -85,7 +85,7 @@ const Holiday = ({navigation}) => {
 
         {loading ? (
           <View
-            style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <ActivityIndicator size="small" color="#A63ED3" />
           </View>
         ) : holidays?.length === 0 ? (

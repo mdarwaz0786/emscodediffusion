@@ -1,4 +1,4 @@
-import {PermissionsAndroid} from "react-native";
+import { PermissionsAndroid } from "react-native";
 
 // Get location permission from user
 const requestLocationPermission = async () => {

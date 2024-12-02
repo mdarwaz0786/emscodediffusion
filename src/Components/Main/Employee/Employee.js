@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,12 +9,12 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import axios from "axios";
-import {API_BASE_URL} from "@env";
-import {useAuth} from "../../../Context/auth.context.js";
+import { API_BASE_URL } from "@env";
+import { useAuth } from "../../../Context/auth.context.js";
 import Icon from "react-native-vector-icons/Feather";
 
-const Employee = ({navigation}) => {
-  const {validToken} = useAuth();
+const Employee = ({ navigation }) => {
+  const { validToken } = useAuth();
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [visiblePopupId, setVisiblePopupId] = useState(null);
@@ -46,18 +46,18 @@ const Employee = ({navigation}) => {
   }, [validToken]);
 
   const navigateToAttendance = id => {
-    navigation.navigate("Attendance", {id});
+    navigation.navigate("Attendance", { id });
   };
 
   const navigateToSalary = id => {
-    navigation.navigate("Salary", {id});
+    navigation.navigate("Salary", { id });
   };
 
   const handleBackgroundPress = () => {
     setVisiblePopupId(null);
   };
 
-  const renderEmployeeItem = ({item}) => (
+  const renderEmployeeItem = ({ item }) => (
     <View style={styles.employeeCard}>
       <View style={styles.heading}>
         <TouchableOpacity
@@ -117,7 +117,7 @@ const Employee = ({navigation}) => {
         <View style={styles.container}>
           {loading ? (
             <View
-              style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+              style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
               <ActivityIndicator size="large" color="#A63ED3" />
             </View>
           ) : employees?.length === 0 ? (

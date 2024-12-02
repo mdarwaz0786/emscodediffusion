@@ -1,4 +1,4 @@
-import {PermissionsAndroid} from "react-native";
+import { PermissionsAndroid } from "react-native";
 
 // Request storage permissions from user
 const requestStoragePermission = async () => {

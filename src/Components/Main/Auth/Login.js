@@ -1,14 +1,14 @@
-import React, {useState} from "react";
-import {View, Text, TextInput, Button, Image, StyleSheet} from "react-native";
+import React, { useState } from "react";
+import { View, Text, TextInput, Button, Image, StyleSheet } from "react-native";
 import axios from "axios";
 import Toast from "react-native-toast-message";
-import {useAuth} from "../../../Context/auth.context.js";
-import {API_BASE_URL} from "@env";
+import { useAuth } from "../../../Context/auth.context.js";
+import { API_BASE_URL } from "@env";
 
 const Login = () => {
   const [employeeId, setEmployeeId] = useState("");
   const [password, setPassword] = useState("");
-  const {storeToken} = useAuth();
+  const { storeToken } = useAuth();
 
   // Ensure the employeeId starts with "EmpID" and the rest remains unchanged
   const transformedEmployeeId = `EmpID${employeeId.substring(5)}`;
@@ -26,14 +26,14 @@ const Login = () => {
         storeToken(response?.data?.token);
         setEmployeeId("");
         setPassword("");
-        Toast.show({type: "success", text1: response?.data?.message});
+        Toast.show({ type: "success", text1: response?.data?.message });
       }
     } catch (error) {
       console.error("Error while login:", error.message);
       const errorMessage =
         error?.response?.data?.message ||
         "An unexpected error occurred. Please try again.";
-      Toast.show({type: "error", text1: errorMessage});
+      Toast.show({ type: "error", text1: errorMessage });
     }
   };
 
