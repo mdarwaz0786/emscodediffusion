@@ -1,8 +1,8 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
+import {View, Text, StyleSheet, ScrollView, Image} from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 
-const AboutUsScreen = ({ navigation }) => {
+const AboutUsScreen = ({navigation}) => {
   return (
     <>
       {/* Header */}
@@ -27,7 +27,10 @@ const AboutUsScreen = ({ navigation }) => {
 
         <Text style={styles.subHeader}>Who We Are ?</Text>
         <Text style={styles.text}>
-          We are a passionate team of developers and designers dedicated to delivering high-quality web solutions tailored to your business needs. Our mission is to create impactful digital experiences that help businesses thrive in the online world.
+          We are a passionate team of developers and designers dedicated to
+          delivering high-quality web solutions tailored to your business needs.
+          Our mission is to create impactful digital experiences that help
+          businesses thrive in the online world.
         </Text>
 
         <Text style={styles.subHeader}>Our Values</Text>
@@ -49,16 +52,21 @@ const AboutUsScreen = ({ navigation }) => {
 
         <Text style={styles.subHeader}>Our Team</Text>
         <Text style={styles.text}>
-          Our talented team consists of skilled developers, creative designers, and strategic project managers, all working collaboratively to deliver the best results for your projects.
+          Our talented team consists of skilled developers, creative designers,
+          and strategic project managers, all working collaboratively to deliver
+          the best results for your projects.
         </Text>
 
         <Text style={styles.subHeader}>Our History</Text>
         <Text style={styles.text}>
-          Established in 2015, we have spent over a decade building a reputation for exceptional service and innovative solutions. From small startups to established enterprises, we've been a part of many success stories.
+          Established in 2015, we have spent over a decade building a reputation
+          for exceptional service and innovative solutions. From small startups
+          to established enterprises, we've been a part of many success stories.
         </Text>
 
         <Text style={styles.footer}>
-          Ready to transform your vision into reality? Let's build something amazing together!
+          Ready to transform your vision into reality? Let's build something
+          amazing together!
         </Text>
       </ScrollView>
     </>

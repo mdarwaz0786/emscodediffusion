@@ -1,11 +1,17 @@
-import React, { Suspense, lazy } from "react";
-import { createStackNavigator } from "@react-navigation/stack";
-import { ActivityIndicator, View } from "react-native";
+import React, {Suspense, lazy} from "react";
+import {createStackNavigator} from "@react-navigation/stack";
+import {ActivityIndicator, View} from "react-native";
 
 // Lazy load the screens
-const EmployeeScreen = lazy(() => import("../../../Screens/Employee/EmployeeScreen.js"));
-const SalaryScreen = lazy(() => import("../../../Screens/Salary/SalaryScreen.js"));
-const AttendanceScreen = lazy(() => import("../../../Screens/Attendance/AttendanceScreen.js"));
+const EmployeeScreen = lazy(() =>
+  import("../../../Screens/Employee/EmployeeScreen.js"),
+);
+const SalaryScreen = lazy(() =>
+  import("../../../Screens/Salary/SalaryScreen.js"),
+);
+const AttendanceScreen = lazy(() =>
+  import("../../../Screens/Attendance/AttendanceScreen.js"),
+);
 
 // Create a Stack Navigator
 const Stack = createStackNavigator();
@@ -14,12 +20,13 @@ const EmployeeStack = () => {
   return (
     <Suspense
       fallback={
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
           <ActivityIndicator size="large" color="#A63ED3" />
         </View>
-      }
-    >
-      <Stack.Navigator initialRouteName="Employee" screenOptions={{ headerShown: false }}>
+      }>
+      <Stack.Navigator
+        initialRouteName="Employee"
+        screenOptions={{headerShown: false}}>
         <Stack.Screen name="Employee" component={EmployeeScreen} />
         <Stack.Screen name="Attendance" component={AttendanceScreen} />
         <Stack.Screen name="Salary" component={SalaryScreen} />

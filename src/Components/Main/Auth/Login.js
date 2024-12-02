@@ -53,7 +53,6 @@ const Login = () => {
         </Text>
         <TextInput
           style={styles.input}
-          placeholder="Employee ID"
           value={employeeId}
           onChangeText={setEmployeeId}
           autoComplete="off"
@@ -66,7 +65,6 @@ const Login = () => {
         </Text>
         <TextInput
           style={styles.input}
-          placeholder="Password"
           secureTextEntry
           value={password}
           onChangeText={setPassword}
@@ -88,7 +86,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   logo: {
-    width: "50%",
+    width: "60%",
     resizeMode: "contain",
   },
   heading: {
@@ -96,7 +94,7 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     textAlign: "center",
     marginBottom: 10,
-    color: "#333",
+    color: "#000",
   },
   subheading: {
     fontSize: 14,
@@ -105,11 +103,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   inputContainer: {
-    marginBottom: 15,
+    marginBottom: 20,
   },
   label: {
-    fontSize: 15,
-    marginBottom: 5,
+    fontSize: 14,
+    marginBottom: 3,
     color: "#555",
   },
   required: {
@@ -122,6 +120,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 5,
     backgroundColor: "#fff",
+    fontSize: 13,
+    paddingLeft: 15,
   },
 });
 

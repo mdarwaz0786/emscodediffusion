@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import React, {useState, useEffect} from "react";
+import {View, Text, StyleSheet, TouchableOpacity, FlatList} from "react-native";
 import axios from "axios";
 import Icon from "react-native-vector-icons/Feather";
-import { API_BASE_URL } from "@env";
-import { useAuth } from "../../../Context/auth.context.js";
+import {API_BASE_URL} from "@env";
+import {useAuth} from "../../../Context/auth.context.js";
 import Calender from "react-native-vector-icons/MaterialCommunityIcons";
 import formatDate from "../../../Helper/formatDate.js";
-import { ActivityIndicator } from "react-native-paper";
+import {ActivityIndicator} from "react-native-paper";
 
-const Holiday = ({ navigation }) => {
+const Holiday = ({navigation}) => {
   const [holidays, setHolidays] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { validToken } = useAuth();
+  const {validToken} = useAuth();
 
   useEffect(() => {
     fetchUpcomingHoliday();
@@ -40,7 +40,7 @@ const Holiday = ({ navigation }) => {
   };
 
   // Render each upcoming holiday
-  const renderItem = ({ item }) => (
+  const renderItem = ({item}) => (
     <View style={styles.notificationCard}>
       <View style={styles.cardHeader}>
         <Calender
@@ -55,7 +55,8 @@ const Holiday = ({ navigation }) => {
         </View>
       </View>
       <Text style={styles.cardDescription}>
-        The office will be closed on {formatDate(item?.date)} for {item?.reason}.
+        The office will be closed on {formatDate(item?.date)} for {item?.reason}
+        .
       </Text>
     </View>
   );
@@ -83,8 +84,9 @@ const Holiday = ({ navigation }) => {
         <Text style={styles.pageTitle}>Upcoming holidays</Text>
 
         {loading ? (
-          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator size="large" color="#A63ED3" />
+          <View
+            style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+            <ActivityIndicator size="small" color="#A63ED3" />
           </View>
         ) : holidays?.length === 0 ? (
           <View style={styles.centeredView}>
@@ -124,7 +126,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: "center",
     color: "#333",
-    marginTop: 8
+    marginTop: 8,
   },
   addButton: {
     backgroundColor: "#A63ED3",

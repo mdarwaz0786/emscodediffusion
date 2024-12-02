@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import {
   View,
   Text,
@@ -13,12 +13,12 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import Toast from "react-native-toast-message";
-import { API_BASE_URL } from "@env";
+import {API_BASE_URL} from "@env";
 import axios from "axios";
-import { useAuth } from "../../../Context/auth.context.js";
+import {useAuth} from "../../../Context/auth.context.js";
 
-const Settings = ({ navigation }) => {
-  const { validToken } = useAuth();
+const Settings = ({navigation}) => {
+  const {validToken} = useAuth();
   const [office, setOffice] = useState([]);
   const [popupVisible, setPopupVisible] = useState(null);
   const [confirmationVisible, setConfirmationVisible] = useState(false);
@@ -63,12 +63,12 @@ const Settings = ({ navigation }) => {
             headers: {
               Authorization: validToken,
             },
-          }
+          },
         );
 
         if (response?.data?.success) {
           fetchOfficeLocation();
-          Toast.show({ type: "success", text1: "Deleted successfully" });
+          Toast.show({type: "success", text1: "Deleted successfully"});
         }
       } catch (error) {
         console.error("Error while deleting office location:", error.message);
@@ -86,7 +86,7 @@ const Settings = ({ navigation }) => {
   const renderOfficeCard = item => (
     <View style={styles.card} key={item?._id}>
       <View style={styles.cardHeader}>
-        {item?.logo && <Image source={{ uri: item?.logo }} style={styles.logo} />}
+        {item?.logo && <Image source={{uri: item?.logo}} style={styles.logo} />}
         <TouchableOpacity
           onPress={() =>
             setPopupVisible(popupVisible === item?._id ? null : item?._id)
@@ -114,7 +114,7 @@ const Settings = ({ navigation }) => {
             style={styles.popupOption}
             onPress={() => {
               setPopupVisible(null);
-              navigation.navigate("EditOffice", { id: item?._id });
+              navigation.navigate("EditOffice", {id: item?._id});
             }}>
             <Text style={styles.popupOptionText}>Edit</Text>
           </TouchableOpacity>
@@ -123,8 +123,7 @@ const Settings = ({ navigation }) => {
             onPress={() => {
               setOfficeToDelete(item?._id);
               setConfirmationVisible(true);
-            }}
-          >
+            }}>
             <Text style={styles.popupOptionText}>Delete</Text>
           </TouchableOpacity>
         </View>
@@ -156,16 +155,15 @@ const Settings = ({ navigation }) => {
         {/* Office Locations */}
         <Text style={styles.pageTitle}>Offices</Text>
         {loading ? (
-          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <View
+            style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
             <ActivityIndicator size="large" color="#A63ED3" />
           </View>
         ) : office?.length === 0 ? (
-          <Text style={{ textAlign: "center" }}>
-            Office not found.
-          </Text>
+          <Text style={{textAlign: "center"}}>Office not found.</Text>
         ) : (
           <ScrollView
-            contentContainerStyle={[styles.cardContainer, { flexGrow: 1 }]}
+            contentContainerStyle={[styles.cardContainer, {flexGrow: 1}]}
             keyboardShouldPersistTaps="handled">
             <Pressable onPress={() => setPopupVisible(null)}>
               {office?.map(item => renderOfficeCard(item))}
@@ -182,13 +180,13 @@ const Settings = ({ navigation }) => {
         onRequestClose={() => {
           setConfirmationVisible(false);
           setConfirmationText("");
-        }}
-      >
+        }}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Confirm Deletion</Text>
             <Text style={styles.modalText}>
-              Type <Text style={styles.modalHighlight}>"yes"</Text> to confirm the deletion.
+              Type <Text style={styles.modalHighlight}>"yes"</Text> to confirm
+              the deletion.
             </Text>
             <TextInput
               style={styles.modalInput}
@@ -198,7 +196,9 @@ const Settings = ({ navigation }) => {
               placeholderTextColor="#aaa"
             />
             <View style={styles.modalButtons}>
-              <TouchableOpacity style={styles.modalButton} onPress={handleDelete}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleDelete}>
                 <Text style={styles.modalButtonText}>Confirm</Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -207,8 +207,7 @@ const Settings = ({ navigation }) => {
                   setConfirmationVisible(false);
                   setPopupVisible(null);
                   setConfirmationText("");
-                }}
-              >
+                }}>
                 <Text style={styles.modalButtonText}>Cancel</Text>
               </TouchableOpacity>
             </View>
@@ -322,7 +321,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,

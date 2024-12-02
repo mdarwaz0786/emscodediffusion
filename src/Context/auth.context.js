@@ -1,12 +1,12 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {createContext, useContext, useEffect, useState} from "react";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
-import { API_BASE_URL } from "@env";
+import {API_BASE_URL} from "@env";
 
 export const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+export const AuthProvider = ({children}) => {
   const [token, setToken] = useState(null);
   const [team, setTeam] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -21,20 +21,22 @@ export const AuthProvider = ({ children }) => {
 
       const response = await axios.get(
         `${API_BASE_URL}/api/v1/team/loggedin-team`,
-        { headers: { Authorization: `Bearer ${serverToken}` } },
+        {headers: {Authorization: `Bearer ${serverToken}`}},
       );
 
       if (response?.data?.success) {
         setTeam(response?.data?.team);
-      } else {
-        Toast.show({ type: "error", text1: "Failed to fetch user details" });
+        await AsyncStorage.setItem(
+          "team",
+          JSON.stringify(response?.data?.team),
+        );
       }
     } catch (error) {
       console.error(
         "Error while storing token or fetching user details:",
         error.message,
       );
-      Toast.show({ type: "error", text1: "Login failed. Please try again." });
+      Toast.show({type: "error", text1: "Login failed. Please try again."});
     }
   };
 
@@ -43,7 +45,7 @@ export const AuthProvider = ({ children }) => {
       await AsyncStorage.removeItem("token");
       setToken(null);
       setTeam(null);
-      Toast.show({ type: "success", text1: "Logout successful" });
+      Toast.show({type: "success", text1: "Logout successful"});
     } catch (error) {
       console.error("Error while removing token:", error.message);
     }
@@ -56,16 +58,24 @@ export const AuthProvider = ({ children }) => {
 
       if (storedToken) {
         setToken(storedToken);
-        const response = await axios.get(
-          `${API_BASE_URL}/api/v1/team/loggedin-team`,
-          { headers: { Authorization: `Bearer ${storedToken}` } },
-        );
+        const cachedTeam = await AsyncStorage.getItem("team");
 
-        if (response?.data?.success) {
-          setTeam(response?.data?.team);
+        if (cachedTeam) {
+          setTeam(JSON.parse(cachedTeam));
+        } else {
+          const response = await axios.get(
+            `${API_BASE_URL}/api/v1/team/loggedin-team`,
+            {headers: {Authorization: `Bearer ${storedToken}`}},
+          );
+
+          if (response?.data?.success) {
+            setTeam(response?.data?.team);
+            await AsyncStorage.setItem(
+              "team",
+              JSON.stringify(response?.data?.team),
+            );
+          }
         }
-      } else {
-        Toast.show({ type: "error", text1: "Please log in to continue" });
       }
     } catch (error) {
       console.log("Error during initializing auth:", error.message);
@@ -74,7 +84,7 @@ export const AuthProvider = ({ children }) => {
           type: "error",
           text1: "Session expired. Please log in again.",
         });
-        await AsyncStorage.removeItem("token");
+        logOutTeam();
       }
     } finally {
       setIsLoading(false);
@@ -87,7 +97,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ storeToken, logOutTeam, isLoggedIn, team, isLoading, validToken }}>
+      value={{storeToken, logOutTeam, isLoggedIn, team, isLoading, validToken}}>
       {children}
     </AuthContext.Provider>
   );

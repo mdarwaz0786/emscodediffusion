@@ -1,8 +1,15 @@
 import React from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 
-const ContactUsScreen = ({ navigation }) => {
+const ContactUsScreen = ({navigation}) => {
   return (
     <>
       {/* Header */}
@@ -21,7 +28,11 @@ const ContactUsScreen = ({ navigation }) => {
           Have questions or want to start a project? We're here to help!
         </Text>
 
-        <TextInput style={styles.input} placeholder="Your Name" placeholderTextColor="#aaa" />
+        <TextInput
+          style={styles.input}
+          placeholder="Your Name"
+          placeholderTextColor="#aaa"
+        />
         <TextInput
           style={styles.input}
           placeholder="Your Email"
@@ -54,6 +65,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     alignItems: "center",
     padding: 20,
+    paddingTop: 15,
   },
   header: {
     flexDirection: "row",
@@ -79,7 +91,7 @@ const styles = StyleSheet.create({
   input: {
     width: "100%",
     backgroundColor: "#fff",
-    padding: 8,
+    padding: 5,
     paddingLeft: 16,
     borderRadius: 8,
     marginBottom: 15,
@@ -88,7 +100,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   textArea: {
-    height: 120,
+    height: 100,
     textAlignVertical: "top",
     paddingLeft: 16,
   },

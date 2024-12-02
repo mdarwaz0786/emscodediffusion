@@ -1,11 +1,11 @@
 import React from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
-import { useAuth } from "../../Context/auth.context.js";
+import {View, Text, ScrollView, StyleSheet} from "react-native";
+import {useAuth} from "../../Context/auth.context.js";
 import formatTimeToHoursMinutes from "../../Helper/formatTimeToHoursMinutes.js";
 import formatDate from "../../Helper/formatDate.js";
 
 const ProfileScreen = () => {
-  const { team } = useAuth();
+  const {team} = useAuth();
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -38,7 +38,7 @@ const ProfileScreen = () => {
   );
 };
 
-const DetailRow = ({ label, value }) => (
+const DetailRow = ({label, value}) => (
   <View style={styles.detailRow}>
     <Text style={styles.detailLabel}>{label}:</Text>
     <Text style={styles.detailValue}>{value || "Not available"}</Text>

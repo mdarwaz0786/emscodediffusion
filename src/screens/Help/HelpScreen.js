@@ -1,8 +1,8 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView, Linking } from "react-native";
+import {View, Text, StyleSheet, ScrollView, Linking} from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 
-const HelpScreen = ({ navigation }) => {
+const HelpScreen = ({navigation}) => {
   return (
     <>
       {/* Header */}
@@ -19,44 +19,52 @@ const HelpScreen = ({ navigation }) => {
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.subHeader}>FAQs</Text>
         <View style={styles.faqContainer}>
-          <Text style={styles.faqQuestion}>Q1: How do I get started with your services?</Text>
+          <Text style={styles.faqQuestion}>
+            Q1: How do I get started with your services?
+          </Text>
           <Text style={styles.faqAnswer}>
-            A1: Simply contact us via our website or email, and we’ll schedule a consultation to understand your requirements.
+            A1: Simply contact us via our website or email, and we’ll schedule a
+            consultation to understand your requirements.
           </Text>
 
-          <Text style={styles.faqQuestion}>Q2: What types of web development services do you offer?</Text>
+          <Text style={styles.faqQuestion}>
+            Q2: What types of web development services do you offer?
+          </Text>
           <Text style={styles.faqAnswer}>
-            A2: We specialize in custom web development, mobile-friendly design, e-commerce solutions, and SEO optimization.
+            A2: We specialize in custom web development, mobile-friendly design,
+            e-commerce solutions, and SEO optimization.
           </Text>
 
-          <Text style={styles.faqQuestion}>Q3: How can I contact customer support?</Text>
+          <Text style={styles.faqQuestion}>
+            Q3: How can I contact customer support?
+          </Text>
           <Text style={styles.faqAnswer}>
-            A3: You can reach out to our support team via email at info@codediffusion.in or call us at +91-7827114607.
+            A3: You can reach out to our support team via email at
+            info@codediffusion.in or call us at +91-7827114607.
           </Text>
         </View>
 
         <Text style={styles.subHeader}>Contact Support</Text>
         <Text style={styles.text}>
-          For any inquiries or technical issues, please don't hesitate to get in touch with our support team. We're here to help!
+          For any inquiries or technical issues, please don't hesitate to get in
+          touch with our support team. We're here to help!
         </Text>
-        <Text style={styles.supportDetails}>
-          Email: info@codediffusion.in
-        </Text>
-        <Text style={styles.supportDetails}>
-          Phone: +91-7827114607
-        </Text>
+        <Text style={styles.supportDetails}>Email: info@codediffusion.in</Text>
+        <Text style={styles.supportDetails}>Phone: +91-7827114607</Text>
 
         <View style={styles.linkContainer}>
           <Text style={styles.subHeader}>Useful Links</Text>
-          <Text style={styles.link}
-            onPress={() => Linking.openURL("https://www.codediffusion.in")}
-          >
-            👉 Visit our [Website] (https://www.codediffusion.in) for more information.
+          <Text
+            style={styles.link}
+            onPress={() => Linking.openURL("https://www.codediffusion.in")}>
+            👉 Visit our [Website] (https://www.codediffusion.in) for more
+            information.
           </Text>
         </View>
 
         <Text style={styles.footer}>
-          We're committed to providing top-notch support. Thank you for choosing us!
+          We're committed to providing top-notch support. Thank you for choosing
+          us!
         </Text>
       </ScrollView>
     </>

@@ -1,12 +1,17 @@
-import React, { useEffect } from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import React, {useEffect} from "react";
+import {NavigationContainer} from "@react-navigation/native";
 import SplashScreen from "react-native-splash-screen";
 import DrawerNavigator from "./src/Navigation/Drawer/DrawerNavigator.js";
+import {useAuth} from "./src/Context/auth.context.js";
 
 const App = () => {
+  const {isLoading} = useAuth();
+
   useEffect(() => {
-    SplashScreen.hide();
-  }, []);
+    if (!isLoading) {
+      SplashScreen.hide();
+    }
+  }, [isLoading]);
 
   return (
     <>

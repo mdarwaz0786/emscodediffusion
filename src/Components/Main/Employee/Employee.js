@@ -1,12 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, StyleSheet, TouchableWithoutFeedback } from 'react-native';
-import axios from 'axios';
-import { API_BASE_URL } from '@env';
-import { useAuth } from '../../../Context/auth.context.js';
-import Icon from 'react-native-vector-icons/Feather';
+import React, {useState, useEffect} from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  ActivityIndicator,
+  StyleSheet,
+  TouchableWithoutFeedback,
+} from "react-native";
+import axios from "axios";
+import {API_BASE_URL} from "@env";
+import {useAuth} from "../../../Context/auth.context.js";
+import Icon from "react-native-vector-icons/Feather";
 
-const Employee = ({ navigation }) => {
-  const { validToken } = useAuth();
+const Employee = ({navigation}) => {
+  const {validToken} = useAuth();
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [visiblePopupId, setVisiblePopupId] = useState(null);
@@ -37,33 +45,35 @@ const Employee = ({ navigation }) => {
     }
   }, [validToken]);
 
-  const navigateToAttendance = (id) => {
-    navigation.navigate('Attendance', { id });
+  const navigateToAttendance = id => {
+    navigation.navigate("Attendance", {id});
   };
 
-  const navigateToSalary = (id) => {
-    navigation.navigate('Salary', { id });
+  const navigateToSalary = id => {
+    navigation.navigate("Salary", {id});
   };
 
   const handleBackgroundPress = () => {
     setVisiblePopupId(null);
   };
 
-  const renderEmployeeItem = ({ item }) => (
+  const renderEmployeeItem = ({item}) => (
     <View style={styles.employeeCard}>
       <View style={styles.heading}>
         <TouchableOpacity
           style={styles.nameRoleContainer}
-          onPress={() => setVisiblePopupId(visiblePopupId === item?._id ? null : item?._id)}
-        >
+          onPress={() =>
+            setVisiblePopupId(visiblePopupId === item?._id ? null : item?._id)
+          }>
           <Text style={styles.employeeName}>{item?.name}</Text>
           <Text style={styles.employeeRole}>{item?.designation?.name}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.optionsButton}
-          onPress={() => setVisiblePopupId(visiblePopupId === item?._id ? null : item?._id)}
-        >
-          <Icon name="more-vertical" size={20} color="#000" />
+          onPress={() =>
+            setVisiblePopupId(visiblePopupId === item?._id ? null : item?._id)
+          }>
+          <Icon name="more-vertical" size={20} color="#555" />
         </TouchableOpacity>
       </View>
 
@@ -74,8 +84,7 @@ const Employee = ({ navigation }) => {
               setVisiblePopupId(null);
               navigateToAttendance(item?._id);
             }}
-            style={styles.popupOption}
-          >
+            style={styles.popupOption}>
             <Text style={styles.popupOptionText}>Attendance</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -83,8 +92,7 @@ const Employee = ({ navigation }) => {
               setVisiblePopupId(null);
               navigateToSalary(item?._id);
             }}
-            style={styles.popupOption}
-          >
+            style={styles.popupOption}>
             <Text style={styles.popupOptionText}>Salary</Text>
           </TouchableOpacity>
         </View>
@@ -96,14 +104,20 @@ const Employee = ({ navigation }) => {
     <>
       {/* Header */}
       <View style={styles.header}>
-        <Icon name="arrow-left" size={20} color="#000" onPress={() => navigation.goBack()} />
+        <Icon
+          name="arrow-left"
+          size={20}
+          color="#000"
+          onPress={() => navigation.goBack()}
+        />
         <Text style={styles.headerTitle}>Employee</Text>
       </View>
 
       <TouchableWithoutFeedback onPress={handleBackgroundPress}>
         <View style={styles.container}>
           {loading ? (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <View
+              style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
               <ActivityIndicator size="large" color="#A63ED3" />
             </View>
           ) : employees?.length === 0 ? (
@@ -114,7 +128,7 @@ const Employee = ({ navigation }) => {
             <FlatList
               data={employees}
               renderItem={renderEmployeeItem}
-              keyExtractor={(item) => item?._id}
+              keyExtractor={item => item?._id}
             />
           )}
         </View>
@@ -130,55 +144,55 @@ const styles = StyleSheet.create({
     paddingTop: 2,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
     columnGap: 100,
     padding: 12,
     marginBottom: 10,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     elevation: 1,
   },
   headerTitle: {
     fontSize: 16,
-    fontWeight: '400',
-    color: '#000',
+    fontWeight: "400",
+    color: "#000",
   },
   employeeCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     padding: 10,
     marginBottom: 12,
     borderRadius: 8,
     zIndex: 1,
   },
   heading: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   nameRoleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
   },
   employeeName: {
     fontSize: 14,
-    fontWeight: '400',
-    color: '#555',
+    fontWeight: "400",
+    color: "#555",
     marginRight: 10,
   },
   employeeRole: {
     fontSize: 13,
-    color: '#888',
+    color: "#888",
   },
   optionsButton: {
     padding: 5,
   },
   popupMenu: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 5,
     elevation: 5,
-    position: 'absolute',
+    position: "absolute",
     right: 0,
     top: 0,
     right: 60,
@@ -193,16 +207,16 @@ const styles = StyleSheet.create({
   },
   popupOptionText: {
     fontSize: 14,
-    color: '#000',
+    color: "#333",
   },
   centeredView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   noHolidaysText: {
     fontSize: 16,
-    color: '#888',
+    color: "#888",
   },
 });
 

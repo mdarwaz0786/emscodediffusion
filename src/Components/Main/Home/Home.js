@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
   View,
   Text,
@@ -6,13 +6,14 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
+  ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { useAuth } from "../../../Context/auth.context.js";
+import {useAuth} from "../../../Context/auth.context.js";
 import axios from "axios";
 import Toast from "react-native-toast-message";
-import { API_BASE_URL } from "@env";
-import { CommonActions, useNavigation } from "@react-navigation/native";
+import {API_BASE_URL} from "@env";
+import {CommonActions, useNavigation} from "@react-navigation/native";
 import formatTimeWithAmPm from "../../../Helper/formatTimeWithAmPm.js";
 import formatTimeToHoursMinutes from "../../../Helper/formatTimeToHoursMinutes.js";
 import getGreeting from "../../../Helper/generateGreeting.js";
@@ -23,7 +24,7 @@ import formatDate from "../../../Helper/formatDate.js";
 
 const Home = () => {
   const navigation = useNavigation();
-  const { team, validToken, isLoading } = useAuth();
+  const {team, validToken, isLoading} = useAuth();
   const [attendance, setAttendance] = useState([]);
   const [holidays, setHolidays] = useState([]);
   const [monthlyStatistic, setMonthlyStatistic] = useState("");
@@ -34,6 +35,7 @@ const Home = () => {
     new Date().toISOString().split("T")[0],
   );
   const [employeeId, setEmployeeId] = useState(team?._id);
+  const [loading, setLoading] = useState(true);
 
   // Update employeeId, currentMonth and currentDate when the component mounts or team changes
   useEffect(() => {
@@ -56,14 +58,14 @@ const Home = () => {
         method,
         url: `${API_BASE_URL}/api/v1/attendance/${endpoint}`,
         data,
-        headers: { Authorization: validToken },
+        headers: {Authorization: validToken},
       };
 
       const response = await axios(axiosConfig);
 
       if (response.data.success) {
         fetchAttendance();
-        Toast.show({ type: "success", text1: successMessage });
+        Toast.show({type: "success", text1: successMessage});
       }
     } catch (error) {
       Toast.show({
@@ -79,11 +81,11 @@ const Home = () => {
       const position = await getUserLocation();
 
       if (!position) {
-        Toast.show({ type: "error", text1: "Please enable location" });
+        Toast.show({type: "error", text1: "Please enable location"});
         return;
       }
 
-      const { latitude, longitude } = position;
+      const {latitude, longitude} = position;
 
       // Ensure the function waits for the result of isWithinOfficeLocation
       const isWithinOffice = await isWithinOfficeLocation(
@@ -100,12 +102,12 @@ const Home = () => {
         return;
       }
 
-      const { time, date, employeeId } = getAttendanceData(team);
+      const {time, date, employeeId} = getAttendanceData(team);
 
       const requestData =
         actionType === "punchIn"
-          ? { employee: employeeId, attendanceDate: date, punchInTime: time }
-          : { employee: employeeId, attendanceDate: date, punchOutTime: time };
+          ? {employee: employeeId, attendanceDate: date, punchInTime: time}
+          : {employee: employeeId, attendanceDate: date, punchOutTime: time};
 
       const apiMethod = actionType === "punchIn" ? "post" : "put";
       const apiEndpoint =
@@ -123,20 +125,23 @@ const Home = () => {
         validToken,
       );
     } catch (error) {
-      Toast.show({ type: "error", text1: error.message });
+      Toast.show({type: "error", text1: error.message});
     }
   };
 
   // Handle marked attendance
   const handleMarkedAttendance = () => {
+    fetchAttendance();
     if (attendance[0]?.punchOut && attendance[0]?.punchIn) {
-      Toast.show({ type: "success", text1: "Attendance is marked for today." });
+      Toast.show({type: "success", text1: "Attendance is marked for today."});
     }
   };
 
   // Get current date attendance for logged in employee
   const fetchAttendance = async () => {
     try {
+      setLoading(true);
+
       const params = {};
 
       if (currentDate) {
@@ -162,6 +167,8 @@ const Home = () => {
       }
     } catch (error) {
       console.error("Error while fetching attendance:", error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -231,12 +238,12 @@ const Home = () => {
   // Navigate to attendance detail screen
   const navigateToAttendance = () => {
     const routes = [
-      { name: "BottomTabNavigator" }, // Base route
+      {name: "BottomTabNavigator"}, // Base route
       {
         name: "EmployeeStack",
         params: {
           screen: "Attendance",
-          params: { id: employeeId },
+          params: {id: employeeId},
         },
       },
     ];
@@ -270,29 +277,36 @@ const Home = () => {
               <Text style={styles.positionText}>{team?.role?.name}</Text>
             </View>
           </View>
-          <View style={styles.punchButtons}>
-            {!attendance[0]?.punchIn && !attendance[0]?.punchOut && (
-              <TouchableOpacity
-                style={[styles.punchButton, styles.punchInButton]}
-                onPress={() => handlePunchAction("punchIn")}>
-                <Text style={styles.punchButtonText}>Punch In</Text>
-              </TouchableOpacity>
-            )}
-            {!attendance[0]?.punchOut && attendance[0]?.punchIn && (
-              <TouchableOpacity
-                style={[styles.punchButton, styles.punchOutButton]}
-                onPress={() => handlePunchAction("punchOut")}>
-                <Text style={styles.punchButtonText}>Punch Out</Text>
-              </TouchableOpacity>
-            )}
-            {attendance[0]?.punchOut && attendance[0]?.punchOut && (
-              <TouchableOpacity
-                style={[styles.punchButton, styles.markedButton]}
-                onPress={handleMarkedAttendance}>
-                <Text style={styles.punchButtonText}>✓ Marked</Text>
-              </TouchableOpacity>
-            )}
-          </View>
+          {loading ? (
+            <View
+              style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+              <ActivityIndicator size="small" color="#A63ED3" />
+            </View>
+          ) : (
+            <View style={styles.punchButtons}>
+              {!attendance[0]?.punchIn && !attendance[0]?.punchOut && (
+                <TouchableOpacity
+                  style={[styles.punchButton, styles.punchInButton]}
+                  onPress={() => handlePunchAction("punchIn")}>
+                  <Text style={styles.punchButtonText}>Punch In</Text>
+                </TouchableOpacity>
+              )}
+              {!attendance[0]?.punchOut && attendance[0]?.punchIn && (
+                <TouchableOpacity
+                  style={[styles.punchButton, styles.punchOutButton]}
+                  onPress={() => handlePunchAction("punchOut")}>
+                  <Text style={styles.punchButtonText}>Punch Out</Text>
+                </TouchableOpacity>
+              )}
+              {attendance[0]?.punchOut && attendance[0]?.punchOut && (
+                <TouchableOpacity
+                  style={[styles.punchButton, styles.markedButton]}
+                  onPress={handleMarkedAttendance}>
+                  <Text style={styles.punchButtonText}>✓ Marked</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
         </View>
       </View>
 
@@ -309,20 +323,30 @@ const Home = () => {
         {/* Today's Activity */}
         <View style={styles.activitySection}>
           <Text style={styles.sectionTitle}>Today’s Activity</Text>
-          <Text style={{ marginTop: -3 }}>
-            <Text style={{ color: attendance[0]?.punchIn ? "green" : "red" }}>
-              {attendance[0]?.punchIn ? "✓" : "✗"}
-            </Text>{" "}
-            {formatTimeWithAmPm(attendance[0]?.punchInTime)}
-            {attendance[0]?.punchIn ? " - Punch In" : " Punch In"}
-          </Text>
-          <Text>
-            <Text style={{ color: attendance[0]?.punchOut ? "green" : "red" }}>
-              {attendance[0]?.punchOut ? "✓" : "✗"}
-            </Text>{" "}
-            {formatTimeWithAmPm(attendance[0]?.punchOutTime)}
-            {attendance[0]?.punchOut ? " - Punch Out" : " Punch Out"}
-          </Text>
+          {loading ? (
+            <View
+              style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+              <ActivityIndicator size="small" color="#A63ED3" />
+            </View>
+          ) : (
+            <>
+              <Text style={{marginTop: -3}}>
+                <Text style={{color: attendance[0]?.punchIn ? "green" : "red"}}>
+                  {attendance[0]?.punchIn ? "✓" : "✗"}
+                </Text>{" "}
+                {formatTimeWithAmPm(attendance[0]?.punchInTime)}
+                {attendance[0]?.punchIn ? " - Punch In" : " Punch In"}
+              </Text>
+              <Text>
+                <Text
+                  style={{color: attendance[0]?.punchOut ? "green" : "red"}}>
+                  {attendance[0]?.punchOut ? "✓" : "✗"}
+                </Text>{" "}
+                {formatTimeWithAmPm(attendance[0]?.punchOutTime)}
+                {attendance[0]?.punchOut ? " - Punch Out" : " Punch Out"}
+              </Text>
+            </>
+          )}
         </View>
 
         {/* Quick Actions */}
@@ -342,7 +366,7 @@ const Home = () => {
         {/* Today's Summary */}
         <View style={styles.summary}>
           <Text style={styles.summaryTitle}>Today’s Summary</Text>
-          <Text style={{ marginTop: -1 }}>
+          <Text style={{marginTop: -1}}>
             Total Hours Worked:{" "}
             {formatTimeToHoursMinutes(attendance[0]?.hoursWorked)}
           </Text>
@@ -367,7 +391,7 @@ const Home = () => {
             </View>
             <View style={styles.statBox}>
               <Text style={styles.statNumber}>
-                {monthlyStatistic.employeeLeaveDays}
+                {monthlyStatistic?.employeeLeaveDays}
               </Text>
               <Text style={styles.statLabel}>Leaves</Text>
             </View>
@@ -395,15 +419,16 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    padding: 20,
+    padding: 10,
     backgroundColor: "#f3f4f6",
   },
   cardContainer: {
     backgroundColor: "#fff",
     padding: 15,
+    paddingHorizontal: 12,
+    marginHorizontal: 10,
     borderRadius: 12,
     marginTop: 15,
-    marginHorizontal: 18,
   },
   header: {
     flexDirection: "row",
@@ -454,8 +479,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   greetingContainer: {
-    marginBottom: 8,
-    marginTop: -12,
+    marginBottom: 10,
   },
   greetingText: {
     fontSize: 14.5,

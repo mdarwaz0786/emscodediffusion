@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
   View,
   StyleSheet,
@@ -10,13 +10,13 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import Toast from "react-native-toast-message";
-import { API_BASE_URL } from "@env";
+import {API_BASE_URL} from "@env";
 import axios from "axios";
-import { launchImageLibrary } from "react-native-image-picker";
-import { useAuth } from "../../../Context/auth.context.js";
+import {launchImageLibrary} from "react-native-image-picker";
+import {useAuth} from "../../../Context/auth.context.js";
 import getUserLocation from "../Home/utils/getUerLocation.js";
 
-const EditOffice = ({ navigation, route }) => {
+const EditOffice = ({navigation, route}) => {
   const id = route?.params?.id;
   const [name, setName] = useState("");
   const [logo, setLogo] = useState(null);
@@ -27,21 +27,21 @@ const EditOffice = ({ navigation, route }) => {
   const [addressLine1, setAddressLine1] = useState("");
   const [addressLine2, setAddressLine2] = useState("");
   const [addressLine3, setAddressLine3] = useState("");
-  const { validToken } = useAuth();
+  const {validToken} = useAuth();
 
   async function fetchLatLong() {
     const position = await getUserLocation();
 
     if (!position) {
-      Toast.show({ type: "error", text1: "Please enable location" });
+      Toast.show({type: "error", text1: "Please enable location"});
       return;
     }
 
-    const { latitude, longitude } = position;
+    const {latitude, longitude} = position;
 
     setLatitude(String(latitude));
     setLongitude(String(longitude));
-  };
+  }
 
   const selectLogo = () => {
     launchImageLibrary(
@@ -51,9 +51,9 @@ const EditOffice = ({ navigation, route }) => {
       },
       response => {
         if (response.didCancel) {
-          Toast.show({ type: "info", text1: "Image selection canceled" });
+          Toast.show({type: "info", text1: "Image selection canceled"});
         } else if (response.errorCode) {
-          Toast.show({ type: "error", text1: "Image selection error" });
+          Toast.show({type: "error", text1: "Image selection error"});
         } else {
           setLogo(response.assets[0]);
         }
@@ -136,7 +136,7 @@ const EditOffice = ({ navigation, route }) => {
         setAddressLine1("");
         setAddressLine2("");
         setAddressLine3("");
-        Toast.show({ type: "success", text1: "Submitted successfully" });
+        Toast.show({type: "success", text1: "Submitted successfully"});
         navigation.goBack();
       }
     } catch (error) {
@@ -166,9 +166,9 @@ const EditOffice = ({ navigation, route }) => {
 
       <ScrollView>
         <View style={styles.container}>
-          <View style={{ marginBottom: 0 }}>
-            <Text style={{ marginBottom: 5, color: "#555" }}>
-              Company Name <Text style={{ color: "red" }}>*</Text>
+          <View style={{marginBottom: 0}}>
+            <Text style={{marginBottom: 5, color: "#555"}}>
+              Company Name <Text style={{color: "red"}}>*</Text>
             </Text>
             <TextInput
               value={name}
@@ -177,20 +177,23 @@ const EditOffice = ({ navigation, route }) => {
             />
           </View>
 
-          <View style={{ marginBottom: 0 }}>
-            <Text style={{ marginBottom: 5, color: "#555" }}>Upload Logo</Text>
+          <View style={{marginBottom: 0}}>
+            <Text style={{marginBottom: 5, color: "#555"}}>Upload Logo</Text>
             <TouchableOpacity onPress={selectLogo} style={styles.logoButton}>
               <Text style={styles.logoButtonText}></Text>
             </TouchableOpacity>
           </View>
 
           {logo && (
-            <Image source={{ uri: logo.uri || logo }} style={styles.logoPreview} />
+            <Image
+              source={{uri: logo.uri || logo}}
+              style={styles.logoPreview}
+            />
           )}
 
-          <View style={{ marginBottom: 0 }}>
-            <Text style={{ marginBottom: 5, color: "#555" }}>
-              Email Id <Text style={{ color: "red" }}>*</Text>
+          <View style={{marginBottom: 0}}>
+            <Text style={{marginBottom: 5, color: "#555"}}>
+              Email Id <Text style={{color: "red"}}>*</Text>
             </Text>
             <TextInput
               value={email}
@@ -199,9 +202,9 @@ const EditOffice = ({ navigation, route }) => {
             />
           </View>
 
-          <View style={{ marginBottom: 0 }}>
-            <Text style={{ marginBottom: 5, color: "#555" }}>
-              Contact Number <Text style={{ color: "red" }}>*</Text>
+          <View style={{marginBottom: 0}}>
+            <Text style={{marginBottom: 5, color: "#555"}}>
+              Contact Number <Text style={{color: "red"}}>*</Text>
             </Text>
             <TextInput
               value={contact}
@@ -210,9 +213,9 @@ const EditOffice = ({ navigation, route }) => {
             />
           </View>
 
-          <View style={{ marginBottom: 0 }}>
-            <Text style={{ marginBottom: 5, color: "#555" }}>
-              Latitude <Text style={{ color: "red" }}>*</Text>
+          <View style={{marginBottom: 0}}>
+            <Text style={{marginBottom: 5, color: "#555"}}>
+              Latitude <Text style={{color: "red"}}>*</Text>
             </Text>
             <TextInput
               value={latitude}
@@ -221,9 +224,9 @@ const EditOffice = ({ navigation, route }) => {
             />
           </View>
 
-          <View style={{ marginBottom: 0 }}>
-            <Text style={{ marginBottom: 5, color: "#555" }}>
-              Longitude <Text style={{ color: "red" }}>*</Text>
+          <View style={{marginBottom: 0}}>
+            <Text style={{marginBottom: 5, color: "#555"}}>
+              Longitude <Text style={{color: "red"}}>*</Text>
             </Text>
             <TextInput
               value={longitude}
@@ -232,9 +235,9 @@ const EditOffice = ({ navigation, route }) => {
             />
           </View>
 
-          <View style={{ marginBottom: 0 }}>
-            <Text style={{ marginBottom: 5, color: "#555" }}>
-              Address Line 1 <Text style={{ color: "red" }}>*</Text>
+          <View style={{marginBottom: 0}}>
+            <Text style={{marginBottom: 5, color: "#555"}}>
+              Address Line 1 <Text style={{color: "red"}}>*</Text>
             </Text>
             <TextInput
               value={addressLine1}
@@ -243,8 +246,8 @@ const EditOffice = ({ navigation, route }) => {
             />
           </View>
 
-          <View style={{ marginBottom: 0 }}>
-            <Text style={{ marginBottom: 5, color: "#555" }}>Address Line 2</Text>
+          <View style={{marginBottom: 0}}>
+            <Text style={{marginBottom: 5, color: "#555"}}>Address Line 2</Text>
             <TextInput
               value={addressLine2}
               onChangeText={setAddressLine2}
@@ -252,8 +255,8 @@ const EditOffice = ({ navigation, route }) => {
             />
           </View>
 
-          <View style={{ marginBottom: 0 }}>
-            <Text style={{ marginBottom: 5, color: "#555" }}>Address Line 3</Text>
+          <View style={{marginBottom: 0}}>
+            <Text style={{marginBottom: 5, color: "#555"}}>Address Line 3</Text>
             <TextInput
               value={addressLine3}
               onChangeText={setAddressLine3}
@@ -261,7 +264,9 @@ const EditOffice = ({ navigation, route }) => {
             />
           </View>
 
-          <TouchableOpacity style={styles.submitButton} onPress={() => handleUpdate(id)}>
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={() => handleUpdate(id)}>
             <Text style={styles.submitButtonText}>Submit</Text>
           </TouchableOpacity>
         </View>

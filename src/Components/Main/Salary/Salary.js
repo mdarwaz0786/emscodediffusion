@@ -1,28 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
   View,
   Text,
   StyleSheet,
-  Button,
   Alert,
   ScrollView,
   Image,
-  Pressable,
+  TouchableOpacity,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
-import { Picker } from "@react-native-picker/picker";
+import {Picker} from "@react-native-picker/picker";
 import RNHTMLtoPDF from "react-native-html-to-pdf";
 import RNFetchBlob from "rn-fetch-blob";
 import requestStoragePermission from "./utils/requestStoragePermission.js";
-import { useAuth } from "../../../Context/auth.context.js";
-import { useNavigation } from "@react-navigation/native";
+import {useAuth} from "../../../Context/auth.context.js";
+import {useNavigation} from "@react-navigation/native";
 import axios from "axios";
-import { API_BASE_URL } from "@env";
+import {API_BASE_URL} from "@env";
 import getMonthName from "./utils/getMonthName.js";
 
-const SalarySlip = ({ route }) => {
+const SalarySlip = ({route}) => {
   const id = route?.params?.id;
-  const { validToken, isLoading } = useAuth();
+  const {validToken, isLoading} = useAuth();
   const [monthlySalary, setMonthlySalary] = useState("");
   const [employee, setEmployee] = useState("");
   const currentYear = new Date().getFullYear();
@@ -270,12 +269,15 @@ const SalarySlip = ({ route }) => {
       <!-- Employee Information -->
       <div class="employeeInfo">
         <div class="salaryMonth">${getMonthName(month)} ${year}</div>
-        <div class="employeeDetail"><span class="bold">Employee Name:</span>  ${employee?.name
-      }</div>
-        <div class="employeeDetail"><span class="bold">Designation:</span> ${employee?.designation?.name
-      }</div>
-        <div class="employeeDetail"><span class="bold">Employee ID:</span> ${employee?.employeeId
-      }</div>
+        <div class="employeeDetail"><span class="bold">Employee Name:</span>  ${
+          employee?.name
+        }</div>
+        <div class="employeeDetail"><span class="bold">Designation:</span> ${
+          employee?.designation?.name
+        }</div>
+        <div class="employeeDetail"><span class="bold">Employee ID:</span> ${
+          employee?.employeeId
+        }</div>
         <div class="employeeDetail"><span class="bold">Department:</span> IT</div>
         <div class="employeeDetail"><span class="bold">Bank Account:</span> XXXX-XXXX-1234</div>
       </div>
@@ -328,16 +330,19 @@ const SalarySlip = ({ route }) => {
 
     let options = {
       html: html,
-      fileName: `Salary-${getMonthName(month)?.slice(0, 3)}-${year}-${employee?.name?.split(" ", 1)[0]
-        }`,
+      fileName: `Salary-${getMonthName(month)?.slice(0, 3)}-${year}-${
+        employee?.name?.split(" ", 1)[0]
+      }`,
       directory: "Downloads", // Ensure this is set to 'Downloads'
     };
 
     try {
       const file = await RNHTMLtoPDF.convert(options);
-      const newPath = await `${RNFetchBlob.fs.dirs.DownloadDir
-        }/Salary-${getMonthName(month)?.slice(0, 3)}-${year}-${employee?.name?.split(" ", 1)[0]
-        }.pdf`; // Set the new path
+      const newPath = await `${
+        RNFetchBlob.fs.dirs.DownloadDir
+      }/Salary-${getMonthName(month)?.slice(0, 3)}-${year}-${
+        employee?.name?.split(" ", 1)[0]
+      }.pdf`; // Set the new path
       await RNFetchBlob.fs.mv(file.filePath, newPath); // Move the file to the new path
       Alert.alert("PDF Generated", `File saved to: ${newPath}`);
       console.log("PDF saved successfully at:", newPath);
@@ -358,9 +363,9 @@ const SalarySlip = ({ route }) => {
           onPress={() => navigation.goBack()}
         />
         <Text style={styles.headerTitle}>Salary</Text>
-        <Pressable style={styles.buttonReset} onPress={resetFilters}>
+        <TouchableOpacity style={styles.buttonReset} onPress={resetFilters}>
           <Text style={styles.buttonResetText}>Reset Filter</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
 
       {/* Filter Section */}
@@ -372,7 +377,7 @@ const SalarySlip = ({ route }) => {
               selectedValue={year}
               onValueChange={itemValue => setYear(itemValue)}
               style={styles.picker}>
-              {Array.from({ length: 5 }, (_, index) => {
+              {Array.from({length: 5}, (_, index) => {
                 const yearOption = currentYear - index;
                 return (
                   <Picker.Item
@@ -392,7 +397,7 @@ const SalarySlip = ({ route }) => {
               selectedValue={month}
               onValueChange={itemValue => setMonth(itemValue)}
               style={styles.picker}>
-              {Array.from({ length: 12 }, (_, index) => (
+              {Array.from({length: 12}, (_, index) => (
                 <Picker.Item
                   key={index}
                   label={new Date(0, index).toLocaleString("default", {
@@ -409,13 +414,13 @@ const SalarySlip = ({ route }) => {
 
       {/* Employee */}
       <View style={styles.headerContainer}>
-        <Text style={{ fontSize: 15, fontWeight: "400", color: "#555" }}>
+        <Text style={{fontSize: 15, fontWeight: "400", color: "#555"}}>
           {employee?.name}
         </Text>
-        <Pressable
+        <TouchableOpacity
           onPress={generatePDF}
           style={{
-            backgroundColor: "#4CAF50",
+            backgroundColor: "#007bff",
             paddingVertical: 2,
             paddingHorizontal: 7,
             borderRadius: 5,
@@ -430,7 +435,7 @@ const SalarySlip = ({ route }) => {
             }}>
             Download
           </Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
