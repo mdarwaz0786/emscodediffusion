@@ -59,7 +59,7 @@ const NotificationScreen = () => {
         <Calender
           name="calendar"
           size={22}
-          color="#A63ED3"
+          color="#ffb300"
           style={styles.icon}
         />
         <View style={styles.cardContent}>
@@ -78,7 +78,7 @@ const NotificationScreen = () => {
       <Text style={styles.title}>Notifications</Text>
       {loading && !refreshing ? (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-          <ActivityIndicator size="large" color="#A63ED3" />
+          <ActivityIndicator size="large" color="#ffb300" />
         </View>
       ) : holidays?.length === 0 ? (
         <View style={styles.centeredView}>

@@ -1,7 +1,7 @@
-import React, {Suspense, lazy} from "react";
-import {ActivityIndicator, View} from "react-native";
-import {createDrawerNavigator} from "@react-navigation/drawer";
-import {useAuth} from "../../Context/auth.context.js";
+import React, { Suspense, lazy } from "react";
+import { ActivityIndicator, View } from "react-native";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import { useAuth } from "../../Context/auth.context.js";
 import BottomTabNavigator from "../BottomTab/BottomTabNavigator.js";
 import LoginScreen from "../../Screens/Auth/LoginScreen.js";
 
@@ -28,13 +28,13 @@ const SettingsStack = lazy(() =>
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {
-  const {isLoggedIn} = useAuth();
+  const { isLoggedIn } = useAuth();
 
   return (
     <Suspense
       fallback={
-        <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
-          <ActivityIndicator size="large" color="#A63ED3" />
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color="#ffb300" />
         </View>
       }>
       <Drawer.Navigator

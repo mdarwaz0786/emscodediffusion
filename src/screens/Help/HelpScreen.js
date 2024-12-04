@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView, Linking } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Linking, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 
 const HelpScreen = ({ navigation }) => {

@@ -1,6 +1,6 @@
-import React, {Suspense, lazy} from "react";
-import {createStackNavigator} from "@react-navigation/stack";
-import {ActivityIndicator, View} from "react-native";
+import React, { Suspense, lazy } from "react";
+import { createStackNavigator } from "@react-navigation/stack";
+import { ActivityIndicator, View } from "react-native";
 
 // Lazy load the screens
 const SettingsScreen = lazy(() =>
@@ -20,13 +20,13 @@ const SettingsStack = () => {
   return (
     <Suspense
       fallback={
-        <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
-          <ActivityIndicator size="large" color="#A63ED3" />
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color="#ffb300" />
         </View>
       }>
       <Stack.Navigator
         initialRouteName="Settings"
-        screenOptions={{headerShown: false}}>
+        screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Settings" component={SettingsScreen} />
         <Stack.Screen name="AddOffice" component={AddOfficeScreen} />
         <Stack.Screen name="EditOffice" component={EditOfficeScreen} />

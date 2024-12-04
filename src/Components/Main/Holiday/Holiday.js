@@ -46,7 +46,7 @@ const Holiday = ({ navigation }) => {
         <Calender
           name="calendar"
           size={22}
-          color="#A63ED3"
+          color="#ffb300"
           style={styles.icon}
         />
         <View style={styles.cardContent}>
@@ -86,7 +86,7 @@ const Holiday = ({ navigation }) => {
         {loading ? (
           <View
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator size="small" color="#A63ED3" />
+            <ActivityIndicator size="small" color="#ffb300" />
           </View>
         ) : holidays?.length === 0 ? (
           <View style={styles.centeredView}>
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   addButton: {
-    backgroundColor: "#A63ED3",
+    backgroundColor: "#ffb300",
     padding: 8,
     borderRadius: 5,
     alignItems: "center",

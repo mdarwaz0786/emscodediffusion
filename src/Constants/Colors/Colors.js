@@ -1,4 +1,4 @@
 export const COLORS = {
-  primaryButtonColor: "#A63ED3",
+  primaryButtonColor: "#ffb300",
   primaryTextColor: "#fff",
 };

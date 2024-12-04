@@ -1,7 +1,7 @@
-import React, {Suspense, lazy} from "react";
-import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
+import React, { Suspense, lazy } from "react";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/Ionicons";
-import {ActivityIndicator, View} from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import HomeScreen from "../../Screens/Home/HomeScreen.js";
 
 // Lazy load the screens
@@ -28,19 +28,19 @@ const BottomTabNavigator = () => {
   return (
     <Suspense
       fallback={
-        <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
-          <ActivityIndicator size="large" color="#A63ED3" />
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color="#ffb300" />
         </View>
       }>
       <Tab.Navigator
         initialRouteName="Home"
-        screenOptions={({route}) => ({
+        screenOptions={({ route }) => ({
           headerShown: false,
-          tabBarIcon: ({color, size}) => {
+          tabBarIcon: ({ color, size }) => {
             const iconName = icons[route.name];
             return <Icon name={iconName} size={23} color={color} />;
           },
-          tabBarActiveTintColor: "#A63ED3",
+          tabBarActiveTintColor: "#ffb300",
           tabBarInactiveTintColor: "gray",
           tabBarStyle: {
             height: 60,

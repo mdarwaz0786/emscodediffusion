@@ -280,7 +280,7 @@ const Home = () => {
           {loading ? (
             <View
               style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-              <ActivityIndicator size="small" color="#A63ED3" />
+              <ActivityIndicator size="small" color="#ffb300" />
             </View>
           ) : (
             <View style={styles.punchButtons}>
@@ -326,7 +326,7 @@ const Home = () => {
           {loading ? (
             <View
               style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-              <ActivityIndicator size="small" color="#A63ED3" />
+              <ActivityIndicator size="small" color="#ffb300" />
             </View>
           ) : (
             <>
@@ -465,10 +465,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   punchInButton: {
-    backgroundColor: "#dc3545",
+    backgroundColor: "#ffb300",
   },
   punchOutButton: {
-    backgroundColor: "#dc3545",
+    backgroundColor: "#ffb300",
   },
   markedButton: {
     backgroundColor: "#28a745",

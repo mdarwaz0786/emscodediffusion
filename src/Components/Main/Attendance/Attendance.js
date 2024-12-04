@@ -160,6 +160,11 @@ const Attendance = ({ route }) => {
     fetchMonthlyStatistic();
   };
 
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
   return (
     <>
       {/* Header */}
@@ -204,14 +209,13 @@ const Attendance = ({ route }) => {
             <Picker
               selectedValue={month}
               onValueChange={itemValue => setMonth(itemValue)}
-              style={styles.picker}>
-              {Array.from({ length: 12 }, (_, index) => (
+              style={styles.picker}
+            >
+              {monthNames?.map((month, index) => (
                 <Picker.Item
                   key={index}
-                  label={new Date(0, index).toLocaleString("default", {
-                    month: "long",
-                  })}
-                  value={index}
+                  label={month}
+                  value={index + 1}
                   style={styles.pickerItem}
                 />
               ))}
@@ -229,13 +233,13 @@ const Attendance = ({ route }) => {
           padding: 10,
           paddingTop: 0,
         }}>
-        <Text style={{ fontSize: 15, fontWeight: "400" }}>{employee?.name}</Text>
+        <Text style={{ fontSize: 14, fontWeight: "400", color: "#333" }}>{employee?.name}</Text>
         {/* Summary Button */}
         <TouchableOpacity
           style={{
             paddingVertical: 3,
             paddingHorizontal: 8,
-            backgroundColor: "#007bff",
+            backgroundColor: "#ffb300",
             borderRadius: 5,
           }}
           onPress={() => setModalVisible(true)}>
@@ -255,7 +259,7 @@ const Attendance = ({ route }) => {
         {loading ? (
           <View
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator size="small" color="#A63ED3" />
+            <ActivityIndicator size="small" color="#ffb300" />
           </View>
         ) : attendance?.length === 0 ? (
           <Text style={{ textAlign: "center" }}>
@@ -269,16 +273,14 @@ const Attendance = ({ route }) => {
               </Text>
               <View style={styles.statusContainer}>
                 <Text style={styles.statusText}>Status: {item?.status}</Text>
-                <View
-                  style={[
-                    styles.statusBadge,
+                <View>
+                  <Text style={[
                     item?.status === "Present"
                       ? styles.present
                       : item?.status === "Absent"
                         ? styles.absent
                         : styles.holiday,
-                  ]}>
-                  <Text style={styles.statusBadgeText}>{item?.status}</Text>
+                  ]}>{item?.status}</Text>
                 </View>
               </View>
               <Text style={styles.punchInOut}>
@@ -299,21 +301,21 @@ const Attendance = ({ route }) => {
                       ? formatTimeToHoursMinutes(item?.lateIn)
                       : ""}{" "}
                 </Text>
-                <View
-                  style={[
-                    styles.statusBadge,
-                    item?.lateIn === "00:00"
-                      ? styles.onTime
-                      : item?.lateIn || item?.status === "Absent"
-                        ? styles.late
-                        : styles.holiday,
-                  ]}>
-                  <Text style={styles.statusBadgeText}>
+                <View>
+                  <Text
+                    style={[
+                      item?.lateIn === "00:00"
+                        ? styles.onTime
+                        : item?.lateIn || item?.status === "Absent"
+                          ? styles.late
+                          : styles.holiday,
+                    ]}
+                  >
                     {item?.lateIn === "00:00"
                       ? "On Time"
                       : item?.lateIn
                         ? "Late"
-                        : "X"}
+                        : "__"}
                   </Text>
                 </View>
               </View>
@@ -336,10 +338,11 @@ const Attendance = ({ route }) => {
           }}>
           <Text
             style={{
-              fontSize: 17,
+              fontSize: 16,
               fontWeight: "400",
               marginBottom: 10,
               textAlign: "center",
+              color: "#555",
             }}>
             Attendance Summary
           </Text>
@@ -383,7 +386,7 @@ const Attendance = ({ route }) => {
           <Button
             mode="contained"
             onPress={() => setModalVisible(false)}
-            style={{ marginTop: 10, backgroundColor: "#B22222" }}>
+            style={{ marginTop: 10, backgroundColor: "#ffb300" }}>
             <Close name="close" size={25} />
           </Button>
         </Modal>
@@ -412,7 +415,7 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   buttonReset: {
-    backgroundColor: "#B22222",
+    backgroundColor: "#ffb300",
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 5,
@@ -450,9 +453,9 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   attendanceDate: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "400",
-    color: "#2D6A4F",
+    color: "#333",
   },
   statusContainer: {
     flexDirection: "row",
@@ -462,35 +465,27 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 13,
     fontWeight: "400",
-    color: "#333",
-  },
-  statusBadge: {
-    paddingHorizontal: 1,
-    paddingVertical: 2,
-    borderRadius: 5,
-    width: 55,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
+    color: "#555",
   },
   present: {
-    backgroundColor: "green",
+    color: "green",
+    fontSize: 13,
   },
   absent: {
-    backgroundColor: "#B22222",
+    color: "red",
+    fontSize: 13,
   },
   holiday: {
-    backgroundColor: "gold",
+    color: "#ffb300",
+    fontSize: 13,
   },
   onTime: {
-    backgroundColor: "green",
+    color: "green",
+    fontSize: 13,
   },
   late: {
-    backgroundColor: "#B22222",
-  },
-  statusBadgeText: {
-    fontSize: 12,
-    color: "#fff",
+    color: "red",
+    fontSize: 13,
   },
   punchInOut: {
     fontSize: 13,
@@ -499,7 +494,7 @@ const styles = StyleSheet.create({
   hoursWorked: {
     fontSize: 13,
     fontWeight: "400",
-    color: "#2D6A4F",
+    color: "#555",
   },
 });
 

@@ -118,7 +118,7 @@ const Employee = ({ navigation }) => {
           {loading ? (
             <View
               style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-              <ActivityIndicator size="large" color="#A63ED3" />
+              <ActivityIndicator size="large" color="#ffb300" />
             </View>
           ) : employees?.length === 0 ? (
             <View style={styles.centeredView}>

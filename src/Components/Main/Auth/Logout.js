@@ -20,7 +20,7 @@ const Logout = props => {
 
   return (
     <View style={styles.container}>
-      <ActivityIndicator size="large" color="#A63ED3" />
+      <ActivityIndicator size="large" color="#ffb300" />
       <Text style={styles.message}>Thank you for using our app!</Text>
       <Text style={styles.subMessage}>
         You have been logged out successfully.

@@ -71,7 +71,7 @@ const Login = () => {
           autoComplete="off"
         />
       </View>
-      <Button title="Login" onPress={handleLogin} color="#A63ED3" />
+      <Button title="Login" onPress={handleLogin} color="#ffb300" />
     </View>
   );
 };

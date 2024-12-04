@@ -21,11 +21,12 @@ import getMonthName from "./utils/getMonthName.js";
 
 const SalarySlip = ({ route }) => {
   const id = route?.params?.id;
-  const { validToken, isLoading } = useAuth();
+  const { validToken } = useAuth();
   const [monthlySalary, setMonthlySalary] = useState("");
+  const [office, setOffice] = useState([]);
   const [employee, setEmployee] = useState("");
   const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().getMonth();
+  const currentMonth = new Date().getMonth() + 1;
   const [month, setMonth] = useState(currentMonth);
   const [year, setYear] = useState(currentYear);
   const [employeeId, setEmployeeId] = useState(id);
@@ -42,6 +43,31 @@ const SalarySlip = ({ route }) => {
     setMonth(currentMonth);
     setYear(currentYear);
   }, [id]);
+
+  const fetchOfficeLocation = async () => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/api/v1/officeLocation/all-officeLocation`,
+        {
+          headers: {
+            Authorization: validToken,
+          },
+        },
+      );
+
+      if (response?.data?.success) {
+        setOffice(response?.data?.officeLocation);
+      }
+    } catch (error) {
+      console.error("Error while fetching office location:", error.message);
+    }
+  };
+
+  useEffect(() => {
+    if (validToken) {
+      fetchOfficeLocation();
+    }
+  }, [validToken]);
 
   // Fetch single employee
   const fetchSingleEmployee = async id => {
@@ -98,10 +124,10 @@ const SalarySlip = ({ route }) => {
   };
 
   useEffect(() => {
-    if (employeeId && month && year && validToken && !isLoading) {
+    if (employeeId && month && year && validToken) {
       fetchMonthlySalary();
     }
-  }, [employeeId, month, year, validToken, isLoading]);
+  }, [employeeId, month, year, validToken]);
 
   // Function to reset filters to initial values
   const resetFilters = () => {
@@ -256,13 +282,13 @@ const SalarySlip = ({ route }) => {
       <!-- Company Header -->
       <div class="header">
         <div class="companyLogo">
-          <img src="https://www.codediffusion.in/img/website-designing-company-in%20delhi.png" alt="Company Logo">
+          <img src="${office[0]?.logo}" alt="company-logo">
         </div>
         <div class="companyInfo">
-          <div class="companyName">Code Diffusuion Technologies</div>
-          <div class="companyAddress">120, Kirti Sikhar Tower</div>
-          <div class="companyAddress">District Center, Janakpuri</div>
-          <div class="companyAddress">New Delhi</div>
+          <div class="companyName">${office[0]?.name}</div>
+          <div class="companyAddress">${office[0]?.addressLine1}</div>
+          <div class="companyAddress">${office[0]?.addressLine3}</div>
+          <div class="companyAddress">${office[0]?.addressLine3}</div>
         </div>
       </div>
 
@@ -276,7 +302,7 @@ const SalarySlip = ({ route }) => {
         <div class="employeeDetail"><span class="bold">Employee ID:</span> ${employee?.employeeId
       }</div>
         <div class="employeeDetail"><span class="bold">Department:</span> IT</div>
-        <div class="employeeDetail"><span class="bold">Bank Account:</span> XXXX-XXXX-1234</div>
+        <div class="employeeDetail"><span class="bold">Bank Account:</span> XXXX-XXXX-XXXX-XXXX</div>
       </div>
 
       <!-- Salary Details -->
@@ -309,6 +335,10 @@ const SalarySlip = ({ route }) => {
           <div class="salaryText">Income Tax</div>
           <div class="salaryText">-₹0.00</div>
         </div>
+        <div class="salaryRow">
+          <div class="salaryText">Deduction</div>
+          <div class="salaryText">-₹${parseFloat(employee?.monthlySalary) - parseFloat(monthlySalary?.totalSalary)}</div>
+        </div>
         <div class="salaryRow totalSalary">
           <div class="salaryTextBold">Total Salary</div>
           <div class="salaryTextBold">₹${monthlySalary?.totalSalary}</div>
@@ -317,7 +347,7 @@ const SalarySlip = ({ route }) => {
 
       <!-- Footer -->
       <div class="footer">
-        <div class="footerText">Authorized Signatory</div>
+        <div class="footerText">Signature</div>
       </div>
     </div>
   </div>
@@ -345,6 +375,11 @@ const SalarySlip = ({ route }) => {
       Alert.alert("Error", "Failed to generate PDF");
     }
   };
+
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
 
   return (
     <>
@@ -390,14 +425,13 @@ const SalarySlip = ({ route }) => {
             <Picker
               selectedValue={month}
               onValueChange={itemValue => setMonth(itemValue)}
-              style={styles.picker}>
-              {Array.from({ length: 12 }, (_, index) => (
+              style={styles.picker}
+            >
+              {monthNames?.map((month, index) => (
                 <Picker.Item
                   key={index}
-                  label={new Date(0, index).toLocaleString("default", {
-                    month: "long",
-                  })}
-                  value={index}
+                  label={month}
+                  value={index + 1}
                   style={styles.pickerItem}
                 />
               ))}
@@ -408,13 +442,13 @@ const SalarySlip = ({ route }) => {
 
       {/* Employee */}
       <View style={styles.headerContainer}>
-        <Text style={{ fontSize: 15, fontWeight: "400", color: "#555" }}>
+        <Text style={{ fontSize: 14, fontWeight: "400", color: "#333" }}>
           {employee?.name}
         </Text>
         <TouchableOpacity
           onPress={generatePDF}
           style={{
-            backgroundColor: "#007bff",
+            backgroundColor: "#ffb300",
             paddingVertical: 2,
             paddingHorizontal: 7,
             borderRadius: 5,
@@ -444,13 +478,13 @@ const SalarySlip = ({ route }) => {
             </View>
             <View style={styles.companyInfo}>
               <Text style={styles.companyName}>
-                Code Diffusion Technologies
+                {office[0]?.name}
               </Text>
-              <Text style={styles.companyAddress}>120, Kirti Sikhar Tower</Text>
+              <Text style={styles.companyAddress}>{office[0]?.addressLine1}</Text>
               <Text style={styles.companyAddress}>
-                District Center, Janakpuri
+                {office[0]?.addressLine2}
               </Text>
-              <Text style={styles.companyAddress}>New Delhi</Text>
+              <Text style={styles.companyAddress}>{office[0]?.addressLine3}</Text>
             </View>
           </View>
 
@@ -474,7 +508,7 @@ const SalarySlip = ({ route }) => {
               <Text style={styles.bold}>Department:</Text> IT
             </Text>
             <Text style={styles.employeeDetail}>
-              <Text style={styles.bold}>Bank Account:</Text> XXXX-XXXX-1234
+              <Text style={styles.bold}>Bank Account:</Text> XXXX-XXXX-XXXX-XXXX
             </Text>
           </View>
 
@@ -508,6 +542,10 @@ const SalarySlip = ({ route }) => {
               <Text style={styles.salaryText}>Income Tax</Text>
               <Text style={styles.salaryText}>-₹0.00</Text>
             </View>
+            <View style={styles.salaryRow}>
+              <Text style={styles.salaryText}>Deduction</Text>
+              <Text style={styles.salaryText}>-₹{parseFloat(employee?.monthlySalary) - parseFloat(monthlySalary?.totalSalary)}</Text>
+            </View>
             <View style={[styles.salaryRow, styles.totalSalary]}>
               <Text style={styles.salaryTextBold}>Total Salary</Text>
               <Text style={styles.salaryTextBold}>
@@ -518,7 +556,7 @@ const SalarySlip = ({ route }) => {
 
           {/* Footer */}
           <View style={styles.footer}>
-            <Text style={styles.footerText}>Authorized Signatory</Text>
+            <Text style={styles.footerText}>Signature</Text>
           </View>
         </View>
       </ScrollView>
@@ -542,7 +580,7 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   buttonReset: {
-    backgroundColor: "#B22222",
+    backgroundColor: "#ffb300",
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 5,
@@ -593,7 +631,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderBottomWidth: 1,
     borderBottomColor: "#e1e1e1",
-    paddingBottom: 10,
+    paddingBottom: 5,
     marginBottom: 10,
     columnGap: 11,
   },
