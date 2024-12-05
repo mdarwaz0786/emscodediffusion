@@ -23,24 +23,57 @@ const HelpScreen = ({ navigation }) => {
             Q1: How do I get started with your services?
           </Text>
           <Text style={styles.faqAnswer}>
-            A1: Simply contact us via our website or email, and we’ll schedule a
-            consultation to understand your requirements.
+            A1: Simply contact us via our website or email, and we’ll schedule a consultation to understand your requirements.
           </Text>
 
           <Text style={styles.faqQuestion}>
             Q2: What types of web development services do you offer?
           </Text>
           <Text style={styles.faqAnswer}>
-            A2: We specialize in custom web development, mobile-friendly design,
-            e-commerce solutions, and SEO optimization.
+            A2: We specialize in custom web development, mobile-friendly design, e-commerce solutions, and SEO optimization.
           </Text>
 
           <Text style={styles.faqQuestion}>
             Q3: How can I contact customer support?
           </Text>
           <Text style={styles.faqAnswer}>
-            A3: You can reach out to our support team via email at
-            info@codediffusion.in or call us at +91-7827114607.
+            A3: You can reach out to our support team via email at info@codediffusion.in or call us at +91-7827114607.
+          </Text>
+
+          {/* New FAQs */}
+          <Text style={styles.faqQuestion}>
+            Q4: How long does it take to complete a project?
+          </Text>
+          <Text style={styles.faqAnswer}>
+            A4: The duration depends on the project’s complexity and scope. Generally, it ranges from a few weeks to several months.
+          </Text>
+
+          <Text style={styles.faqQuestion}>
+            Q5: Do you provide post-launch support and maintenance?
+          </Text>
+          <Text style={styles.faqAnswer}>
+            A5: Yes, we offer post-launch support and maintenance services to ensure your application runs smoothly.
+          </Text>
+
+          <Text style={styles.faqQuestion}>
+            Q6: Can I request custom features for my project?
+          </Text>
+          <Text style={styles.faqAnswer}>
+            A6: Absolutely! We specialize in custom development to meet your unique requirements.
+          </Text>
+
+          <Text style={styles.faqQuestion}>
+            Q7: Do you handle hosting and domain setup?
+          </Text>
+          <Text style={styles.faqAnswer}>
+            A7: Yes, we can assist with hosting, domain setup, and configuration to ensure a seamless deployment process.
+          </Text>
+
+          <Text style={styles.faqQuestion}>
+            Q8: What payment methods do you accept?
+          </Text>
+          <Text style={styles.faqAnswer}>
+            A8: We accept various payment methods including bank transfers, credit cards, and digital wallets.
           </Text>
         </View>
 
@@ -54,12 +87,11 @@ const HelpScreen = ({ navigation }) => {
 
         <View style={styles.linkContainer}>
           <Text style={styles.subHeader}>Useful Links</Text>
-          <Text
-            style={styles.link}
-            onPress={() => Linking.openURL("https://www.codediffusion.in")}>
-            👉 Visit our [Website] (https://www.codediffusion.in) for more
-            information.
-          </Text>
+          <TouchableOpacity onPress={() => Linking.openURL("https://www.codediffusion.in")}>
+            <Text style={styles.link}>
+              👉 Visit our [Website] (https://www.codediffusion.in) for more information.
+            </Text>
+          </TouchableOpacity>
         </View>
 
         <Text style={styles.footer}>
@@ -91,7 +123,7 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   subHeader: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "400",
     color: "#000",
     marginBottom: 5,
@@ -129,7 +161,7 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
   },
   footer: {
-    fontSize: 15,
+    fontSize: 14,
     color: "#555",
     fontWeight: "400",
     marginTop: 20,

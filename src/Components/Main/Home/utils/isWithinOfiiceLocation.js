@@ -26,7 +26,7 @@ const isWithinOfficeLocation = async (
   userLatitude,
   userLongitude,
   validToken,
-  maxDistance = 20,
+  maxDistance = 100,
 ) => {
   try {
     // Fetch office locations from the API
@@ -43,7 +43,7 @@ const isWithinOfficeLocation = async (
       const officeLocations = response?.data?.officeLocation;
 
       // Check if user is within range of any office
-      return officeLocations.some(({ latitude, longitude }) => {
+      return officeLocations?.some(({ latitude, longitude }) => {
         const lat = parseFloat(latitude);
         const lon = parseFloat(longitude);
 

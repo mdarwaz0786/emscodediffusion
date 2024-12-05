@@ -15,10 +15,10 @@ const formatDate = dateString => {
     "Dec",
   ];
 
-  const [year, month, day] = dateString?.split("-").map(Number);
+  const [year, month, day] = dateString.split("-").map(Number);
   const monthName = months[month - 1]; // Month is zero-indexed
 
-  return `${day} ${monthName} ${year}`;
+  return `${day || ""} ${monthName || ""} ${year || ""}`;
 };
 
 export default formatDate;

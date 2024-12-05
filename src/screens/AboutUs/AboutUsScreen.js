@@ -1,8 +1,8 @@
 import React from "react";
-import {View, Text, StyleSheet, ScrollView, Image} from "react-native";
+import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 
-const AboutUsScreen = ({navigation}) => {
+const AboutUsScreen = ({ navigation }) => {
   return (
     <>
       {/* Header */}
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   footer: {
-    fontSize: 15,
+    fontSize: 14,
     color: "#555",
     fontWeight: "400",
     marginTop: 10,

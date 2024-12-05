@@ -26,7 +26,7 @@ const Login = () => {
         storeToken(response?.data?.token);
         setEmployeeId("");
         setPassword("");
-        Toast.show({ type: "success", text1: response?.data?.message });
+        Toast.show({ type: "success", text1: response?.data?.message || "Please try again." });
       }
     } catch (error) {
       console.error("Error while login:", error.message);

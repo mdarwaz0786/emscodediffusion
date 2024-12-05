@@ -2,7 +2,7 @@
 const formatTimeToHoursMinutes = timeString => {
   if (!timeString) return ""; // Return empty if time is not provided
 
-  const [hours, minutes] = timeString?.split(":").map(Number); // Split hours and minutes
+  const [hours, minutes] = timeString.split(":").map(Number); // Split hours and minutes
 
   if (hours === 0 && minutes === 0) {
     return null;

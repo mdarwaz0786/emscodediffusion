@@ -24,7 +24,7 @@ import formatDate from "../../../Helper/formatDate.js";
 
 const Home = () => {
   const navigation = useNavigation();
-  const { team, validToken, isLoading } = useAuth();
+  const { team, validToken } = useAuth();
   const [attendance, setAttendance] = useState([]);
   const [holidays, setHolidays] = useState([]);
   const [monthlyStatistic, setMonthlyStatistic] = useState("");
@@ -166,7 +166,7 @@ const Home = () => {
         setAttendance(response?.data?.attendance);
       }
     } catch (error) {
-      console.error("Error while fetching attendance:", error.message);
+      console.log("Error while fetching attendance:", error.message);
     } finally {
       setLoading(false);
     }
@@ -193,10 +193,10 @@ const Home = () => {
   };
 
   useEffect(() => {
-    if (employeeId && currentDate && validToken && !isLoading) {
+    if (employeeId && currentDate && validToken) {
       fetchAttendance();
     }
-  }, [employeeId, currentDate, validToken, isLoading]);
+  }, [employeeId, currentDate, validToken]);
 
   // Get current month statistic for logged in employee
   const fetchMonthlyStatistic = async () => {
@@ -230,10 +230,10 @@ const Home = () => {
   };
 
   useEffect(() => {
-    if (employeeId && currentMonth && validToken && !isLoading) {
+    if (employeeId && currentMonth && validToken) {
       fetchMonthlyStatistic();
     }
-  }, [employeeId, currentMonth, validToken, isLoading]);
+  }, [employeeId, currentMonth, validToken]);
 
   // Navigate to attendance detail screen
   const navigateToAttendance = () => {
@@ -261,6 +261,24 @@ const Home = () => {
       }),
     );
   };
+
+  const statistics = monthlyStatistic
+    ? [
+      { label: " Month", value: formatDate(monthlyStatistic?.month) || "-", icon: "📅" },
+      { label: "Total Days", value: monthlyStatistic?.totalDaysInMonth || 0, icon: "📆" },
+      { label: "Working Days", value: monthlyStatistic?.companyWorkingDays || 0, icon: "💼" },
+      { label: "Holidays", value: monthlyStatistic?.totalHolidays || 0, icon: "🎉" },
+      { label: "Sundays", value: monthlyStatistic?.totalSundays || 0, icon: "☀️" },
+      { label: "Present Days", value: monthlyStatistic?.employeePresentDays || 0, icon: "✅" },
+      { label: "Absent Days", value: monthlyStatistic?.employeeAbsentDays || 0, icon: "❌" },
+      { label: "Leave Days", value: monthlyStatistic?.employeeLeaveDays || 0, icon: "🏖️" },
+      { label: "Late In Days", value: monthlyStatistic?.employeeLateInDays || 0, icon: "⏰" },
+      { label: "Total Hours Worked", value: formatTimeToHoursMinutes(monthlyStatistic?.employeeWorkingHours) || "00:00", icon: "🕒" },
+      { label: "Avgerage Punch In Time", value: formatTimeWithAmPm(monthlyStatistic?.averagePunchInTime) || "-", icon: "🔔" },
+      { label: "Avgerage Punch Out Time", value: formatTimeWithAmPm(monthlyStatistic?.averagePunchOutTime) || "-", icon: "🔕" },
+      { label: "Company's Working Hours", value: formatTimeToHoursMinutes(monthlyStatistic?.companyWorkingHours) || "00:00", icon: "🏢" },
+    ]
+    : [];
 
   return (
     <>
@@ -322,7 +340,7 @@ const Home = () => {
 
         {/* Today's Activity */}
         <View style={styles.activitySection}>
-          <Text style={styles.sectionTitle}>Today’s Activity</Text>
+          <Text style={[styles.sectionTitle, styles.activityTitle,]}>Today’s Activity</Text>
           {loading ? (
             <View
               style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -375,38 +393,26 @@ const Home = () => {
 
         {/* Monthly Statistics */}
         <View style={styles.monthlyStats}>
-          <Text style={styles.sectionTitle}>Monthly Statistics</Text>
-          <View style={styles.statsRow}>
-            <View style={styles.statBox}>
-              <Text style={styles.statNumber}>
-                {monthlyStatistic?.employeePresentDays}
-              </Text>
-              <Text style={styles.statLabel}>Present Days</Text>
+          <Text style={[styles.sectionTitle, styles.staticTitle]}>Monthly Statistics</Text>
+          {statistics?.map((item, index) => (
+            <View key={index} style={styles.statItem}>
+              <Text style={styles.iconPlaceholder}>{item.icon}</Text>
+              <View style={styles.textContainer}>
+                <Text style={styles.label}>{item.label}</Text>
+                <Text style={styles.value}>{item.value}</Text>
+              </View>
             </View>
-            <View style={styles.statBox}>
-              <Text style={styles.statNumber}>
-                {monthlyStatistic?.employeeAbsentDays}
-              </Text>
-              <Text style={styles.statLabel}>Absent Days</Text>
-            </View>
-            <View style={styles.statBox}>
-              <Text style={styles.statNumber}>
-                {monthlyStatistic?.employeeLeaveDays}
-              </Text>
-              <Text style={styles.statLabel}>Leaves</Text>
-            </View>
-          </View>
+          ))}
         </View>
 
         {/* Notifications */}
         <View style={styles.notifications}>
-          <Text style={styles.sectionTitle}>Notifications</Text>
+          <Text style={[styles.sectionTitle, styles.notificationTitle]}>Notifications</Text>
           {holidays?.map((item, index) => (
             <Text
-              key={item._id || index}
+              key={item?._id || index}
               style={styles.notificationDescription}>
-              🔔 New holiday announced on {formatDate(item?.date)} for{" "}
-              {item?.reason}.
+              🔔 New holiday announced on {formatDate(item?.date)} for {item?.reason}.
             </Text>
           ))}
           {holidays?.length === 0 && <Text>🔔 No new notifications</Text>}
@@ -441,8 +447,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   profileIcon: {
-    width: 35,
-    height: 35,
+    width: 40,
+    height: 40,
     borderRadius: 25,
     marginRight: 8,
   },
@@ -475,19 +481,33 @@ const styles = StyleSheet.create({
   },
   punchButtonText: {
     color: "#fff",
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: "500",
   },
   greetingContainer: {
     marginBottom: 10,
   },
   greetingText: {
-    fontSize: 14.5,
+    fontSize: 14,
     fontWeight: "500",
   },
   dateText: {
     color: "gray",
     fontSize: 13,
+  },
+  activitySection: {
+    padding: 15,
+    backgroundColor: "#d9e3f0",
+    borderRadius: 10,
+    marginTop: 2,
+    marginBottom: 6,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  activityTitle: {
+    paddingBottom: 7,
   },
   quickActions: {
     flexDirection: "row",
@@ -503,7 +523,7 @@ const styles = StyleSheet.create({
     width: "47%",
   },
   quickActionText: {
-    fontSize: 13,
+    fontSize: 14,
     marginTop: 5,
   },
   summary: {
@@ -520,53 +540,60 @@ const styles = StyleSheet.create({
     marginTop: -5,
   },
   monthlyStats: {
-    padding: 15,
+    paddingTop: 15,
+    paddingBottom: 10,
     backgroundColor: "#fff",
-    borderRadius: 10,
+    borderRadius: 12,
     marginTop: 16,
   },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: "500",
-    marginBottom: 5,
-    marginTop: -5,
+  staticTitle: {
+    paddingLeft: 16,
+    paddingBottom: 10,
   },
-  statsRow: {
+  statItem: {
+    paddingLeft: 12,
     flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 3,
-  },
-  statBox: {
     alignItems: "center",
-    padding: 8,
-    backgroundColor: "#f0f4f8",
-    borderRadius: 10,
-    width: "30%",
-    paddingBottom: 16,
+    paddingVertical: 8,
+    borderTopWidth: 1,
+    borderTopColor: "#e0e0e0",
   },
-  statNumber: {
-    fontSize: 16,
-    fontWeight: "500",
+  iconPlaceholder: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "#d9e2ec",
+    textAlign: "center",
+    lineHeight: 32,
+    fontSize: 18,
+    marginRight: 12,
+    color: "#333",
   },
-  statLabel: {
-    fontSize: 12,
-    color: "gray",
+  textContainer: {
+    flex: 1,
   },
-  activitySection: {
-    padding: 15,
-    backgroundColor: "#d9e3f0",
-    borderRadius: 10,
-    marginTop: 2,
-    marginBottom: 6,
+  label: {
+    fontSize: 14,
+    color: "#777",
+  },
+  value: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: "#4a90e2",
   },
   notifications: {
     padding: 15,
     backgroundColor: "#fce8e8",
     borderRadius: 10,
     marginTop: 16,
+    marginBottom: 5,
+  },
+  notificationTitle: {
+    marginBottom: 3,
   },
   notificationDescription: {
     marginBottom: 5,
+    fontSize: 14,
   },
 });
 

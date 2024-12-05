@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
         );
       }
     } catch (error) {
-      console.error(
+      console.log(
         "Error while storing token or fetching user details:",
         error.message,
       );
@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
       setTeam(null);
       Toast.show({ type: "success", text1: "Logout successful" });
     } catch (error) {
-      console.error("Error while removing token:", error.message);
+      console.log("Error while logout:", error.message);
     }
   };
 
@@ -63,25 +63,14 @@ export const AuthProvider = ({ children }) => {
         if (cachedTeam) {
           setTeam(JSON.parse(cachedTeam));
         } else {
-          const response = await axios.get(
-            `${API_BASE_URL}/api/v1/team/loggedin-team`,
-            { headers: { Authorization: `Bearer ${storedToken}` } },
-          );
-
-          if (response?.data?.success) {
-            setTeam(response?.data?.team);
-            await AsyncStorage.setItem(
-              "team",
-              JSON.stringify(response?.data?.team),
-            );
-          }
-        }
+          setTeam(null)
+        };
       } else {
         Toast.show({
           type: "error",
           text1: "Please log in to continue.",
         });
-      }
+      };
     } catch (error) {
       console.log("Error during initializing auth:", error.message);
       if (error?.response && error?.response?.status === 401) {
