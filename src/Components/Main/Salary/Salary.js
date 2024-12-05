@@ -455,9 +455,9 @@ const SalarySlip = ({ route }) => {
           }}>
           <Text
             style={{
-              fontSize: 13,
+              fontSize: 14,
               color: "#FFF",
-              fontWeight: "400",
+              fontWeight: "500",
               paddingVertical: 2,
               paddingHorizontal: 5,
             }}>
@@ -588,8 +588,8 @@ const styles = StyleSheet.create({
   },
   buttonResetText: {
     color: "#fff",
-    fontSize: 12,
-    fontWeight: "400",
+    fontSize: 13,
+    fontWeight: "500",
   },
   filterContainer: {
     paddingHorizontal: 5,
@@ -653,7 +653,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   companyAddress: {
-    fontSize: 13,
+    fontSize: 14,
     color: "#777",
   },
   employeeInfo: {
@@ -667,7 +667,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   employeeDetail: {
-    fontSize: 13,
+    fontSize: 14,
     color: "#555",
     marginBottom: 2,
   },
@@ -685,7 +685,7 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
   },
   headerText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: "500",
     color: "#555",
   },
@@ -697,14 +697,14 @@ const styles = StyleSheet.create({
     borderBottomColor: "#e1e1e1",
   },
   salaryText: {
-    fontSize: 13,
+    fontSize: 14,
     color: "#555",
   },
   totalSalary: {
     backgroundColor: "#f9f9f9",
   },
   salaryTextBold: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: "500",
     color: "#555",
   },
@@ -713,7 +713,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   footerText: {
-    fontSize: 13,
+    fontSize: 14,
     color: "#555",
     fontWeight: "500",
   },

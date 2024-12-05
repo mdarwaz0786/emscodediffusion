@@ -272,13 +272,14 @@ const styles = StyleSheet.create({
   },
   buttonResetText: {
     color: "#fff",
-    fontSize: 12,
-    fontWeight: "400",
+    fontSize: 13,
+    fontWeight: "500",
   },
   container: {
     flex: 1,
     padding: 20,
-    paddingTop: 10,
+    paddingBottom: 12,
+    paddingTop: 0,
   },
   input: {
     padding: 16,
@@ -286,7 +287,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ddd",
     borderRadius: 5,
-    marginBottom: 20,
+    marginBottom: 12,
     backgroundColor: "#fff",
     color: "#777",
   },
@@ -297,7 +298,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ddd",
     borderRadius: 5,
-    marginBottom: 20,
+    marginBottom: 12,
   },
   logoButtonText: {
     color: "#777",
@@ -306,7 +307,7 @@ const styles = StyleSheet.create({
   logoPreview: {
     width: 100,
     height: 100,
-    marginBottom: 15,
+    marginBottom: 8,
   },
   submitButton: {
     backgroundColor: "#ffb300",
@@ -317,6 +318,7 @@ const styles = StyleSheet.create({
   submitButtonText: {
     color: "#fff",
     fontWeight: "500",
+    fontSize: 14,
   },
 });
 

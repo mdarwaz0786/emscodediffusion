@@ -246,8 +246,8 @@ const Attendance = ({ route }) => {
           <Text
             style={{
               color: "#fff",
-              fontSize: 13,
-              fontWeight: "400",
+              fontSize: 14,
+              fontWeight: "500",
             }}>
             Summary
           </Text>
@@ -315,7 +315,7 @@ const Attendance = ({ route }) => {
                       ? "On Time"
                       : item?.lateIn
                         ? "Late"
-                        : "__"}
+                        : "_"}
                   </Text>
                 </View>
               </View>
@@ -423,8 +423,8 @@ const styles = StyleSheet.create({
   },
   buttonResetText: {
     color: "#fff",
-    fontSize: 12,
-    fontWeight: "400",
+    fontSize: 13,
+    fontWeight: "500",
   },
   filterContainer: {
     paddingHorizontal: 5,
@@ -453,9 +453,9 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   attendanceDate: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: "400",
-    color: "#333",
+    color: "green",
   },
   statusContainer: {
     flexDirection: "row",
@@ -463,36 +463,36 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   statusText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: "400",
     color: "#555",
   },
   present: {
     color: "green",
-    fontSize: 13,
+    fontSize: 14,
   },
   absent: {
     color: "red",
-    fontSize: 13,
+    fontSize: 14,
   },
   holiday: {
     color: "#ffb300",
-    fontSize: 13,
+    fontSize: 14,
   },
   onTime: {
     color: "green",
-    fontSize: 13,
+    fontSize: 14,
   },
   late: {
     color: "red",
-    fontSize: 13,
+    fontSize: 14,
   },
   punchInOut: {
-    fontSize: 13,
+    fontSize: 14,
     color: "#555",
   },
   hoursWorked: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: "400",
     color: "#555",
   },

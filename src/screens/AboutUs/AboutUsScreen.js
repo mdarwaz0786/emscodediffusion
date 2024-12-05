@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
+import FastImage from "react-native-fast-image";
 import Icon from "react-native-vector-icons/Feather";
 
 const AboutUsScreen = ({ navigation }) => {
@@ -22,6 +23,7 @@ const AboutUsScreen = ({ navigation }) => {
           <Image
             source={require("../../Assets/company-banner.jpg")}
             style={styles.banner}
+            resizeMode={FastImage.resizeMode.contain}
           />
         </View>
 

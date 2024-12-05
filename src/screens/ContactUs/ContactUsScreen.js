@@ -30,24 +30,24 @@ const ContactUsScreen = ({ navigation }) => {
 
         <TextInput
           style={styles.input}
-          placeholder="Your Name"
+          placeholder="Enter Name"
           placeholderTextColor="#aaa"
         />
         <TextInput
           style={styles.input}
-          placeholder="Your Email"
+          placeholder="Enter Email Id"
           placeholderTextColor="#aaa"
           keyboardType="email-address"
         />
         <TextInput
           style={styles.input}
-          placeholder="Your Phone"
+          placeholder="Enter Mobile Number"
           placeholderTextColor="#aaa"
           keyboardType="phone-pad"
         />
         <TextInput
           style={[styles.input, styles.textArea]}
-          placeholder="Your Message"
+          placeholder="Enter Message"
           placeholderTextColor="#aaa"
           multiline
         />
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     alignItems: "center",
     padding: 20,
-    paddingTop: 15,
+    paddingTop: 10,
   },
   header: {
     flexDirection: "row",
@@ -82,10 +82,10 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   description: {
-    fontSize: 15,
+    fontSize: 14,
     color: "#666",
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 10,
     lineHeight: 20,
   },
   input: {
@@ -103,6 +103,7 @@ const styles = StyleSheet.create({
     height: 100,
     textAlignVertical: "top",
     paddingLeft: 16,
+    paddingTop: 10,
   },
   button: {
     backgroundColor: "#ffb300",
@@ -111,7 +112,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
     width: "100%",
-    marginTop: 10,
   },
   buttonText: {
     color: "#fff",

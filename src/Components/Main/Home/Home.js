@@ -434,7 +434,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     marginHorizontal: 10,
     borderRadius: 12,
-    marginTop: 15,
+    marginTop: 12,
   },
   header: {
     flexDirection: "row",
@@ -508,6 +508,7 @@ const styles = StyleSheet.create({
   },
   activityTitle: {
     paddingBottom: 7,
+    marginTop: -5,
   },
   quickActions: {
     flexDirection: "row",
@@ -554,7 +555,7 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 8,
+    paddingVertical: 5,
     borderTopWidth: 1,
     borderTopColor: "#e0e0e0",
   },

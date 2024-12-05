@@ -63,7 +63,7 @@ const Employee = ({ navigation }) => {
         <TouchableOpacity
           style={styles.nameRoleContainer}
           onPress={() =>
-            setVisiblePopupId(visiblePopupId === item?._id ? null : item?._id)
+            navigateToAttendance(item?._id)
           }>
           <Text style={styles.employeeName}>{item?.name}</Text>
           <Text style={styles.employeeRole}>{item?.designation?.name}</Text>
@@ -140,8 +140,6 @@ const Employee = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
-    paddingTop: 2,
   },
   header: {
     flexDirection: "row",
@@ -149,7 +147,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     columnGap: 100,
     padding: 12,
-    marginBottom: 10,
     backgroundColor: "#fff",
     elevation: 1,
   },
@@ -161,8 +158,8 @@ const styles = StyleSheet.create({
   employeeCard: {
     backgroundColor: "#ffffff",
     padding: 10,
-    marginBottom: 12,
-    borderRadius: 8,
+    borderTopWidth: 1,
+    borderTopColor: "#e0e0e0",
     zIndex: 1,
   },
   heading: {
@@ -198,15 +195,15 @@ const styles = StyleSheet.create({
     right: 60,
     minWidth: 120,
     zIndex: 999,
-    height: 60,
+    height: 52,
     justifyContent: "center",
   },
   popupOption: {
-    paddingVertical: 5,
+    paddingVertical: 3,
     paddingHorizontal: 10,
   },
   popupOptionText: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#333",
   },
   centeredView: {

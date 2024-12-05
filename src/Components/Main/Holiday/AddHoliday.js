@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    paddingTop: 22,
+    paddingTop: 10,
   },
   input: {
     paddingVertical: 5,
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ddd",
     borderRadius: 5,
-    marginBottom: 20,
+    marginBottom: 10,
     backgroundColor: "#fff",
     color: "#777",
   },
@@ -158,10 +158,12 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     alignItems: "center",
+    marginTop: 5,
   },
   submitButtonText: {
     color: "#fff",
     fontWeight: "500",
+    fontSize: 14,
   },
 });
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { CommonActions, useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useAuth } from "../../Context/auth.context.js";
@@ -44,7 +44,7 @@ const CustomDrawerNavigator = () => {
       show: true,
     },
     {
-      label: "Help",
+      label: "Help & Support",
       icon: "help-circle-outline",
       route: "Help",
       show: true,
@@ -86,17 +86,17 @@ const CustomDrawerNavigator = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerText}>Employee Management System</Text>
+        <Text style={styles.headerText}>Code Diffusion Technologies</Text>
       </View>
       <View style={styles.sidebar}>
         {visibleDrawerItems.map((item, index) => (
-          <Pressable
+          <TouchableOpacity
             key={index}
             style={styles.item}
             onPress={() => handleNavigation(item)}>
             <Icon name={item.icon} size={22} color="#ffb300" />
             <Text style={styles.itemText}>{item.label}</Text>
-          </Pressable>
+          </TouchableOpacity>
         ))}
       </View>
     </ScrollView>
@@ -113,7 +113,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffb300",
   },
   headerText: {
-    fontSize: 16,
+    fontSize: 15,
+    fontWeight: "500",
     color: "#fff",
   },
   sidebar: {

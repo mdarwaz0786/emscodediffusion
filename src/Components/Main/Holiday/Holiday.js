@@ -55,8 +55,7 @@ const Holiday = ({ navigation }) => {
         </View>
       </View>
       <Text style={styles.cardDescription}>
-        The office will be closed on {formatDate(item?.date)} for {item?.reason}
-        .
+        The office will be closed on {formatDate(item?.date)} for {item?.reason}.
       </Text>
     </View>
   );
@@ -123,10 +122,10 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: 15,
     fontWeight: "400",
-    marginBottom: 10,
+    marginBottom: 12,
     textAlign: "center",
-    color: "#333",
-    marginTop: 8,
+    color: "#000",
+    marginTop: 5,
   },
   addButton: {
     backgroundColor: "#ffb300",
@@ -138,7 +137,8 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     color: "#fff",
-    fontWeight: "400",
+    fontWeight: "500",
+    fontSize: 14,
   },
   container: {
     flex: 1,

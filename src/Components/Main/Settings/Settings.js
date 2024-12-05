@@ -247,15 +247,16 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     color: "#fff",
-    fontWeight: "400",
+    fontWeight: "500",
+    fontSize: 14,
   },
   pageTitle: {
     fontSize: 15,
     fontWeight: "400",
-    marginBottom: 8,
-    marginTop: 8,
+    marginBottom: 10,
+    marginTop: 5,
     textAlign: "center",
-    color: "#333",
+    color: "#000",
   },
   cardContainer: {
     paddingBottom: 16,
