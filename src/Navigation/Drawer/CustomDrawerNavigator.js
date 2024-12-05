@@ -132,6 +132,7 @@ const styles = StyleSheet.create({
   itemText: {
     marginLeft: 10,
     fontSize: 15,
+    color: "#777",
   },
 });
 

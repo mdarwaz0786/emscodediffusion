@@ -348,14 +348,14 @@ const Home = () => {
             </View>
           ) : (
             <>
-              <Text style={{ marginTop: -3 }}>
+              <Text style={{ marginTop: -3, color: "#777" }}>
                 <Text style={{ color: attendance[0]?.punchIn ? "green" : "red" }}>
                   {attendance[0]?.punchIn ? "✓" : "✗"}
                 </Text>{" "}
                 {formatTimeWithAmPm(attendance[0]?.punchInTime)}
                 {attendance[0]?.punchIn ? " - Punch In" : " Punch In"}
               </Text>
-              <Text>
+              <Text style={{ color: "#777" }}>
                 <Text
                   style={{ color: attendance[0]?.punchOut ? "green" : "red" }}>
                   {attendance[0]?.punchOut ? "✓" : "✗"}
@@ -372,11 +372,11 @@ const Home = () => {
           <TouchableOpacity
             style={styles.quickActionButton}
             onPress={navigateToAttendance}>
-            <Icon name="history" size={20} />
+            <Icon name="history" size={20} style={{ color: "#777" }} />
             <Text style={styles.quickActionText}>Attendance History</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.quickActionButton}>
-            <Icon name="file-text-o" size={20} />
+            <Icon name="file-text-o" size={20} style={{ color: "#777" }} />
             <Text style={styles.quickActionText}>Leave Request</Text>
           </TouchableOpacity>
         </View>
@@ -384,11 +384,11 @@ const Home = () => {
         {/* Today's Summary */}
         <View style={styles.summary}>
           <Text style={styles.summaryTitle}>Today’s Summary</Text>
-          <Text style={{ marginTop: -1 }}>
+          <Text style={{ marginTop: -1, color: "#777" }}>
             Total Hours Worked:{" "}
             {formatTimeToHoursMinutes(attendance[0]?.hoursWorked)}
           </Text>
-          <Text>Break Time: 45 minutes</Text>
+          <Text style={{ color: "#777" }}>Break Time: 45 minutes</Text>
         </View>
 
         {/* Monthly Statistics */}
@@ -456,9 +456,10 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "500",
     marginRight: 10,
+    color: "#777",
   },
   positionText: {
-    color: "gray",
+    color: "#777",
     fontSize: 12,
   },
   punchButtons: {
@@ -490,9 +491,10 @@ const styles = StyleSheet.create({
   greetingText: {
     fontSize: 14,
     fontWeight: "500",
+    color: "#777",
   },
   dateText: {
-    color: "gray",
+    color: "#777",
     fontSize: 13,
   },
   activitySection: {
@@ -505,6 +507,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 14,
     fontWeight: "500",
+    color: "#777",
   },
   activityTitle: {
     paddingBottom: 7,
@@ -526,6 +529,7 @@ const styles = StyleSheet.create({
   quickActionText: {
     fontSize: 14,
     marginTop: 5,
+    color: "#777",
   },
   summary: {
     padding: 15,
@@ -536,12 +540,13 @@ const styles = StyleSheet.create({
   },
   summaryTitle: {
     fontSize: 14,
+    color: "#777",
     fontWeight: "500",
     marginBottom: 5,
     marginTop: -5,
   },
   monthlyStats: {
-    paddingTop: 15,
+    paddingTop: 12,
     paddingBottom: 10,
     backgroundColor: "#fff",
     borderRadius: 12,
@@ -584,6 +589,7 @@ const styles = StyleSheet.create({
   },
   notifications: {
     padding: 15,
+    paddingTop: 12,
     backgroundColor: "#fce8e8",
     borderRadius: 10,
     marginTop: 16,
@@ -595,6 +601,7 @@ const styles = StyleSheet.create({
   notificationDescription: {
     marginBottom: 5,
     fontSize: 14,
+    color: "#777",
   },
 });
 

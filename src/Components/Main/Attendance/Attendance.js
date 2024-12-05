@@ -348,46 +348,46 @@ const Attendance = ({ route }) => {
           </Text>
           {attendanceSummary ? (
             <>
-              <Text style={{ fontSize: 14, marginBottom: 5 }}>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#777" }}>
                 Total Sundays: {attendanceSummary?.totalSundays}
               </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5 }}>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#777" }}>
                 Total Holidays: {attendanceSummary?.totalHolidays}
               </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5 }}>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#777" }}>
                 Total Present Days: {attendanceSummary?.employeePresentDays}/
                 {attendanceSummary.companyWorkingDays}
               </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5 }}>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#777" }}>
                 Total Absent Days: {attendanceSummary?.employeeAbsentDays}
               </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5 }}>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#777" }}>
                 Total Leave Days: {attendanceSummary?.employeeLeaveDays}
               </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5 }}>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#777" }}>
                 Total Hours Worked: {attendanceSummary?.employeeWorkingHours}/
                 {attendanceSummary.companyWorkingHours}
               </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5 }}>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#777" }}>
                 Total Late in Days: {attendanceSummary?.employeeLateInDays}
               </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5 }}>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#777" }}>
                 Average Punch In Time:{" "}
                 {formatTimeWithAmPm(attendanceSummary?.averagePunchInTime)}
               </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5 }}>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#777" }}>
                 Average Punch Out Time:{" "}
                 {formatTimeWithAmPm(attendanceSummary?.averagePunchOutTime)}
               </Text>
             </>
           ) : (
-            <Text style={{ fontSize: 14, marginBottom: 10 }}>No Data</Text>
+            <Text style={{ fontSize: 14, marginBottom: 10, color: "#777" }}>No Data</Text>
           )}
           <Button
             mode="contained"
             onPress={() => setModalVisible(false)}
             style={{ marginTop: 10, backgroundColor: "#ffb300" }}>
-            <Close name="close" size={25} />
+            <Close name="close" size={25} style={{ color: "#fff" }} />
           </Button>
         </Modal>
       </Portal>

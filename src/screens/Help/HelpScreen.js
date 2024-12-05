@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   },
   supportDetails: {
     fontSize: 14,
-    color: "#333",
+    color: "#555",
   },
   linkContainer: {
     marginTop: 20,

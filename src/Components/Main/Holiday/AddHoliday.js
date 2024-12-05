@@ -98,7 +98,7 @@ const AddHoliday = ({ navigation }) => {
         <TouchableOpacity
           style={[styles.input, styles.dateInput]}
           onPress={showDatePicker}>
-          <Text>{date.toISOString().split("T")[0]}</Text>
+          <Text style={{ color: "#777" }}>{date.toISOString().split("T")[0]}</Text>
         </TouchableOpacity>
 
         {showPicker && (
@@ -152,6 +152,7 @@ const styles = StyleSheet.create({
   dateInput: {
     paddingVertical: 10,
     paddingLeft: 15,
+    color: "#777",
   },
   submitButton: {
     backgroundColor: "#ffb300",
