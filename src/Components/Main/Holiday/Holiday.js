@@ -80,7 +80,7 @@ const Holiday = ({ navigation }) => {
           <Text style={styles.addButtonText}>Add New Holiday</Text>
         </TouchableOpacity>
 
-        <Text style={styles.pageTitle}>Upcoming holidays</Text>
+        <Text style={styles.pageTitle}>Upcoming Holidays</Text>
 
         {loading ? (
           <View
@@ -112,7 +112,6 @@ const styles = StyleSheet.create({
     columnGap: 100,
     padding: 12,
     backgroundColor: "#fff",
-    elevation: 1,
   },
   headerTitle: {
     fontSize: 16,

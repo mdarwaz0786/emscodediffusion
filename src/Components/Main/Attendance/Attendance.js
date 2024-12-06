@@ -262,7 +262,7 @@ const Attendance = ({ route }) => {
             <ActivityIndicator size="small" color="#ffb300" />
           </View>
         ) : attendance?.length === 0 ? (
-          <Text style={{ textAlign: "center" }}>
+          <Text style={{ textAlign: "center", color: "#777" }}>
             Attendance records not found.
           </Text>
         ) : (
@@ -334,7 +334,6 @@ const Attendance = ({ route }) => {
             padding: 20,
             marginHorizontal: 20,
             borderRadius: 10,
-            elevation: 5,
           }}>
           <Text
             style={{
@@ -407,7 +406,6 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 10,
     backgroundColor: "#fff",
-    elevation: 1,
   },
   headerTitle: {
     fontSize: 16,
@@ -441,10 +439,12 @@ const styles = StyleSheet.create({
   },
   picker: {
     backgroundColor: "#fff",
+    color: "#333",
   },
   pickerItem: {
     fontSize: 14,
     color: "#333",
+    backgroundColor: "#fff",
   },
   attendanceCard: {
     backgroundColor: "#fff",

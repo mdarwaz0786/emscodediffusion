@@ -572,7 +572,6 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 10,
     backgroundColor: "#fff",
-    elevation: 1,
   },
   headerTitle: {
     fontSize: 16,
@@ -606,9 +605,11 @@ const styles = StyleSheet.create({
   },
   picker: {
     backgroundColor: "#fff",
+    color: "#333",
   },
   pickerItem: {
     fontSize: 14,
+    backgroundColor: "#fff",
     color: "#333",
   },
   headerContainer: {

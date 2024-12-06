@@ -148,7 +148,6 @@ const styles = StyleSheet.create({
     columnGap: 100,
     padding: 12,
     backgroundColor: "#fff",
-    elevation: 1,
   },
   headerTitle: {
     fontSize: 16,
@@ -189,6 +188,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 5,
     elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
     position: "absolute",
     right: 0,
     top: 0,

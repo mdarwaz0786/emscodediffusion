@@ -160,7 +160,7 @@ const Settings = ({ navigation }) => {
             <ActivityIndicator size="large" color="#ffb300" />
           </View>
         ) : office?.length === 0 ? (
-          <Text style={{ textAlign: "center" }}>Office not found.</Text>
+          <Text style={{ textAlign: "center", color: "#777" }}>Office not found.</Text>
         ) : (
           <ScrollView
             contentContainerStyle={[styles.cardContainer, { flexGrow: 1 }]}
@@ -226,7 +226,6 @@ const styles = StyleSheet.create({
     columnGap: 100,
     padding: 12,
     backgroundColor: "#fff",
-    elevation: 1,
   },
   headerTitle: {
     fontSize: 16,
@@ -297,6 +296,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     zIndex: 10,
     elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
   },
   popupOption: {
     paddingVertical: 8,
@@ -325,7 +328,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5,
     alignItems: "center",
   },
   modalTitle: {

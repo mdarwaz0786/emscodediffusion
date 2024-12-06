@@ -74,7 +74,6 @@ const styles = StyleSheet.create({
     columnGap: 100,
     padding: 12,
     backgroundColor: "#fff",
-    elevation: 1,
   },
   headerTitle: {
     fontSize: 16,

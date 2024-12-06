@@ -262,23 +262,21 @@ const Home = () => {
     );
   };
 
-  const statistics = monthlyStatistic
-    ? [
-      { label: " Month", value: formatDate(monthlyStatistic?.month) || "-", icon: "📅" },
-      { label: "Total Days", value: monthlyStatistic?.totalDaysInMonth || 0, icon: "📆" },
-      { label: "Working Days", value: monthlyStatistic?.companyWorkingDays || 0, icon: "💼" },
-      { label: "Holidays", value: monthlyStatistic?.totalHolidays || 0, icon: "🎉" },
-      { label: "Sundays", value: monthlyStatistic?.totalSundays || 0, icon: "☀️" },
-      { label: "Present Days", value: monthlyStatistic?.employeePresentDays || 0, icon: "✅" },
-      { label: "Absent Days", value: monthlyStatistic?.employeeAbsentDays || 0, icon: "❌" },
-      { label: "Leave Days", value: monthlyStatistic?.employeeLeaveDays || 0, icon: "🏖️" },
-      { label: "Late In Days", value: monthlyStatistic?.employeeLateInDays || 0, icon: "⏰" },
-      { label: "Total Hours Worked", value: formatTimeToHoursMinutes(monthlyStatistic?.employeeWorkingHours) || "00:00", icon: "🕒" },
-      { label: "Avgerage Punch In Time", value: formatTimeWithAmPm(monthlyStatistic?.averagePunchInTime) || "-", icon: "🔔" },
-      { label: "Avgerage Punch Out Time", value: formatTimeWithAmPm(monthlyStatistic?.averagePunchOutTime) || "-", icon: "🔕" },
-      { label: "Company's Working Hours", value: formatTimeToHoursMinutes(monthlyStatistic?.companyWorkingHours) || "00:00", icon: "🏢" },
-    ]
-    : [];
+  const statistics = [
+    { label: " Month", value: formatDate(monthlyStatistic?.month) || "-", icon: "📅" },
+    { label: "Total Days", value: monthlyStatistic?.totalDaysInMonth || 0, icon: "📆" },
+    { label: "Working Days", value: monthlyStatistic?.companyWorkingDays || 0, icon: "💼" },
+    { label: "Holidays", value: monthlyStatistic?.totalHolidays || 0, icon: "🎉" },
+    { label: "Sundays", value: monthlyStatistic?.totalSundays || 0, icon: "☀️" },
+    { label: "Present Days", value: monthlyStatistic?.employeePresentDays || 0, icon: "✅" },
+    { label: "Absent Days", value: monthlyStatistic?.employeeAbsentDays || 0, icon: "❌" },
+    { label: "Leave Days", value: monthlyStatistic?.employeeLeaveDays || 0, icon: "🏖️" },
+    { label: "Late In Days", value: monthlyStatistic?.employeeLateInDays || 0, icon: "⏰" },
+    { label: "Total Hours Worked", value: formatTimeToHoursMinutes(monthlyStatistic?.employeeWorkingHours) || "00:00", icon: "🕒" },
+    { label: "Avgerage Punch In Time", value: formatTimeWithAmPm(monthlyStatistic?.averagePunchInTime) || "-", icon: "🔔" },
+    { label: "Avgerage Punch Out Time", value: formatTimeWithAmPm(monthlyStatistic?.averagePunchOutTime) || "-", icon: "🔕" },
+    { label: "Company's Working Hours", value: formatTimeToHoursMinutes(monthlyStatistic?.companyWorkingHours) || "00:00", icon: "🏢" },
+  ];
 
   return (
     <>
@@ -415,7 +413,7 @@ const Home = () => {
               🔔 New holiday announced on {formatDate(item?.date)} for {item?.reason}.
             </Text>
           ))}
-          {holidays?.length === 0 && <Text>🔔 No new notifications</Text>}
+          {holidays?.length === 0 && <Text style={{ color: "#777" }}>🔕 No new notifications</Text>}
         </View>
       </ScrollView>
     </>
@@ -434,7 +432,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     marginHorizontal: 10,
     borderRadius: 12,
-    marginTop: 12,
+    marginTop: 10,
   },
   header: {
     flexDirection: "row",
@@ -593,7 +591,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fce8e8",
     borderRadius: 10,
     marginTop: 16,
-    marginBottom: 5,
   },
   notificationTitle: {
     marginBottom: 3,
