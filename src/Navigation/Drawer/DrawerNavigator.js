@@ -4,6 +4,7 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import { useAuth } from "../../Context/auth.context.js";
 import BottomTabNavigator from "../BottomTab/BottomTabNavigator.js";
 import LoginScreen from "../../Screens/Auth/LoginScreen.js";
+import WorkSummary from "../../Components/Main/WorkSummary/WorkSummary.js";
 
 // Lazy load the screens
 const CustomDrawerNavigator = lazy(() => import("./CustomDrawerNavigator.js"));
@@ -56,6 +57,7 @@ const DrawerNavigator = () => {
             <Drawer.Screen name="EmployeeStack" component={EmployeeStack} />
             <Drawer.Screen name="HolidayStack" component={HolidayStack} />
             <Drawer.Screen name="SettingsStack" component={SettingsStack} />
+            <Drawer.Screen name="WorkSummary" component={WorkSummary} />
             <Drawer.Screen name="About" component={AboutUsScreen} />
             <Drawer.Screen name="Contact" component={ContactUsScreen} />
             <Drawer.Screen name="Help" component={HelpScreen} />

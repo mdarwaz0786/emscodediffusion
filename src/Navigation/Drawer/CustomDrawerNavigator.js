@@ -32,6 +32,12 @@ const CustomDrawerNavigator = () => {
       show: fieldPermissions?.settings?.show,
     },
     {
+      label: "Work Summary",
+      icon: "document-text-outline",
+      route: "WorkSummary",
+      show: true,
+    },
+    {
       label: "About Us",
       icon: "information-circle-outline",
       route: "About",
