@@ -337,7 +337,7 @@ const SalarySlip = ({ route }) => {
         </div>
         <div class="salaryRow">
           <div class="salaryText">Deduction</div>
-          <div class="salaryText">-₹${parseFloat(employee?.monthlySalary) - parseFloat(monthlySalary?.totalSalary)}</div>
+          <div class="salaryText">-₹${monthlySalary?.totalDeduction}</div>
         </div>
         <div class="salaryRow totalSalary">
           <div class="salaryTextBold">Total Salary</div>
@@ -544,7 +544,7 @@ const SalarySlip = ({ route }) => {
             </View>
             <View style={styles.salaryRow}>
               <Text style={styles.salaryText}>Deduction</Text>
-              <Text style={styles.salaryText}>-₹{parseFloat(employee?.monthlySalary) - parseFloat(monthlySalary?.totalSalary)}</Text>
+              <Text style={styles.salaryText}>-₹{monthlySalary?.totalDeduction}</Text>
             </View>
             <View style={[styles.salaryRow, styles.totalSalary]}>
               <Text style={styles.salaryTextBold}>Total Salary</Text>
