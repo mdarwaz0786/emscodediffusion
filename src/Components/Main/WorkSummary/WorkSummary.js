@@ -15,16 +15,16 @@ import axios from "axios";
 import { API_BASE_URL } from "@env";
 
 const WorkSummary = ({ navigation }) => {
-  const [reason, setReason] = useState("");
   const [date, setDate] = useState(new Date());
   const [startTime, setStartTime] = useState(new Date());
   const [endTime, setEndTime] = useState(new Date());
+  const [workDescription, setWorkDescription] = useState("");
+  const [projects, setProjects] = useState([]);
+  const [selectedProject, setSelectedProject] = useState(null);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isStartTimePickerVisible, setIsStartTimePickerVisible] = useState(false);
   const [isEndTimePickerVisible, setIsEndTimePickerVisible] = useState(false);
   const { validToken, team } = useAuth();
-  const [projects, setProjects] = useState([]);
-  const [selectedProject, setSelectedProject] = useState(null);
 
   const fetchAllProject = async () => {
     try {
@@ -57,54 +57,53 @@ const WorkSummary = ({ navigation }) => {
     };
   }, [team]);
 
-  console.log(projects)
-
-  // Formatting helper function for time
+  // Format time
   const formatTime = (time) => {
     return time.toTimeString().substring(0, 5);
   };
 
   const handleSubmit = async () => {
-    if (!date || !startTime || !endTime) {
+    if (!date || !startTime || !endTime || !selectedProject || !workDescription) {
       Toast.show({ type: "error", text1: "All fields are required" });
       return;
-    }
+    };
 
     const formattedDate = date.toISOString().split("T")[0];
     const formattedStartTime = formatTime(startTime);
     const formattedEndTime = formatTime(endTime);
 
-    const holidayData = {
-      type: "Holiday",
+    const workDetail = [{
+      teamMember: team?._id,
+      workDescription,
       date: formattedDate,
       startTime: formattedStartTime,
       endTime: formattedEndTime,
-    };
+    }];
 
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/api/v1/holiday/create-holiday`,
-        holidayData,
+      const response = await axios.put(
+        `${API_BASE_URL}/api/v1/project/update-project/${selectedProject}`,
+        { workDetail },
         {
           headers: {
             Authorization: validToken,
-            "Content-Type": "application/json",
           },
         }
       );
 
       if (response?.data?.success) {
-        setReason("");
+        setWorkDescription("");
         setDate(new Date());
         setStartTime(new Date());
         setEndTime(new Date());
+        setSelectedProject(null);
         Toast.show({ type: "success", text1: "Submitted successfully" });
         navigation.goBack();
       }
     } catch (error) {
-      console.error("Error:", error);
-      Toast.show({ type: "error", text1: error.response?.data?.message || "Submission failed" });
-    }
+      console.log("Error:", error.message);
+      Toast.show({ type: "error", text1: error?.response?.data?.message || "Submission failed" });
+    };
   };
 
   const showDatePicker = () => {
@@ -151,16 +150,26 @@ const WorkSummary = ({ navigation }) => {
       </View>
 
       <View style={styles.container}>
-        <Text style={styles.label}>Select a Project</Text>
-
+        <Text style={{ marginBottom: 5, color: "#555" }}>
+          Project <Text style={{ color: "red" }}>*</Text>
+        </Text>
         <Picker
           selectedValue={selectedProject}
           style={styles.picker}
           onValueChange={(itemValue, itemIndex) => setSelectedProject(itemValue)}
         >
-          <Picker.Item label="Select a project..." value={null} />
+          <Picker.Item
+            label="Select project"
+            value={null}
+            style={styles.pickerItem}
+          />
           {projects?.map((project) => (
-            <Picker.Item key={project?._id} label={project?.projectName} value={project?._id} />
+            <Picker.Item
+              key={project?._id}
+              label={project?.projectName}
+              value={project?._id}
+              style={styles.pickerItem}
+            />
           ))}
         </Picker>
 
@@ -174,7 +183,6 @@ const WorkSummary = ({ navigation }) => {
         >
           <Text style={{ color: "#777" }}>{date.toISOString().split("T")[0]}</Text>
         </TouchableOpacity>
-
         {isDatePickerVisible && (
           <DateTimePicker
             value={date}
@@ -194,7 +202,6 @@ const WorkSummary = ({ navigation }) => {
         >
           <Text style={{ color: "#777" }}>{formatTime(startTime)}</Text>
         </TouchableOpacity>
-
         {isStartTimePickerVisible && (
           <DateTimePicker
             value={startTime}
@@ -214,7 +221,6 @@ const WorkSummary = ({ navigation }) => {
         >
           <Text style={{ color: "#777" }}>{formatTime(endTime)}</Text>
         </TouchableOpacity>
-
         {isEndTimePickerVisible && (
           <DateTimePicker
             value={endTime}
@@ -224,14 +230,16 @@ const WorkSummary = ({ navigation }) => {
           />
         )}
 
+        {/* Description */}
         <Text style={{ marginBottom: 5, color: "#555" }}>
-          Descripton <Text style={{ color: "red" }}>*</Text>
+          Work Descripton <Text style={{ color: "red" }}>*</Text>
         </Text>
-
         <TextInput
           style={[styles.input, styles.textArea]}
-          placeholder="Enter Description"
-          placeholderTextColor="#aaa"
+          placeholder="Enter Work Description"
+          placeholderTextColor="#777"
+          value={workDescription}
+          onChangeText={setWorkDescription}
           multiline
         />
 
@@ -263,40 +271,33 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingTop: 10,
   },
-  label: {
-    fontSize: 16,
-    marginBottom: 10,
-    color: "#777"
-  },
   picker: {
-    height: 50,
-    width: '100%',
     marginBottom: 10,
     backgroundColor: "#fff",
     color: "#777",
     borderWidth: 1,
-    borderColor: "#fff"
+    borderColor: "#fff",
+  },
+  pickerItem: {
+    backgroundColor: "#fff",
+    color: "#555",
+    fontSize: 14,
   },
   input: {
-    paddingVertical: 5,
+    height: 50,
     paddingLeft: 15,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 5,
     marginBottom: 10,
     backgroundColor: "#fff",
     color: "#777",
+    justifyContent: "center"
   },
   textArea: {
-    height: 100,
+    height: 150,
     textAlignVertical: "top",
-    paddingLeft: 16,
-    paddingTop: 10,
   },
   dateInput: {
     paddingVertical: 10,
     paddingLeft: 15,
-    color: "#777",
   },
   submitButton: {
     backgroundColor: "#ffb300",
