@@ -4,12 +4,14 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import { useAuth } from "../../Context/auth.context.js";
 import BottomTabNavigator from "../BottomTab/BottomTabNavigator.js";
 import LoginScreen from "../../Screens/Auth/LoginScreen.js";
-import WorkSummary from "../../Components/Main/WorkSummary/WorkSummary.js";
 
 // Lazy load the screens
 const CustomDrawerNavigator = lazy(() => import("./CustomDrawerNavigator.js"));
 const AboutUsScreen = lazy(() =>
   import("../../Screens/AboutUs/AboutUsScreen.js"),
+);
+const WorkSummary = lazy(() =>
+  import("../../Components/Main/WorkSummary/WorkSummary.js"),
 );
 const ContactUsScreen = lazy(() =>
   import("../../Screens/ContactUs/ContactUsScreen.js"),
