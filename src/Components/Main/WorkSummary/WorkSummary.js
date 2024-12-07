@@ -5,6 +5,7 @@ import {
   TextInput,
   Text,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
@@ -149,7 +150,7 @@ const WorkSummary = ({ navigation }) => {
         <Text style={styles.headerTitle}>Work Summary</Text>
       </View>
 
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         <Text style={{ marginBottom: 5, color: "#555" }}>
           Project <Text style={{ color: "red" }}>*</Text>
         </Text>
@@ -247,7 +248,7 @@ const WorkSummary = ({ navigation }) => {
         <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
           <Text style={styles.submitButtonText}>Submit</Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     </>
   );
 };
