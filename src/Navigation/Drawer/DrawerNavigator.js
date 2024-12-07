@@ -10,14 +10,15 @@ const CustomDrawerNavigator = lazy(() => import("./CustomDrawerNavigator.js"));
 const AboutUsScreen = lazy(() =>
   import("../../Screens/AboutUs/AboutUsScreen.js"),
 );
+const AddWorkSummary = lazy(() =>
+  import("../../Components/Main/WorkSummary/AddWorkSummary.js"),
+);
 const WorkSummary = lazy(() =>
   import("../../Components/Main/WorkSummary/WorkSummary.js"),
 );
 const ContactUsScreen = lazy(() =>
   import("../../Screens/ContactUs/ContactUsScreen.js"),
 );
-const HelpScreen = lazy(() => import("../../Screens/Help/HelpScreen.js"));
-const LogoutScreen = lazy(() => import("../../Screens/Auth/LogoutScreen.js"));
 const EmployeeStack = lazy(() =>
   import("../Stack/EmployeeStack/EmployeeStack.js"),
 );
@@ -26,6 +27,12 @@ const HolidayStack = lazy(() =>
 );
 const SettingsStack = lazy(() =>
   import("../Stack/SettingsStack/SettingsStack.js"),
+);
+const HelpScreen = lazy(() =>
+  import("../../Screens/Help/HelpScreen.js"),
+);
+const LogoutScreen = lazy(() =>
+  import("../../Screens/Auth/LogoutScreen.js"),
 );
 
 const Drawer = createDrawerNavigator();
@@ -59,6 +66,7 @@ const DrawerNavigator = () => {
             <Drawer.Screen name="EmployeeStack" component={EmployeeStack} />
             <Drawer.Screen name="HolidayStack" component={HolidayStack} />
             <Drawer.Screen name="SettingsStack" component={SettingsStack} />
+            <Drawer.Screen name="AddWorkSummary" component={AddWorkSummary} />
             <Drawer.Screen name="WorkSummary" component={WorkSummary} />
             <Drawer.Screen name="About" component={AboutUsScreen} />
             <Drawer.Screen name="Contact" component={ContactUsScreen} />
