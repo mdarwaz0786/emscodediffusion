@@ -6,15 +6,14 @@ import BottomTabNavigator from "../BottomTab/BottomTabNavigator.js";
 import LoginScreen from "../../Screens/Auth/LoginScreen.js";
 
 // Lazy load the screens
-const CustomDrawerNavigator = lazy(() => import("./CustomDrawerNavigator.js"));
+const CustomDrawerNavigator = lazy(() =>
+  import("./CustomDrawerNavigator.js")
+);
 const AboutUsScreen = lazy(() =>
   import("../../Screens/AboutUs/AboutUsScreen.js"),
 );
 const AddWorkSummary = lazy(() =>
-  import("../../Components/Main/WorkSummary/AddWorkSummary.js"),
-);
-const WorkSummary = lazy(() =>
-  import("../../Components/Main/WorkSummary/WorkSummary.js"),
+  import("../../Components/Main/AddWorkSummary/AddWorkSummary.js"),
 );
 const ContactUsScreen = lazy(() =>
   import("../../Screens/ContactUs/ContactUsScreen.js"),
@@ -67,7 +66,6 @@ const DrawerNavigator = () => {
             <Drawer.Screen name="HolidayStack" component={HolidayStack} />
             <Drawer.Screen name="SettingsStack" component={SettingsStack} />
             <Drawer.Screen name="AddWorkSummary" component={AddWorkSummary} />
-            <Drawer.Screen name="WorkSummary" component={WorkSummary} />
             <Drawer.Screen name="About" component={AboutUsScreen} />
             <Drawer.Screen name="Contact" component={ContactUsScreen} />
             <Drawer.Screen name="Help" component={HelpScreen} />

@@ -26,7 +26,6 @@ const Home = () => {
   const navigation = useNavigation();
   const { team, validToken } = useAuth();
   const [attendance, setAttendance] = useState([]);
-  const [holidays, setHolidays] = useState([]);
   const [monthlyStatistic, setMonthlyStatistic] = useState("");
   const [currentMonth, setCurrentMonth] = useState(
     new Date().toISOString().split("T")[0].slice(0, 7),
@@ -42,7 +41,6 @@ const Home = () => {
     setEmployeeId(team?._id);
     setCurrentDate(new Date().toISOString().split("T")[0]);
     setCurrentMonth(new Date().toISOString().split("T")[0].slice(0, 7));
-    fetchUpcomingHoliday();
   }, [team]);
 
   // Process Attendance API Request
@@ -169,26 +167,6 @@ const Home = () => {
       console.log("Error while fetching attendance:", error.message);
     } finally {
       setLoading(false);
-    }
-  };
-
-  // Get upcoming holiday
-  const fetchUpcomingHoliday = async () => {
-    try {
-      const response = await axios.get(
-        `${API_BASE_URL}/api/v1/holiday/upcoming-holiday`,
-        {
-          headers: {
-            Authorization: validToken,
-          },
-        },
-      );
-
-      if (response?.data?.success) {
-        setHolidays(response?.data?.holiday);
-      }
-    } catch (error) {
-      console.error("Error while fetching upcoming holiday:", error.message);
     }
   };
 
@@ -384,7 +362,7 @@ const Home = () => {
           <Text style={styles.summaryTitle}>Today’s Summary</Text>
           <Text style={{ marginTop: -1, color: "#777" }}>
             Total Hours Worked:{" "}
-            {formatTimeToHoursMinutes(attendance[0]?.hoursWorked)}
+            {formatTimeToHoursMinutes(attendance[0]?.hoursWorked) || "0"}
           </Text>
           <Text style={{ color: "#777" }}>Break Time: 45 minutes</Text>
         </View>
@@ -401,19 +379,6 @@ const Home = () => {
               </View>
             </View>
           ))}
-        </View>
-
-        {/* Notifications */}
-        <View style={styles.notifications}>
-          <Text style={[styles.sectionTitle, styles.notificationTitle]}>Notifications</Text>
-          {holidays?.map((item, index) => (
-            <Text
-              key={item?._id || index}
-              style={styles.notificationDescription}>
-              🔔 New holiday announced on {formatDate(item?.date)} for {item?.reason}.
-            </Text>
-          ))}
-          {holidays?.length === 0 && <Text style={{ color: "#777" }}>🔕 No new notifications</Text>}
         </View>
       </ScrollView>
     </>
@@ -584,21 +549,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "400",
     color: "#4a90e2",
-  },
-  notifications: {
-    padding: 15,
-    paddingTop: 12,
-    backgroundColor: "#fce8e8",
-    borderRadius: 10,
-    marginTop: 16,
-  },
-  notificationTitle: {
-    marginBottom: 3,
-  },
-  notificationDescription: {
-    marginBottom: 5,
-    fontSize: 14,
-    color: "#777",
   },
 });
 

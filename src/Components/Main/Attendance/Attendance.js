@@ -315,7 +315,7 @@ const Attendance = ({ route }) => {
                       ? "On Time"
                       : item?.lateIn
                         ? "Late"
-                        : "_"}
+                        : "-"}
                   </Text>
                 </View>
               </View>

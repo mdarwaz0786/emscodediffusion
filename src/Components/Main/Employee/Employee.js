@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   employeeRole: {
-    fontSize: 13,
+    fontSize: 14,
     color: "#888",
   },
   optionsButton: {
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   popupOptionText: {
-    fontSize: 13,
+    fontSize: 14,
     color: "#333",
   },
   centeredView: {

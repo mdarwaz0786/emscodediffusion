@@ -5,8 +5,8 @@ import { ActivityIndicator, View } from "react-native";
 import HomeScreen from "../../Screens/Home/HomeScreen.js";
 
 // Lazy load the screens
-const NotificationsScreen = lazy(() =>
-  import("../../Screens/Notifications/NotificationScreen.js"),
+const NotificationTobTab = lazy(() =>
+  import("../TopTab/NotificationTopTab/NotificationTopTab.js"),
 );
 const CustomDrawerNavigator = lazy(() =>
   import("../Drawer/CustomDrawerNavigator.js"),
@@ -38,23 +38,24 @@ const BottomTabNavigator = () => {
           headerShown: false,
           tabBarIcon: ({ color, size }) => {
             const iconName = icons[route.name];
-            return <Icon name={iconName} size={23} color={color} />;
+            return <Icon name={iconName} size={size} color={color} />;
           },
           tabBarActiveTintColor: "#ffb300",
           tabBarInactiveTintColor: "gray",
           tabBarStyle: {
-            height: 60,
+            height: 65,
             backgroundColor: "#fff",
             paddingBottom: 8,
             paddingTop: 5,
           },
           tabBarLabelStyle: {
-            fontSize: 14,
+            fontSize: 15,
+            fontWeight: "400",
           },
         })}>
         <Tab.Screen name="Home" component={HomeScreen} />
         <Tab.Screen name="Profile" component={ProfileScreen} />
-        <Tab.Screen name="Notifications" component={NotificationsScreen} />
+        <Tab.Screen name="Notifications" component={NotificationTobTab} />
         <Tab.Screen name="Menu" component={CustomDrawerNavigator} />
       </Tab.Navigator>
     </Suspense>

@@ -13,10 +13,6 @@ const Holiday = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const { validToken } = useAuth();
 
-  useEffect(() => {
-    fetchUpcomingHoliday();
-  }, []);
-
   const fetchUpcomingHoliday = async () => {
     try {
       setLoading(true);
@@ -38,6 +34,12 @@ const Holiday = ({ navigation }) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (validToken) {
+      fetchUpcomingHoliday();
+    }
+  }, [validToken]);
 
   // Render each upcoming holiday
   const renderItem = ({ item }) => (

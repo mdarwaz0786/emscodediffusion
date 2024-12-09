@@ -45,6 +45,7 @@ const Main = () => (
 const styles = StyleSheet.create({
   toastContainer: {
     padding: 10,
+    paddingHorizontal: 16,
     borderRadius: 8,
     marginHorizontal: 20,
     marginBottom: 10,

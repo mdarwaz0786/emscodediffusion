@@ -8,11 +8,11 @@ import {
 } from "react-native";
 import Calender from "react-native-vector-icons/MaterialCommunityIcons";
 import { API_BASE_URL } from "@env";
-import { useAuth } from "../../Context/auth.context.js";
-import formatDate from "../../Helper/formatDate.js";
+import { useAuth } from "../../../Context/auth.context.js";
+import formatDate from "../../../Helper/formatDate.js";
 import axios from "axios";
 
-const NotificationScreen = () => {
+const UpcomingHolidays = () => {
   const [holidays, setHolidays] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -75,14 +75,14 @@ const NotificationScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Notifications</Text>
+      <Text style={styles.title}>Upcoming Holidays</Text>
       {loading && !refreshing ? (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
           <ActivityIndicator size="large" color="#ffb300" />
         </View>
       ) : holidays?.length === 0 ? (
         <View style={styles.centeredView}>
-          <Text style={styles.noHolidaysText}>No new notifications</Text>
+          <Text style={styles.noHolidaysText}>No Upcoming Holidays</Text>
         </View>
       ) : (
         <FlatList
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   title: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "400",
     color: "#333",
     marginBottom: 10,
@@ -155,4 +155,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NotificationScreen;
+export default UpcomingHolidays;

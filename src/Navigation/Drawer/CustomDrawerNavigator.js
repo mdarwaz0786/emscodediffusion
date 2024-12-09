@@ -38,12 +38,6 @@ const CustomDrawerNavigator = () => {
       show: team?.role?.permissions?.project?.fields?.workDetail?.show,
     },
     {
-      label: "Work Summary",
-      icon: "document-text-outline",
-      route: "WorkSummary",
-      show: team?.role?.permissions?.project?.fields?.workDetail?.show,
-    },
-    {
       label: "About Us",
       icon: "information-circle-outline",
       route: "About",
