@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.log(
-        "Error while storing token or fetching user details:",
+        "Error while storing token and fetching user details:",
         error.message,
       );
       Toast.show({ type: "error", text1: "Login failed. Please try again." });
@@ -55,15 +55,13 @@ export const AuthProvider = ({ children }) => {
     try {
       setIsLoading(true);
       const storedToken = await AsyncStorage.getItem("token");
-
       if (storedToken) {
         setToken(storedToken);
         const cachedTeam = await AsyncStorage.getItem("team");
-
         if (cachedTeam) {
           setTeam(JSON.parse(cachedTeam));
         } else {
-          setTeam(null)
+          setTeam(null);
         };
       } else {
         Toast.show({
@@ -73,13 +71,7 @@ export const AuthProvider = ({ children }) => {
       };
     } catch (error) {
       console.log("Error during initializing auth:", error.message);
-      if (error?.response && error?.response?.status === 401) {
-        Toast.show({
-          type: "error",
-          text1: "Session expired. Please log in again to continue.",
-        });
-        logOutTeam();
-      }
+      logOutTeam();
     } finally {
       setIsLoading(false);
     }
