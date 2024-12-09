@@ -9,6 +9,7 @@ import {
 import Calender from "react-native-vector-icons/MaterialCommunityIcons";
 import { API_BASE_URL } from "@env";
 import { useAuth } from "../../../Context/auth.context.js";
+import { useRefresh } from "../../../Context/refresh.context.js";
 import formatDate from "../../../Helper/formatDate.js";
 import axios from "axios";
 
@@ -17,8 +18,9 @@ const UpcomingHolidays = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { validToken } = useAuth();
+  const { refreshKey, refreshPage } = useRefresh();
 
-  // Fetch holidays
+  // Fetch upcoming holiday
   const fetchUpcomingHoliday = async () => {
     try {
       setLoading(true);
@@ -46,11 +48,11 @@ const UpcomingHolidays = () => {
     if (validToken) {
       fetchUpcomingHoliday();
     }
-  }, [validToken]);
+  }, [validToken, refreshKey]);
 
   const handleRefresh = () => {
     setRefreshing(true);
-    fetchUpcomingHoliday();
+    refreshPage();
   };
 
   const renderItem = ({ item }) => (
@@ -76,7 +78,7 @@ const UpcomingHolidays = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Upcoming Holidays</Text>
-      {loading && !refreshing ? (
+      {loading ? (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
           <ActivityIndicator size="large" color="#ffb300" />
         </View>

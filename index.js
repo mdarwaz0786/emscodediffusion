@@ -7,6 +7,7 @@ import App from "./App.js";
 import { name as appName } from "./app.json";
 import Toast from "react-native-toast-message";
 import { AuthProvider } from "./src/Context/auth.context.js";
+import { RefreshProvider } from "./src/Context/refresh.context.js";
 
 // Custom Toast Configuration
 const toastConfig = {
@@ -33,11 +34,13 @@ const toastConfig = {
 const Main = () => (
   <SafeAreaProvider>
     <AuthProvider>
-      <PaperProvider>
-        <App />
-        <StatusBar backgroundColor="#ffb300" barStyle="light-content" />
-        <Toast config={toastConfig} />
-      </PaperProvider>
+      <RefreshProvider>
+        <PaperProvider>
+          <App />
+          <StatusBar backgroundColor="#ffb300" barStyle="light-content" />
+          <Toast config={toastConfig} />
+        </PaperProvider>
+      </RefreshProvider>
     </AuthProvider>
   </SafeAreaProvider>
 );
