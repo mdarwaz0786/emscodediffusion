@@ -84,7 +84,7 @@ const UpcomingHolidays = () => {
         </View>
       ) : holidays?.length === 0 ? (
         <View style={styles.centeredView}>
-          <Text style={styles.noHolidaysText}>No Upcoming Holidays</Text>
+          <Text style={styles.noHolidaysText}>No upcoming holidays at the moment.</Text>
         </View>
       ) : (
         <FlatList

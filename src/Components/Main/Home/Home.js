@@ -7,6 +7,7 @@ import {
   ScrollView,
   StyleSheet,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useAuth } from "../../../Context/auth.context.js";
@@ -21,10 +22,12 @@ import isWithinOfficeLocation from "./utils/isWithinOfiiceLocation.js";
 import getUserLocation from "./utils/getUerLocation.js";
 import getAttendanceData from "./utils/getAttendanceData.js";
 import formatDate from "../../../Helper/formatDate.js";
+import { useRefresh } from "../../../Context/refresh.context.js";
 
 const Home = () => {
   const navigation = useNavigation();
   const { team, validToken } = useAuth();
+  const { refreshKey, refreshPage } = useRefresh();
   const [attendance, setAttendance] = useState([]);
   const [monthlyStatistic, setMonthlyStatistic] = useState("");
   const [currentMonth, setCurrentMonth] = useState(
@@ -35,6 +38,7 @@ const Home = () => {
   );
   const [employeeId, setEmployeeId] = useState(team?._id);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   // Update employeeId, currentMonth and currentDate when the component mounts or team changes
   useEffect(() => {
@@ -167,6 +171,7 @@ const Home = () => {
       console.log("Error while fetching attendance:", error.message);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -174,7 +179,7 @@ const Home = () => {
     if (employeeId && currentDate && validToken) {
       fetchAttendance();
     }
-  }, [employeeId, currentDate, validToken]);
+  }, [employeeId, currentDate, validToken, refreshKey]);
 
   // Get current month statistic for logged in employee
   const fetchMonthlyStatistic = async () => {
@@ -204,6 +209,8 @@ const Home = () => {
       }
     } catch (error) {
       console.error("Error while fetching monthly statistic:", error.message);
+    } finally {
+      setRefreshing(false);
     }
   };
 
@@ -211,7 +218,7 @@ const Home = () => {
     if (employeeId && currentMonth && validToken) {
       fetchMonthlyStatistic();
     }
-  }, [employeeId, currentMonth, validToken]);
+  }, [employeeId, currentMonth, validToken, refreshKey]);
 
   // Navigate to attendance detail screen
   const navigateToAttendance = () => {
@@ -256,6 +263,11 @@ const Home = () => {
     { label: "Company's Working Hours", value: formatTimeToHoursMinutes(monthlyStatistic?.companyWorkingHours) || "00:00", icon: "🏢" },
   ];
 
+  const handleRefresh = () => {
+    setRefreshing(true);
+    refreshPage();
+  };
+
   return (
     <>
       {/* Header Card with Profile Icon and Punch Buttons non scrollable */}
@@ -274,7 +286,7 @@ const Home = () => {
           {loading ? (
             <View
               style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-              <ActivityIndicator size="small" color="#ffb300" />
+              <ActivityIndicator size={30} color="#ffb300" />
             </View>
           ) : (
             <View style={styles.punchButtons}>
@@ -305,7 +317,15 @@ const Home = () => {
       </View>
 
       {/* Scrollable content */}
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+          />
+        }
+      >
         {/* Greeting and Date */}
         <View style={styles.greetingContainer}>
           <Text style={styles.greetingText}>
@@ -317,30 +337,21 @@ const Home = () => {
         {/* Today's Activity */}
         <View style={styles.activitySection}>
           <Text style={[styles.sectionTitle, styles.activityTitle,]}>Today’s Activity</Text>
-          {loading ? (
-            <View
-              style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-              <ActivityIndicator size="small" color="#ffb300" />
-            </View>
-          ) : (
-            <>
-              <Text style={{ marginTop: -3, color: "#777" }}>
-                <Text style={{ color: attendance[0]?.punchIn ? "green" : "red" }}>
-                  {attendance[0]?.punchIn ? "✓" : "✗"}
-                </Text>{" "}
-                {formatTimeWithAmPm(attendance[0]?.punchInTime)}
-                {attendance[0]?.punchIn ? " - Punch In" : " Punch In"}
-              </Text>
-              <Text style={{ color: "#777" }}>
-                <Text
-                  style={{ color: attendance[0]?.punchOut ? "green" : "red" }}>
-                  {attendance[0]?.punchOut ? "✓" : "✗"}
-                </Text>{" "}
-                {formatTimeWithAmPm(attendance[0]?.punchOutTime)}
-                {attendance[0]?.punchOut ? " - Punch Out" : " Punch Out"}
-              </Text>
-            </>
-          )}
+          <Text style={{ marginTop: -3, color: "#777" }}>
+            <Text style={{ color: attendance[0]?.punchIn ? "green" : "red" }}>
+              {attendance[0]?.punchIn ? "✓" : "✗"}
+            </Text>{" "}
+            {formatTimeWithAmPm(attendance[0]?.punchInTime)}
+            {attendance[0]?.punchIn ? " - Punch In" : " Punch In"}
+          </Text>
+          <Text style={{ color: "#777" }}>
+            <Text
+              style={{ color: attendance[0]?.punchOut ? "green" : "red" }}>
+              {attendance[0]?.punchOut ? "✓" : "✗"}
+            </Text>{" "}
+            {formatTimeWithAmPm(attendance[0]?.punchOutTime)}
+            {attendance[0]?.punchOut ? " - Punch Out" : " Punch Out"}
+          </Text>
         </View>
 
         {/* Quick Actions */}

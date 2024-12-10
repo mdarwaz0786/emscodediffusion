@@ -4,18 +4,22 @@ import {
   Text,
   StyleSheet,
   ScrollView,
+  ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import axios from "axios";
 import { API_BASE_URL } from "@env";
 import { useAuth } from "../../../Context/auth.context.js";
+import { useRefresh } from "../../../Context/refresh.context.js";
 import formatTimeWithAmPm from "../../../Helper/formatTimeWithAmPm.js";
 import formatTimeToHoursMinutes from "../../../Helper/formatTimeToHoursMinutes.js";
-import { ActivityIndicator } from "react-native-paper";
 
 const TodayAttendance = () => {
   const { validToken } = useAuth();
+  const { refreshKey, refreshPage } = useRefresh();
   const [attendance, setAttendance] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   // Fetch today's attendance
   const fetchTodayAttendance = async () => {
@@ -37,6 +41,7 @@ const TodayAttendance = () => {
       console.log(error.message);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -44,21 +49,33 @@ const TodayAttendance = () => {
     if (validToken) {
       fetchTodayAttendance();
     }
-  }, [validToken]);
+  }, [validToken, refreshKey]);
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    refreshPage();
+  };
 
   return (
     <>
       <Text style={styles.title}>Today's Attendance</Text>
       {/* Scrollable Attendance List */}
-      <ScrollView style={styles.container}>
+      <ScrollView
+        style={styles.container}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+          />
+        }
+      >
         {loading ? (
-          <View
-            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator size="small" color="#ffb300" />
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <ActivityIndicator size="large" color="#ffb300" />
           </View>
         ) : attendance?.length === 0 ? (
           <Text style={{ textAlign: "center", color: "#777" }}>
-            Attendance records not found.
+            Attendance not found for today.
           </Text>
         ) : (
           attendance?.map(item => (

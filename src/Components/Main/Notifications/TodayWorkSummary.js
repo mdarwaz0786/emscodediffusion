@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { ScrollView, View, StyleSheet, Text, RefreshControl, ActivityIndicator } from 'react-native';
 import { useAuth } from "../../../Context/auth.context.js";
+import { useRefresh } from '../../../Context/refresh.context.js';
 import axios from "axios";
 import { API_BASE_URL } from "@env";
 import formatTimeToHoursMinutes from '../../../Helper/formatTimeToHoursMinutes.js';
@@ -10,9 +11,13 @@ import calculateTimeDifference from '../../../Helper/calculateTimeDifference.js'
 const TodayWorkSummary = () => {
   const [workSummary, setWorkSummary] = useState([]);
   const { validToken, team } = useAuth();
+  const { refreshKey, refreshPage } = useRefresh();
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   const fetchTodayWorkSummary = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(`${API_BASE_URL}/api/v1/project/work-detail`, {
         headers: {
           Authorization: validToken,
@@ -27,6 +32,9 @@ const TodayWorkSummary = () => {
       }
     } catch (error) {
       console.log(error.message);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -34,15 +42,36 @@ const TodayWorkSummary = () => {
     if (team?.role?.permissions?.project?.fields?.workDetail?.show) {
       fetchTodayWorkSummary();
     }
-  }, [team?.role?.permissions?.project?.fields?.workDetail?.show]);
+  }, [team?.role?.permissions?.project?.fields?.workDetail?.show, refreshKey]);
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    refreshPage();
+  };
 
   return (
     <>
       <Text style={styles.title}>Today's Work Summary</Text>
-      <ScrollView style={styles.container}>
+      <ScrollView
+        style={styles.container}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+          />
+        }
+      >
         {workSummary && team?.role?.permissions?.project?.fields?.workDetail?.show && (
-          <View>
-            {workSummary?.map((w) => (
+          loading ? (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+              <ActivityIndicator size="large" color="#ffb300" />
+            </View>
+          ) : workSummary?.length === 0 ? (
+            <Text style={{ flex: 1, textAlign: "center", color: "#777" }}>
+              Work summary not found for today.
+            </Text>
+          ) : (
+            workSummary?.map((w) => (
               <View style={styles.card} key={w?.teamMember?._id}>
                 <View style={styles.cardHeader}>
                   <View style={styles.avatar}>
@@ -78,8 +107,7 @@ const TodayWorkSummary = () => {
                   ))}
                 </View>
               </View>
-            ))}
-          </View>
+            )))
         )}
       </ScrollView>
     </>

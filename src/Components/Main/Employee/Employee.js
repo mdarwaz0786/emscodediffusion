@@ -11,12 +11,15 @@ import {
 import axios from "axios";
 import { API_BASE_URL } from "@env";
 import { useAuth } from "../../../Context/auth.context.js";
+import { useRefresh } from "../../../Context/refresh.context.js";
 import Icon from "react-native-vector-icons/Feather";
 
 const Employee = ({ navigation }) => {
   const { validToken } = useAuth();
+  const { refreshKey, refreshPage } = useRefresh();
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [visiblePopupId, setVisiblePopupId] = useState(null);
 
   // Fetch all employees
@@ -36,6 +39,7 @@ const Employee = ({ navigation }) => {
       console.log(error.message);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -43,7 +47,7 @@ const Employee = ({ navigation }) => {
     if (validToken) {
       fetchAllEmployees();
     }
-  }, [validToken]);
+  }, [validToken, refreshKey]);
 
   const navigateToAttendance = id => {
     navigation.navigate("Attendance", { id });
@@ -55,6 +59,11 @@ const Employee = ({ navigation }) => {
 
   const handleBackgroundPress = () => {
     setVisiblePopupId(null);
+  };
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    refreshPage();
   };
 
   const renderEmployeeItem = ({ item }) => (
@@ -122,13 +131,15 @@ const Employee = ({ navigation }) => {
             </View>
           ) : employees?.length === 0 ? (
             <View style={styles.centeredView}>
-              <Text style={styles.noHolidaysText}>Employee not found</Text>
+              <Text style={styles.noHolidaysText}>Employee not found.</Text>
             </View>
           ) : (
             <FlatList
               data={employees}
               renderItem={renderEmployeeItem}
               keyExtractor={item => item?._id}
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
             />
           )}
         </View>

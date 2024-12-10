@@ -7,6 +7,7 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  RefreshControl,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { Picker } from "@react-native-picker/picker";
@@ -14,6 +15,7 @@ import RNHTMLtoPDF from "react-native-html-to-pdf";
 import RNFetchBlob from "rn-fetch-blob";
 import requestStoragePermission from "./utils/requestStoragePermission.js";
 import { useAuth } from "../../../Context/auth.context.js";
+import { useRefresh } from "../../../Context/refresh.context.js";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { API_BASE_URL } from "@env";
@@ -22,6 +24,7 @@ import getMonthName from "./utils/getMonthName.js";
 const SalarySlip = ({ route }) => {
   const id = route?.params?.id;
   const { validToken } = useAuth();
+  const { refreshKey, refreshPage } = useRefresh();
   const [monthlySalary, setMonthlySalary] = useState("");
   const [office, setOffice] = useState([]);
   const [employee, setEmployee] = useState("");
@@ -31,6 +34,7 @@ const SalarySlip = ({ route }) => {
   const [year, setYear] = useState(currentYear);
   const [employeeId, setEmployeeId] = useState(id);
   const navigation = useNavigation();
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     requestStoragePermission();
@@ -60,6 +64,8 @@ const SalarySlip = ({ route }) => {
       }
     } catch (error) {
       console.error("Error while fetching office location:", error.message);
+    } finally {
+      setRefreshing(false);
     }
   };
 
@@ -67,7 +73,7 @@ const SalarySlip = ({ route }) => {
     if (validToken) {
       fetchOfficeLocation();
     }
-  }, [validToken]);
+  }, [validToken, refreshKey]);
 
   // Fetch single employee
   const fetchSingleEmployee = async id => {
@@ -86,6 +92,8 @@ const SalarySlip = ({ route }) => {
       }
     } catch (error) {
       console.log(error.message);
+    } finally {
+      setRefreshing(false);
     }
   };
 
@@ -120,6 +128,8 @@ const SalarySlip = ({ route }) => {
       }
     } catch (error) {
       console.error("Error while fetching monthly salary:", error.message);
+    } finally {
+      setRefreshing(false);
     }
   };
 
@@ -127,7 +137,7 @@ const SalarySlip = ({ route }) => {
     if (employeeId && month && year && validToken) {
       fetchMonthlySalary();
     }
-  }, [employeeId, month, year, validToken]);
+  }, [employeeId, month, year, validToken, refreshKey]);
 
   // Function to reset filters to initial values
   const resetFilters = () => {
@@ -136,6 +146,11 @@ const SalarySlip = ({ route }) => {
     setEmployeeId(id);
     fetchSingleEmployee(id);
     fetchMonthlySalary();
+  };
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    refreshPage();
   };
 
   const generatePDF = async () => {
@@ -466,7 +481,15 @@ const SalarySlip = ({ route }) => {
         </TouchableOpacity>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+      <ScrollView
+        contentContainerStyle={styles.scrollViewContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+          />
+        }
+      >
         <View style={styles.salarySlip}>
           {/* Company Header */}
           <View style={styles.slipHeader}>

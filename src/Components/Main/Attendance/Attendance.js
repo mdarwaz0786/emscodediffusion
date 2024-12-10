@@ -5,11 +5,13 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  RefreshControl,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import { API_BASE_URL } from "@env";
 import { useAuth } from "../../../Context/auth.context.js";
+import { useRefresh } from "../../../Context/refresh.context.js";
 import Icon from "react-native-vector-icons/Feather";
 import Close from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
@@ -20,7 +22,8 @@ import { Modal, Portal, Button, ActivityIndicator } from "react-native-paper";
 
 const Attendance = ({ route }) => {
   const id = route?.params?.id;
-  const { validToken, isLoading } = useAuth();
+  const { validToken } = useAuth();
+  const { refreshKey, refreshPage } = useRefresh();
   const [attendance, setAttendance] = useState([]);
   const [employee, setEmployee] = useState("");
   const currentYear = new Date().getFullYear();
@@ -32,6 +35,7 @@ const Attendance = ({ route }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   // Update employeeId, month and date when the component mounts
   useEffect(() => {
@@ -58,6 +62,8 @@ const Attendance = ({ route }) => {
       }
     } catch (error) {
       console.log(error.message);
+    } finally {
+      setRefreshing(false);
     }
   };
 
@@ -103,14 +109,15 @@ const Attendance = ({ route }) => {
       );
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
   useEffect(() => {
-    if (validToken && !isLoading && month && year && employeeId) {
+    if (validToken && month && year && employeeId) {
       fetchAttendance();
     }
-  }, [validToken, isLoading, month, year, employeeId]);
+  }, [validToken, month, year, employeeId, refreshKey]);
 
   // Get selected month and year statistic for employee
   const fetchMonthlyStatistic = async () => {
@@ -141,14 +148,16 @@ const Attendance = ({ route }) => {
       }
     } catch (error) {
       console.error("Error while fetching monthly statistic:", error.message);
+    } finally {
+      setRefreshing(false);
     }
   };
 
   useEffect(() => {
-    if (employeeId && month && year && validToken && !isLoading) {
+    if (employeeId && month && year && validToken) {
       fetchMonthlyStatistic();
     }
-  }, [employeeId, month, year, validToken, isLoading]);
+  }, [employeeId, month, year, validToken, refreshKey]);
 
   // Function to reset filters to initial values
   const resetFilters = () => {
@@ -164,6 +173,11 @@ const Attendance = ({ route }) => {
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
   ];
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    refreshPage();
+  };
 
   return (
     <>
@@ -255,7 +269,15 @@ const Attendance = ({ route }) => {
       </View>
 
       {/* Scrollable Attendance List */}
-      <ScrollView style={styles.container}>
+      <ScrollView
+        style={styles.container}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+          />
+        }
+      >
         {loading ? (
           <View
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -263,7 +285,7 @@ const Attendance = ({ route }) => {
           </View>
         ) : attendance?.length === 0 ? (
           <Text style={{ textAlign: "center", color: "#777" }}>
-            Attendance records not found.
+            Attendance not found.
           </Text>
         ) : (
           attendance?.map(item => (
@@ -380,7 +402,7 @@ const Attendance = ({ route }) => {
               </Text>
             </>
           ) : (
-            <Text style={{ fontSize: 14, marginBottom: 10, color: "#777" }}>No Data</Text>
+            <Text style={{ fontSize: 14, marginBottom: 10, color: "#777" }}>Attendance summary not found.</Text>
           )}
           <Button
             mode="contained"
