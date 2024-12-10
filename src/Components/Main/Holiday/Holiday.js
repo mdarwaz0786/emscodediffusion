@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from "react-native";
 import axios from "axios";
 import Icon from "react-native-vector-icons/Feather";
 import { API_BASE_URL } from "@env";
 import { useAuth } from "../../../Context/auth.context.js";
 import Calender from "react-native-vector-icons/MaterialCommunityIcons";
+import { useRefresh } from "../../../Context/refresh.context.js";
 import formatDate from "../../../Helper/formatDate.js";
-import { ActivityIndicator } from "react-native-paper";
 
 const Holiday = ({ navigation }) => {
   const [holidays, setHolidays] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const { refreshKey, refreshPage } = useRefresh();
   const { validToken } = useAuth();
 
   const fetchUpcomingHoliday = async () => {
@@ -32,6 +34,7 @@ const Holiday = ({ navigation }) => {
       console.error("Error while fetching upcoming holiday:", error.message);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -39,7 +42,13 @@ const Holiday = ({ navigation }) => {
     if (validToken) {
       fetchUpcomingHoliday();
     }
-  }, [validToken]);
+  }, [validToken, refreshKey]);
+
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    refreshPage();
+  };
 
   // Render each upcoming holiday
   const renderItem = ({ item }) => (
@@ -87,11 +96,11 @@ const Holiday = ({ navigation }) => {
         {loading ? (
           <View
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator size="small" color="#ffb300" />
+            <ActivityIndicator size="large" color="#ffb300" />
           </View>
         ) : holidays?.length === 0 ? (
           <View style={styles.centeredView}>
-            <Text style={styles.noHolidaysText}>No upcoming holidays</Text>
+            <Text style={styles.noHolidaysText}>No upcoming holidays at the moment.</Text>
           </View>
         ) : (
           <FlatList
@@ -99,6 +108,8 @@ const Holiday = ({ navigation }) => {
             renderItem={renderItem}
             keyExtractor={item => item?._id}
             contentContainerStyle={styles.listContainer}
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
           />
         )}
       </View>

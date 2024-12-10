@@ -10,21 +10,25 @@ import {
   TextInput,
   ActivityIndicator,
   Modal,
+  RefreshControl,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import Toast from "react-native-toast-message";
 import { API_BASE_URL } from "@env";
 import axios from "axios";
 import { useAuth } from "../../../Context/auth.context.js";
+import { useRefresh } from "../../../Context/refresh.context.js";
 
 const Settings = ({ navigation }) => {
   const { validToken } = useAuth();
+  const { refreshKey, refreshPage } = useRefresh();
   const [office, setOffice] = useState([]);
   const [popupVisible, setPopupVisible] = useState(null);
   const [confirmationVisible, setConfirmationVisible] = useState(false);
   const [confirmationText, setConfirmationText] = useState("");
   const [officeToDelete, setOfficeToDelete] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   const fetchOfficeLocation = async () => {
     try {
@@ -45,6 +49,7 @@ const Settings = ({ navigation }) => {
       console.error("Error while fetching office location:", error.message);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -52,7 +57,7 @@ const Settings = ({ navigation }) => {
     if (validToken) {
       fetchOfficeLocation();
     }
-  }, [validToken]);
+  }, [validToken, refreshKey]);
 
   const handleDelete = async () => {
     if (confirmationText.toLowerCase() === "yes" && officeToDelete) {
@@ -81,6 +86,11 @@ const Settings = ({ navigation }) => {
     } else {
       alert("Please type 'yes' to confirm deletion.");
     }
+  };
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    refreshPage();
   };
 
   const renderOfficeCard = item => (
@@ -164,7 +174,14 @@ const Settings = ({ navigation }) => {
         ) : (
           <ScrollView
             contentContainerStyle={[styles.cardContainer, { flexGrow: 1 }]}
-            keyboardShouldPersistTaps="handled">
+            keyboardShouldPersistTaps="handled"
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+              />
+            }
+          >
             <Pressable onPress={() => setPopupVisible(null)}>
               {office?.map(item => renderOfficeCard(item))}
             </Pressable>
@@ -250,7 +267,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   pageTitle: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "400",
     marginBottom: 10,
     marginTop: 5,

@@ -8,6 +8,7 @@ import {
   Image,
   TouchableOpacity,
   RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { Picker } from "@react-native-picker/picker";
@@ -35,6 +36,7 @@ const SalarySlip = ({ route }) => {
   const [employeeId, setEmployeeId] = useState(id);
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     requestStoragePermission();
@@ -100,6 +102,7 @@ const SalarySlip = ({ route }) => {
   // Get current month salary for employee
   const fetchMonthlySalary = async () => {
     try {
+      setLoading(true);
       const params = {};
 
       if (month) {
@@ -129,6 +132,7 @@ const SalarySlip = ({ route }) => {
     } catch (error) {
       console.error("Error while fetching monthly salary:", error.message);
     } finally {
+      setLoading(false);
       setRefreshing(false);
     }
   };
@@ -480,109 +484,117 @@ const SalarySlip = ({ route }) => {
           </Text>
         </TouchableOpacity>
       </View>
-
-      <ScrollView
-        contentContainerStyle={styles.scrollViewContent}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-          />
-        }
-      >
-        <View style={styles.salarySlip}>
-          {/* Company Header */}
-          <View style={styles.slipHeader}>
-            <View style={styles.companyLogo}>
-              <Image
-                source={require("../../../Assets/logo.png")}
-                style={styles.logo}
+      {
+        loading ? (
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <ActivityIndicator size="large" color="#ffb300" />
+          </View>
+        ) : (
+          <ScrollView
+            contentContainerStyle={styles.scrollViewContent}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
               />
-            </View>
-            <View style={styles.companyInfo}>
-              <Text style={styles.companyName}>
-                {office[0]?.name}
-              </Text>
-              <Text style={styles.companyAddress}>{office[0]?.addressLine1}</Text>
-              <Text style={styles.companyAddress}>
-                {office[0]?.addressLine2}
-              </Text>
-              <Text style={styles.companyAddress}>{office[0]?.addressLine3}</Text>
-            </View>
-          </View>
+            }
+          >
+            <View style={styles.salarySlip}>
+              {/* Company Header */}
+              <View style={styles.slipHeader}>
+                <View style={styles.companyLogo}>
+                  <Image
+                    source={require("../../../Assets/logo.png")}
+                    style={styles.logo}
+                  />
+                </View>
+                <View style={styles.companyInfo}>
+                  <Text style={styles.companyName}>
+                    {office[0]?.name}
+                  </Text>
+                  <Text style={styles.companyAddress}>{office[0]?.addressLine1}</Text>
+                  <Text style={styles.companyAddress}>
+                    {office[0]?.addressLine2}
+                  </Text>
+                  <Text style={styles.companyAddress}>{office[0]?.addressLine3}</Text>
+                </View>
+              </View>
 
-          {/* Employee Information */}
-          <View style={styles.employeeInfo}>
-            <Text style={styles.salaryMonth}>
-              {getMonthName(month)} {year}
-            </Text>
-            <Text style={styles.employeeDetail}>
-              <Text style={styles.bold}>Employee Name:</Text> {employee?.name}
-            </Text>
-            <Text style={styles.employeeDetail}>
-              <Text style={styles.bold}>Designation:</Text>{" "}
-              {employee?.designation?.name}
-            </Text>
-            <Text style={styles.employeeDetail}>
-              <Text style={styles.bold}>Employee ID:</Text>{" "}
-              {employee?.employeeId}
-            </Text>
-            <Text style={styles.employeeDetail}>
-              <Text style={styles.bold}>Department:</Text> IT
-            </Text>
-            <Text style={styles.employeeDetail}>
-              <Text style={styles.bold}>Bank Account:</Text> XXXX-XXXX-XXXX-XXXX
-            </Text>
-          </View>
+              {/* Employee Information */}
+              <View style={styles.employeeInfo}>
+                <Text style={styles.salaryMonth}>
+                  {getMonthName(month)} {year}
+                </Text>
+                <Text style={styles.employeeDetail}>
+                  <Text style={styles.bold}>Employee Name:</Text> {employee?.name}
+                </Text>
+                <Text style={styles.employeeDetail}>
+                  <Text style={styles.bold}>Designation:</Text>{" "}
+                  {employee?.designation?.name}
+                </Text>
+                <Text style={styles.employeeDetail}>
+                  <Text style={styles.bold}>Employee ID:</Text>{" "}
+                  {employee?.employeeId}
+                </Text>
+                <Text style={styles.employeeDetail}>
+                  <Text style={styles.bold}>Department:</Text> IT
+                </Text>
+                <Text style={styles.employeeDetail}>
+                  <Text style={styles.bold}>Bank Account:</Text> XXXX-XXXX-XXXX-XXXX
+                </Text>
+              </View>
 
-          {/* Salary Details */}
-          <View style={styles.salaryDetails}>
-            <View style={styles.detailsHeader}>
-              <Text style={styles.headerText}>Particulars</Text>
-              <Text style={styles.headerText}>Amount</Text>
-            </View>
-            <View style={styles.salaryRow}>
-              <Text style={styles.salaryText}>Basic Salary</Text>
-              <Text style={styles.salaryText}>₹{employee?.monthlySalary}</Text>
-            </View>
-            <View style={styles.salaryRow}>
-              <Text style={styles.salaryText}>House Rent Allowance (HRA)</Text>
-              <Text style={styles.salaryText}>₹0.00</Text>
-            </View>
-            <View style={styles.salaryRow}>
-              <Text style={styles.salaryText}>Special Allowance</Text>
-              <Text style={styles.salaryText}>₹0.00</Text>
-            </View>
-            <View style={styles.salaryRow}>
-              <Text style={styles.salaryText}>Bonus</Text>
-              <Text style={styles.salaryText}>₹0.00</Text>
-            </View>
-            <View style={styles.salaryRow}>
-              <Text style={styles.salaryText}>Provident Fund (PF)</Text>
-              <Text style={styles.salaryText}>-₹0.00</Text>
-            </View>
-            <View style={styles.salaryRow}>
-              <Text style={styles.salaryText}>Income Tax</Text>
-              <Text style={styles.salaryText}>-₹0.00</Text>
-            </View>
-            <View style={styles.salaryRow}>
-              <Text style={styles.salaryText}>Deduction</Text>
-              <Text style={styles.salaryText}>-₹{monthlySalary?.totalDeduction}</Text>
-            </View>
-            <View style={[styles.salaryRow, styles.totalSalary]}>
-              <Text style={styles.salaryTextBold}>Total Salary</Text>
-              <Text style={styles.salaryTextBold}>
-                ₹{monthlySalary?.totalSalary}
-              </Text>
-            </View>
-          </View>
+              {/* Salary Details */}
+              <View style={styles.salaryDetails}>
+                <View style={styles.detailsHeader}>
+                  <Text style={styles.headerText}>Particulars</Text>
+                  <Text style={styles.headerText}>Amount</Text>
+                </View>
+                <View style={styles.salaryRow}>
+                  <Text style={styles.salaryText}>Basic Salary</Text>
+                  <Text style={styles.salaryText}>₹{employee?.monthlySalary}</Text>
+                </View>
+                <View style={styles.salaryRow}>
+                  <Text style={styles.salaryText}>House Rent Allowance (HRA)</Text>
+                  <Text style={styles.salaryText}>₹0.00</Text>
+                </View>
+                <View style={styles.salaryRow}>
+                  <Text style={styles.salaryText}>Special Allowance</Text>
+                  <Text style={styles.salaryText}>₹0.00</Text>
+                </View>
+                <View style={styles.salaryRow}>
+                  <Text style={styles.salaryText}>Bonus</Text>
+                  <Text style={styles.salaryText}>₹0.00</Text>
+                </View>
+                <View style={styles.salaryRow}>
+                  <Text style={styles.salaryText}>Provident Fund (PF)</Text>
+                  <Text style={styles.salaryText}>-₹0.00</Text>
+                </View>
+                <View style={styles.salaryRow}>
+                  <Text style={styles.salaryText}>Income Tax</Text>
+                  <Text style={styles.salaryText}>-₹0.00</Text>
+                </View>
+                <View style={styles.salaryRow}>
+                  <Text style={styles.salaryText}>Deduction</Text>
+                  <Text style={styles.salaryText}>-₹{monthlySalary?.totalDeduction}</Text>
+                </View>
+                <View style={[styles.salaryRow, styles.totalSalary]}>
+                  <Text style={styles.salaryTextBold}>Total Salary</Text>
+                  <Text style={styles.salaryTextBold}>
+                    ₹{monthlySalary?.totalSalary}
+                  </Text>
+                </View>
+              </View>
 
-          {/* Footer */}
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Signature</Text>
-          </View>
-        </View>
-      </ScrollView>
+              {/* Footer */}
+              <View style={styles.footer}>
+                <Text style={styles.footerText}>Signature</Text>
+              </View>
+            </View>
+          </ScrollView>
+        )
+      }
     </>
   );
 };

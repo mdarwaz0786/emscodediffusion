@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import Toast from "react-native-toast-message";
@@ -14,6 +16,7 @@ import { API_BASE_URL } from "@env";
 import axios from "axios";
 import { launchImageLibrary } from "react-native-image-picker";
 import { useAuth } from "../../../Context/auth.context.js";
+import { useRefresh } from "../../../Context/refresh.context.js";
 import getUserLocation from "../Home/utils/getUerLocation.js";
 
 const EditOffice = ({ navigation, route }) => {
@@ -27,7 +30,10 @@ const EditOffice = ({ navigation, route }) => {
   const [addressLine1, setAddressLine1] = useState("");
   const [addressLine2, setAddressLine2] = useState("");
   const [addressLine3, setAddressLine3] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const { validToken } = useAuth();
+  const { refreshKey, refreshPage } = useRefresh();
 
   async function fetchLatLong() {
     const position = await getUserLocation();
@@ -41,7 +47,7 @@ const EditOffice = ({ navigation, route }) => {
 
     setLatitude(String(latitude));
     setLongitude(String(longitude));
-  }
+  };
 
   const selectLogo = () => {
     launchImageLibrary(
@@ -63,6 +69,7 @@ const EditOffice = ({ navigation, route }) => {
 
   const fetchOfficeLocation = async id => {
     try {
+      setLoading(true);
       const response = await axios.get(
         `${API_BASE_URL}/api/v1/officeLocation/single-officeLocation/${id}`,
         {
@@ -86,6 +93,9 @@ const EditOffice = ({ navigation, route }) => {
       }
     } catch (error) {
       console.error("Error while fetching office location:", error.message);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -93,7 +103,7 @@ const EditOffice = ({ navigation, route }) => {
     if (id) {
       fetchOfficeLocation(id);
     }
-  }, [id]);
+  }, [id, refreshKey]);
 
   const handleUpdate = async id => {
     const formData = new FormData();
@@ -148,6 +158,11 @@ const EditOffice = ({ navigation, route }) => {
     }
   };
 
+  const handleRefresh = () => {
+    setRefreshing(true);
+    refreshPage();
+  };
+
   return (
     <>
       {/* Header */}
@@ -163,114 +178,129 @@ const EditOffice = ({ navigation, route }) => {
           <Text style={styles.buttonResetText}>Reset Location</Text>
         </TouchableOpacity>
       </View>
-
-      <ScrollView>
-        <View style={styles.container}>
-          <View style={{ marginBottom: 0 }}>
-            <Text style={{ marginBottom: 5, color: "#555" }}>
-              Company Name <Text style={{ color: "red" }}>*</Text>
-            </Text>
-            <TextInput
-              value={name}
-              onChangeText={setName}
-              style={styles.input}
-            />
+      {
+        loading ? (
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <ActivityIndicator size="large" color="#ffb300" />
           </View>
+        ) : (
+          <ScrollView
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+              />
+            }
+          >
+            <View style={styles.container}>
+              <View style={{ marginBottom: 0 }}>
+                <Text style={{ marginBottom: 5, color: "#555" }}>
+                  Company Name <Text style={{ color: "red" }}>*</Text>
+                </Text>
+                <TextInput
+                  value={name}
+                  onChangeText={setName}
+                  style={styles.input}
+                />
+              </View>
 
-          <View style={{ marginBottom: 0 }}>
-            <Text style={{ marginBottom: 5, color: "#555" }}>Upload Logo</Text>
-            <TouchableOpacity onPress={selectLogo} style={styles.logoButton}>
-              <Text style={styles.logoButtonText}></Text>
-            </TouchableOpacity>
-          </View>
+              <View style={{ marginBottom: 0 }}>
+                <Text style={{ marginBottom: 5, color: "#555" }}>Upload Logo</Text>
+                <TouchableOpacity onPress={selectLogo} style={styles.logoButton}>
+                  <Text style={styles.logoButtonText}></Text>
+                </TouchableOpacity>
+              </View>
 
-          {logo && (
-            <Image
-              source={{ uri: logo.uri || logo }}
-              style={styles.logoPreview}
-            />
-          )}
+              {logo && (
+                <Image
+                  source={{ uri: logo.uri || logo }}
+                  style={styles.logoPreview}
+                />
+              )}
 
-          <View style={{ marginBottom: 0 }}>
-            <Text style={{ marginBottom: 5, color: "#555" }}>
-              Email Id <Text style={{ color: "red" }}>*</Text>
-            </Text>
-            <TextInput
-              value={email}
-              onChangeText={setEmail}
-              style={styles.input}
-            />
-          </View>
+              <View style={{ marginBottom: 0 }}>
+                <Text style={{ marginBottom: 5, color: "#555" }}>
+                  Email Id <Text style={{ color: "red" }}>*</Text>
+                </Text>
+                <TextInput
+                  value={email}
+                  onChangeText={setEmail}
+                  style={styles.input}
+                />
+              </View>
 
-          <View style={{ marginBottom: 0 }}>
-            <Text style={{ marginBottom: 5, color: "#555" }}>
-              Contact Number <Text style={{ color: "red" }}>*</Text>
-            </Text>
-            <TextInput
-              value={contact}
-              onChangeText={setContact}
-              style={styles.input}
-            />
-          </View>
+              <View style={{ marginBottom: 0 }}>
+                <Text style={{ marginBottom: 5, color: "#555" }}>
+                  Contact Number <Text style={{ color: "red" }}>*</Text>
+                </Text>
+                <TextInput
+                  value={contact}
+                  onChangeText={setContact}
+                  style={styles.input}
+                />
+              </View>
 
-          <View style={{ marginBottom: 0 }}>
-            <Text style={{ marginBottom: 5, color: "#555" }}>
-              Latitude <Text style={{ color: "red" }}>*</Text>
-            </Text>
-            <TextInput
-              value={latitude}
-              onChangeText={setLatitude}
-              style={styles.input}
-            />
-          </View>
+              <View style={{ marginBottom: 0 }}>
+                <Text style={{ marginBottom: 5, color: "#555" }}>
+                  Latitude <Text style={{ color: "red" }}>*</Text>
+                </Text>
+                <TextInput
+                  value={latitude}
+                  onChangeText={setLatitude}
+                  style={styles.input}
+                />
+              </View>
 
-          <View style={{ marginBottom: 0 }}>
-            <Text style={{ marginBottom: 5, color: "#555" }}>
-              Longitude <Text style={{ color: "red" }}>*</Text>
-            </Text>
-            <TextInput
-              value={longitude}
-              onChangeText={setLongitude}
-              style={styles.input}
-            />
-          </View>
+              <View style={{ marginBottom: 0 }}>
+                <Text style={{ marginBottom: 5, color: "#555" }}>
+                  Longitude <Text style={{ color: "red" }}>*</Text>
+                </Text>
+                <TextInput
+                  value={longitude}
+                  onChangeText={setLongitude}
+                  style={styles.input}
+                />
+              </View>
 
-          <View style={{ marginBottom: 0 }}>
-            <Text style={{ marginBottom: 5, color: "#555" }}>
-              Address Line 1 <Text style={{ color: "red" }}>*</Text>
-            </Text>
-            <TextInput
-              value={addressLine1}
-              onChangeText={setAddressLine1}
-              style={styles.input}
-            />
-          </View>
+              <View style={{ marginBottom: 0 }}>
+                <Text style={{ marginBottom: 5, color: "#555" }}>
+                  Address Line 1 <Text style={{ color: "red" }}>*</Text>
+                </Text>
+                <TextInput
+                  value={addressLine1}
+                  onChangeText={setAddressLine1}
+                  style={styles.input}
+                />
+              </View>
 
-          <View style={{ marginBottom: 0 }}>
-            <Text style={{ marginBottom: 5, color: "#555" }}>Address Line 2</Text>
-            <TextInput
-              value={addressLine2}
-              onChangeText={setAddressLine2}
-              style={styles.input}
-            />
-          </View>
+              <View style={{ marginBottom: 0 }}>
+                <Text style={{ marginBottom: 5, color: "#555" }}>Address Line 2</Text>
+                <TextInput
+                  value={addressLine2}
+                  onChangeText={setAddressLine2}
+                  style={styles.input}
+                />
+              </View>
 
-          <View style={{ marginBottom: 0 }}>
-            <Text style={{ marginBottom: 5, color: "#555" }}>Address Line 3</Text>
-            <TextInput
-              value={addressLine3}
-              onChangeText={setAddressLine3}
-              style={styles.input}
-            />
-          </View>
+              <View style={{ marginBottom: 0 }}>
+                <Text style={{ marginBottom: 5, color: "#555" }}>Address Line 3</Text>
+                <TextInput
+                  value={addressLine3}
+                  onChangeText={setAddressLine3}
+                  style={styles.input}
+                />
+              </View>
 
-          <TouchableOpacity
-            style={styles.submitButton}
-            onPress={() => handleUpdate(id)}>
-            <Text style={styles.submitButtonText}>Submit</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+              <TouchableOpacity
+                style={styles.submitButton}
+                onPress={() => handleUpdate(id)}>
+                <Text style={styles.submitButtonText}>Submit</Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        )
+      }
     </>
   );
 };
