@@ -363,46 +363,49 @@ const Attendance = ({ route }) => {
               fontWeight: "400",
               marginBottom: 10,
               textAlign: "center",
-              color: "#555",
+              color: "#333",
             }}>
             Attendance Summary
           </Text>
           {attendanceSummary ? (
             <>
-              <Text style={{ fontSize: 14, marginBottom: 5, color: "#777" }}>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
                 Total Sundays: {attendanceSummary?.totalSundays}
               </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5, color: "#777" }}>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
                 Total Holidays: {attendanceSummary?.totalHolidays}
               </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5, color: "#777" }}>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
                 Total Present Days: {attendanceSummary?.employeePresentDays}/
-                {attendanceSummary.companyWorkingDays}
+                {attendanceSummary?.companyWorkingDays}
               </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5, color: "#777" }}>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
                 Total Absent Days: {attendanceSummary?.employeeAbsentDays}
               </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5, color: "#777" }}>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
                 Total Leave Days: {attendanceSummary?.employeeLeaveDays}
               </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5, color: "#777" }}>
-                Total Hours Worked: {attendanceSummary?.employeeWorkingHours}/
-                {attendanceSummary.companyWorkingHours}
-              </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5, color: "#777" }}>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
                 Total Late in Days: {attendanceSummary?.employeeLateInDays}
               </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5, color: "#777" }}>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
+                Total Hours Worked: {attendanceSummary?.employeeWorkingHours}/
+                {attendanceSummary?.employeeRequiredWorkingHours}
+              </Text>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
+                Company's Working Hours: {attendanceSummary?.companyWorkingHours}
+              </Text>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
                 Average Punch In Time:{" "}
                 {formatTimeWithAmPm(attendanceSummary?.averagePunchInTime)}
               </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5, color: "#777" }}>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
                 Average Punch Out Time:{" "}
                 {formatTimeWithAmPm(attendanceSummary?.averagePunchOutTime)}
               </Text>
             </>
           ) : (
-            <Text style={{ fontSize: 14, marginBottom: 10, color: "#777" }}>Attendance summary not found.</Text>
+            <Text style={{ fontSize: 14, marginBottom: 10, color: "#555" }}>Attendance summary not found.</Text>
           )}
           <Button
             mode="contained"

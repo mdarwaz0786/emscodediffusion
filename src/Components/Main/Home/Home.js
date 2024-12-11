@@ -248,7 +248,7 @@ const Home = () => {
   };
 
   const statistics = [
-    { label: " Month", value: formatDate(monthlyStatistic?.month) || "-", icon: "📅" },
+    { label: "Month", value: formatDate(monthlyStatistic?.month) || "-", icon: "📅" },
     { label: "Total Days", value: monthlyStatistic?.totalDaysInMonth || 0, icon: "📆" },
     { label: "Working Days", value: monthlyStatistic?.companyWorkingDays || 0, icon: "💼" },
     { label: "Holidays", value: monthlyStatistic?.totalHolidays || 0, icon: "🎉" },
@@ -257,7 +257,7 @@ const Home = () => {
     { label: "Absent Days", value: monthlyStatistic?.employeeAbsentDays || 0, icon: "❌" },
     { label: "Leave Days", value: monthlyStatistic?.employeeLeaveDays || 0, icon: "🏖️" },
     { label: "Late In Days", value: monthlyStatistic?.employeeLateInDays || 0, icon: "⏰" },
-    { label: "Total Hours Worked", value: formatTimeToHoursMinutes(monthlyStatistic?.employeeWorkingHours) || "00:00", icon: "🕒" },
+    { label: "Total Hours Worked", value: `${formatTimeToHoursMinutes(monthlyStatistic?.employeeWorkingHours) || "00:00"} / ${formatTimeToHoursMinutes(monthlyStatistic?.employeeRequiredWorkingHours) || "00:00"}`, icon: "🕒" },
     { label: "Avgerage Punch In Time", value: formatTimeWithAmPm(monthlyStatistic?.averagePunchInTime) || "-", icon: "🔔" },
     { label: "Avgerage Punch Out Time", value: formatTimeWithAmPm(monthlyStatistic?.averagePunchOutTime) || "-", icon: "🔕" },
     { label: "Company's Working Hours", value: formatTimeToHoursMinutes(monthlyStatistic?.companyWorkingHours) || "00:00", icon: "🏢" },

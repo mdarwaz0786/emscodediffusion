@@ -32,8 +32,8 @@ const CustomDrawerNavigator = () => {
       show: fieldPermissions?.settings?.show,
     },
     {
-      label: "Add Work Summary",
-      icon: "document-text-outline",
+      label: "Daily Work Summary",
+      icon: "clipboard-outline",
       route: "AddWorkSummary",
       show: team?.role?.permissions?.project?.fields?.workDetail?.show,
     },

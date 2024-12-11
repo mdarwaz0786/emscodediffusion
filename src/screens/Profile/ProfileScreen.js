@@ -1,23 +1,86 @@
-import React from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Modal,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { useAuth } from "../../Context/auth.context.js";
+import Toast from "react-native-toast-message";
+import { API_BASE_URL } from "@env";
 import formatTimeToHoursMinutes from "../../Helper/formatTimeToHoursMinutes.js";
 import formatDate from "../../Helper/formatDate.js";
+import axios from "axios";
 
 const ProfileScreen = () => {
-  const { team } = useAuth();
+  const { team, validToken } = useAuth();
+  const id = team?._id;
+  const [name, setName] = useState(team?.name);
+  const [email, setEmail] = useState(team?.email);
+  const [mobile, setMobile] = useState(team?.mobile);
+  const [dob, setDob] = useState(team?.dob);
+  const [joining, setJoining] = useState(team?.joining);
+  const [isDobPickerVisible, setIsDobPickerVisible] = useState(false);
+  const [isJoiningPickerVisible, setIsJoiningPickerVisible] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const toggleModal = () => setIsModalVisible(!isModalVisible);
+
+  const showDobPicker = () => setIsDobPickerVisible(true);
+  const showJoiningPicker = () => setIsJoiningPickerVisible(true);
+
+  const onDobChange = (event, selectedDate) => {
+    setIsDobPickerVisible(false);
+    if (selectedDate) setDob(selectedDate.toISOString().split("T")[0]);
+  };
+
+  const onJoiningChange = (event, selectedDate) => {
+    setIsJoiningPickerVisible(false);
+    if (selectedDate) setJoining(selectedDate.toISOString().split("T")[0]);
+  };
+
+  const handleUpdate = async (id) => {
+    try {
+      const response = await axios.put(
+        `${API_BASE_URL}/api/v1/team/update-team/${id}`,
+        { name, email, mobile, dob, joining },
+        {
+          headers: {
+            Authorization: validToken,
+          },
+        }
+      );
+
+      if (response?.data?.success) {
+        toggleModal();
+        Toast.show({ type: "success", text1: "Profile updated successfully" });
+      }
+    } catch (error) {
+      console.log("Error while updating profile:", error.message);
+      Toast.show({ type: "error", text1: "Error while updating profile" });
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* User Details */}
       <View style={styles.detailsCard}>
-        <Text style={styles.name}>{team?.name}</Text>
-        <Text style={styles.designation}>
-          {team?.designation?.name || "Designation not assigned"}
-        </Text>
+        <View style={styles.avatarContainer}>
+          <Text style={styles.avatarText}>
+            {team?.name ? team.name[0].toUpperCase() : "?"}
+          </Text>
+        </View>
+        <View style={styles.textContainer}>
+          <Text style={styles.name}>{team?.name}</Text>
+          <Text style={styles.designation}>
+            {team?.designation?.name || "Designation not assigned"}
+          </Text>
+        </View>
       </View>
 
-      {/* Additional Info */}
       <View style={styles.infoCard}>
         <DetailRow label="Employee ID" value={team?.employeeId} />
         <DetailRow label="Email" value={team?.email} />
@@ -34,6 +97,91 @@ const ProfileScreen = () => {
           value={team?.role?.name || "Role not assigned"}
         />
       </View>
+
+      <TouchableOpacity style={styles.editButton} onPress={toggleModal}>
+        <Text style={styles.editButtonText}>Edit Profile</Text>
+      </TouchableOpacity>
+
+      <Modal
+        visible={isModalVisible}
+        animationType="fade"
+        onRequestClose={toggleModal}
+        transparent={true}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalHeader}>Edit Profile</Text>
+
+            <Text style={styles.label}>Name:</Text>
+            <TextInput
+              style={styles.input}
+              value={name}
+              onChangeText={setName}
+            />
+
+            <Text style={styles.label}>Email:</Text>
+            <TextInput
+              style={styles.input}
+              value={email}
+              onChangeText={setEmail}
+            />
+
+            <Text style={styles.label}>Mobile:</Text>
+            <TextInput
+              style={styles.input}
+              value={mobile}
+              onChangeText={setMobile}
+            />
+
+            <Text style={styles.label}>Date of Birth:</Text>
+            <TouchableOpacity
+              style={[styles.input, styles.dateInput]}
+              onPress={showDobPicker}
+            >
+              <Text style={{ color: "#777" }}>{dob}</Text>
+            </TouchableOpacity>
+            {isDobPickerVisible && (
+              <DateTimePicker
+                value={dob ? new Date(dob) : new Date()}
+                mode="date"
+                display="default"
+                onChange={onDobChange}
+              />
+            )}
+
+            <Text style={styles.label}>Joining Date:</Text>
+            <TouchableOpacity
+              style={[styles.input, styles.dateInput]}
+              onPress={showJoiningPicker}
+            >
+              <Text style={{ color: "#777" }}>{joining}</Text>
+            </TouchableOpacity>
+            {isJoiningPickerVisible && (
+              <DateTimePicker
+                value={joining ? new Date(joining) : new Date()}
+                mode="date"
+                display="default"
+                onChange={onJoiningChange}
+              />
+            )}
+
+            <View style={styles.buttonGroup}>
+              <TouchableOpacity
+                style={styles.saveButton}
+                onPress={() => handleUpdate(id)}
+              >
+                <Text style={styles.buttonText}>Save</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={toggleModal}
+              >
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
@@ -49,21 +197,38 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     alignItems: "center",
-    backgroundColor: "#f8f9fa",
     padding: 10,
   },
   detailsCard: {
     backgroundColor: "#ffffff",
     padding: 15,
     borderRadius: 10,
+    flexDirection: "row",
     alignItems: "center",
     marginBottom: 15,
     width: "100%",
   },
+  avatarContainer: {
+    height: 35,
+    width: 35,
+    borderRadius: 30,
+    backgroundColor: "#ffb300",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  avatarText: {
+    color: "#ffffff",
+    fontSize: 18,
+    fontWeight: "500",
+  },
+  textContainer: {
+    flex: 1,
+  },
   name: {
-    fontSize: 16,
-    fontWeight: "400",
-    color: "#343a40",
+    fontSize: 15,
+    fontWeight: "500",
+    color: "#333",
   },
   designation: {
     fontSize: 13,
@@ -83,11 +248,85 @@ const styles = StyleSheet.create({
   },
   detailLabel: {
     fontSize: 14,
-    color: "#495057",
+    color: "#333",
   },
   detailValue: {
     fontSize: 14,
-    color: "#495057",
+    color: "#555",
+  },
+  editButton: {
+    backgroundColor: "#ffb300",
+    padding: 10,
+    borderRadius: 5,
+    width: "100%",
+    alignItems: "center",
+  },
+  editButtonText: {
+    color: "#ffffff",
+    fontSize: 15,
+    fontWeight: "500",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "flex-start",
+  },
+  modalContainer: {
+    marginTop: 50,
+    backgroundColor: "#f5f5f5",
+    padding: 20,
+    borderRadius: 10,
+    marginHorizontal: 20,
+  },
+  modalHeader: {
+    fontSize: 15,
+    fontWeight: "500",
+    color: "#333",
+    textAlign: "center",
+  },
+  label: {
+    fontSize: 14,
+    color: "#333",
+    marginBottom: 5,
+  },
+  input: {
+    borderColor: "#ddd",
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 16,
+    padding: 10,
+    paddingVertical: 7,
+    fontSize: 13,
+    color: "#555",
+    backgroundColor: "#fff",
+  },
+  dateInput: {
+    paddingVertical: 12,
+    paddingLeft: 15,
+  },
+  buttonGroup: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: 20,
+  },
+  saveButton: {
+    backgroundColor: "#ffb300",
+    padding: 10,
+    borderRadius: 5,
+    width: "45%",
+    alignItems: "center",
+  },
+  cancelButton: {
+    backgroundColor: "#dc3545",
+    padding: 10,
+    borderRadius: 5,
+    width: "45%",
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "500",
   },
 });
 
