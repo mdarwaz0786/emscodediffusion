@@ -393,15 +393,18 @@ const Attendance = ({ route }) => {
                 {attendanceSummary?.employeeRequiredWorkingHours}
               </Text>
               <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
-                Company's Working Hours: {attendanceSummary?.companyWorkingHours}
-              </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
                 Average Punch In Time:{" "}
                 {formatTimeWithAmPm(attendanceSummary?.averagePunchInTime)}
               </Text>
               <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
                 Average Punch Out Time:{" "}
                 {formatTimeWithAmPm(attendanceSummary?.averagePunchOutTime)}
+              </Text>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
+                Company's Working Hours: {attendanceSummary?.companyWorkingHours}
+              </Text>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
+                Company's Working Days: {attendanceSummary?.companyWorkingDays}
               </Text>
             </>
           ) : (

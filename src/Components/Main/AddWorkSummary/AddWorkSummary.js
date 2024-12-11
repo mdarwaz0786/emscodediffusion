@@ -147,7 +147,7 @@ const AddWorkSummary = ({ navigation }) => {
           color="#000"
           onPress={() => navigation.goBack()}
         />
-        <Text style={styles.headerTitle}>Add Work Summary</Text>
+        <Text style={styles.headerTitle}>Add Daily Work Summary</Text>
       </View>
 
       <ScrollView style={styles.container}>
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
-    columnGap: 85,
+    columnGap: 75,
     padding: 12,
     backgroundColor: "#fff",
   },
