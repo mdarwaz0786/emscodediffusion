@@ -87,10 +87,6 @@ const TodayWorkSummary = () => {
                         {s?.projectName}
                       </Text>
                       <Text style={styles.workDetailText}>
-                        <Text style={styles.label}>Work Description: </Text>
-                        {s?.workDescription}
-                      </Text>
-                      <Text style={styles.workDetailText}>
                         <Text style={styles.label}>Start Time: </Text>
                         {formatTimeWithAmPm(s?.startTime)}
                       </Text>
@@ -101,6 +97,10 @@ const TodayWorkSummary = () => {
                       <Text style={styles.workDetailText}>
                         <Text style={styles.label}>Spent Hours: </Text>
                         {formatTimeToHoursMinutes(calculateTimeDifference(s?.startTime, s?.endTime))}
+                      </Text>
+                      <Text style={styles.workDetailText}>
+                        <Text style={styles.label}>Work Description: </Text>
+                        {s?.workDescription}
                       </Text>
                       {index < w?.workDetails?.length - 1 && <View style={styles.divider} />}
                     </View>

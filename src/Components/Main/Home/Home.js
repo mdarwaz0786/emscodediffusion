@@ -248,7 +248,7 @@ const Home = () => {
   };
 
   const statistics = [
-    { label: "Month", value: formatDate(monthlyStatistic?.month) || "-", icon: "📅" },
+    { label: " Month", value: formatDate(monthlyStatistic?.month) || "-", icon: "📅" },
     { label: "Total Days", value: monthlyStatistic?.totalDaysInMonth || 0, icon: "📆" },
     { label: "Working Days", value: monthlyStatistic?.companyWorkingDays || 0, icon: "💼" },
     { label: "Holidays", value: monthlyStatistic?.totalHolidays || 0, icon: "🎉" },

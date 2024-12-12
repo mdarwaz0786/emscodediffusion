@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
   },
   editButtonText: {
     color: "#ffffff",
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: "500",
   },
   modalOverlay: {
