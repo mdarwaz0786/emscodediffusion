@@ -209,12 +209,12 @@ const Attendance = ({ route }) => {
         <View style={styles.filterContainer}>
           <View style={styles.pickerRow}>
             {/* Year Picker */}
-            <View style={[styles.pickerContainer, styles.yearPicker]}>
+            <View style={styles.pickerContainer}>
               <Picker
                 selectedValue={year}
                 onValueChange={itemValue => setYear(itemValue)}
                 style={styles.picker}>
-                {Array.from({ length: 5 }, (_, index) => {
+                {Array.from({ length: 12 }, (_, index) => {
                   const yearOption = currentYear - index;
                   return (
                     <Picker.Item
@@ -254,15 +254,13 @@ const Attendance = ({ route }) => {
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "center",
-            padding: 10,
-            paddingHorizontal: 0,
-            paddingTop: 0,
+            marginBottom: 10,
           }}>
           <Text style={{ fontSize: 14, fontWeight: "400", color: "#333" }}>{employee?.name}</Text>
           {/* Summary Button */}
           <TouchableOpacity
             style={{
-              paddingVertical: 3,
+              paddingVertical: 4,
               paddingHorizontal: 8,
               backgroundColor: "#ffb300",
               borderRadius: 5,
@@ -278,6 +276,7 @@ const Attendance = ({ route }) => {
             </Text>
           </TouchableOpacity>
         </View>
+
         {loading ? (
           <View
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -353,15 +352,16 @@ const Attendance = ({ route }) => {
           onDismiss={() => setModalVisible(false)}
           contentContainerStyle={{
             backgroundColor: "white",
-            padding: 20,
-            marginHorizontal: 20,
+            padding: 15,
+            paddingTop: 10,
+            marginHorizontal: 30,
             borderRadius: 10,
           }}>
           <Text
             style={{
               fontSize: 16,
               fontWeight: "400",
-              marginBottom: 10,
+              marginBottom: 8,
               textAlign: "center",
               color: "#333",
             }}>
@@ -438,7 +438,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
-    zIndex: 1,
+    zIndex: 1000,
   },
   headerTitle: {
     fontSize: 16,
@@ -463,12 +463,10 @@ const styles = StyleSheet.create({
   pickerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    columnGap: 10,
   },
   pickerContainer: {
     flex: 1,
-  },
-  yearPicker: {
-    marginRight: 10,
   },
   picker: {
     backgroundColor: "#fff",
@@ -482,8 +480,9 @@ const styles = StyleSheet.create({
   attendanceCard: {
     backgroundColor: "#fff",
     padding: 12,
+    paddingVertical: 8,
     borderRadius: 10,
-    marginBottom: 10,
+    marginBottom: 12,
   },
   attendanceDate: {
     fontSize: 14,

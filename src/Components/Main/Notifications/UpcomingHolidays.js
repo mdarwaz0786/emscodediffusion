@@ -84,14 +84,13 @@ const UpcomingHolidays = () => {
         </View>
       ) : holidays?.length === 0 ? (
         <View style={styles.centeredView}>
-          <Text style={styles.noHolidaysText}>No upcoming holidays at the moment.</Text>
+          <Text style={styles.notFoundText}>No upcoming holidays at the moment.</Text>
         </View>
       ) : (
         <FlatList
           data={holidays}
           renderItem={renderItem}
           keyExtractor={(item) => item?._id}
-          contentContainerStyle={styles.listContainer}
           refreshing={refreshing}
           onRefresh={handleRefresh}
         />
@@ -113,11 +112,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   notificationCard: {
-    marginBottom: 16,
+    marginBottom: 15,
     borderRadius: 8,
     backgroundColor: "#fff",
-    padding: 16,
-    paddingTop: 12,
+    padding: 10,
+    paddingTop: 8,
   },
   cardHeader: {
     flexDirection: "row",
@@ -125,10 +124,11 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   icon: {
-    marginRight: 10,
+    marginRight: 8,
   },
   cardContent: {
     flex: 1,
+    marginBottom: 1,
   },
   cardTitle: {
     fontSize: 15,
@@ -136,17 +136,14 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   cardDate: {
-    fontSize: 12,
+    fontSize: 13,
     color: "#888",
   },
   cardDescription: {
     fontSize: 14,
     color: "#555",
   },
-  listContainer: {
-    paddingBottom: 16,
-  },
-  noHolidaysText: {
+  notFoundText: {
     fontSize: 15,
     color: "#aaa",
   },

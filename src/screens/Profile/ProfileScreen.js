@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
   },
   detailsCard: {
     backgroundColor: "#ffffff",
-    padding: 15,
+    padding: 10,
     borderRadius: 10,
     flexDirection: "row",
     alignItems: "center",
@@ -297,15 +297,15 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 15,
     fontWeight: "500",
-    color: "#333",
+    color: "#555",
   },
   designation: {
-    fontSize: 13,
+    fontSize: 14,
     color: "#6c757d",
   },
   infoCard: {
     backgroundColor: "#ffffff",
-    padding: 15,
+    padding: 10,
     borderRadius: 10,
     width: "100%",
     marginBottom: 15,

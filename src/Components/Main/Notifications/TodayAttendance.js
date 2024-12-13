@@ -182,6 +182,7 @@ const styles = StyleSheet.create({
   attendanceCard: {
     backgroundColor: "#fff",
     padding: 12,
+    paddingTop: 10,
     borderRadius: 10,
     marginBottom: 15,
   },

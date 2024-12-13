@@ -104,19 +104,18 @@ const Settings = ({ navigation }) => {
           <Icon name="more-vertical" size={20} color="#333" />
         </TouchableOpacity>
       </View>
-      <Text style={styles.cardDetail}>Name: {item?.name}</Text>
-      <Text style={styles.cardDetail}>Email: {item?.email}</Text>
-      <Text style={styles.cardDetail}>Contact: {item?.contact}</Text>
-      <Text style={styles.cardDetail}>Latitude: {item?.latitude}</Text>
-      <Text style={styles.cardDetail}>Longitude: {item?.longitude}</Text>
-      <Text style={styles.cardDetail}>Address: {item?.addressLine1}</Text>
+      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Company Name: </Text>{item?.name}</Text>
+      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Email: </Text>{item?.email}</Text>
+      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Contact: </Text>{item?.contact}</Text>
+      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Latitude: </Text>{item?.latitude}</Text>
+      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Longitude: </Text>{item?.longitude}</Text>
+      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Address: </Text>{item?.addressLine1}</Text>
       {item?.addressLine2 && (
         <Text style={styles.cardDetail}> {item?.addressLine2}</Text>
       )}
       {item?.addressLine3 && (
         <Text style={styles.cardDetail}> {item?.addressLine3}</Text>
       )}
-
       {/* Popup for Edit/Delete */}
       {popupVisible === item?._id && (
         <View style={styles.popup}>
@@ -163,7 +162,7 @@ const Settings = ({ navigation }) => {
         </TouchableOpacity>
 
         {/* Office Locations */}
-        <Text style={styles.pageTitle}>Offices</Text>
+        <Text style={styles.pageTitle}>Our Offices</Text>
         {loading ? (
           <View
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -173,8 +172,6 @@ const Settings = ({ navigation }) => {
           <Text style={{ textAlign: "center", color: "#777" }}>Office not found.</Text>
         ) : (
           <ScrollView
-            contentContainerStyle={[styles.cardContainer, { flexGrow: 1 }]}
-            keyboardShouldPersistTaps="handled"
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
@@ -200,7 +197,6 @@ const Settings = ({ navigation }) => {
         }}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Confirm Deletion</Text>
             <Text style={styles.modalText}>
               Type <Text style={styles.modalHighlight}>"yes"</Text> to confirm
               the deletion.
@@ -209,8 +205,7 @@ const Settings = ({ navigation }) => {
               style={styles.modalInput}
               value={confirmationText}
               onChangeText={setConfirmationText}
-              placeholder="Type here"
-              placeholderTextColor="#aaa"
+              placeholderTextColor="#777"
             />
             <View style={styles.modalButtons}>
               <TouchableOpacity
@@ -238,13 +233,19 @@ const Settings = ({ navigation }) => {
 const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
-    justifyContent: "flex-start",
     alignItems: "center",
-    columnGap: 100,
     padding: 12,
     backgroundColor: "#fff",
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    zIndex: 1000,
   },
   headerTitle: {
+    flex: 1,
+    textAlign: "center",
     fontSize: 16,
     fontWeight: "400",
     color: "#000",
@@ -255,11 +256,10 @@ const styles = StyleSheet.create({
   },
   addButton: {
     backgroundColor: "#ffb300",
-    padding: 8,
+    padding: 10,
     borderRadius: 5,
     alignItems: "center",
-    marginBottom: 16,
-    marginTop: 5,
+    marginBottom: 8,
   },
   addButtonText: {
     color: "#fff",
@@ -267,22 +267,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   pageTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "400",
-    marginBottom: 10,
-    marginTop: 5,
+    marginBottom: 8,
     textAlign: "center",
     color: "#000",
-  },
-  cardContainer: {
-    paddingBottom: 16,
   },
   card: {
     backgroundColor: "#fff",
     borderRadius: 10,
-    padding: 16,
-    paddingTop: 10,
-    marginBottom: 16,
+    padding: 10,
+    paddingTop: 5,
+    marginBottom: 14,
   },
   cardHeader: {
     flexDirection: "row",
@@ -290,28 +286,29 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   logo: {
-    width: 150,
+    width: 170,
     height: 50,
     resizeMode: "contain",
-    alignSelf: "center",
   },
   cardDetail: {
     fontSize: 14,
     color: "#555",
     marginBottom: 3,
   },
+  cardLabel: {
+    color: "#333",
+  },
   popup: {
     position: "absolute",
     top: 50,
-    right: 10,
+    right: 20,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
     backgroundColor: "#fff",
     borderRadius: 5,
     shadowColor: "#000",
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    zIndex: 10,
+    shadowRadius: 3,
     elevation: 3,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -319,12 +316,12 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   popupOption: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
   },
   popupOptionText: {
     fontSize: 14,
-    color: "#333",
+    color: "#555",
   },
   deleteOption: {
     borderTopWidth: 1,
@@ -337,26 +334,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalContent: {
-    width: "90%",
+    width: "80%",
     backgroundColor: "#fff",
     borderRadius: 10,
-    padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    padding: 15,
+    paddingTop: 12,
     alignItems: "center",
-  },
-  modalTitle: {
-    fontSize: 16,
-    fontWeight: "400",
-    color: "#000",
-    marginBottom: 10,
   },
   modalText: {
     fontSize: 15,
     color: "#555",
-    marginBottom: 15,
+    marginBottom: 10,
     textAlign: "center",
   },
   modalHighlight: {
@@ -370,8 +358,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
-    marginBottom: 20,
+    marginBottom: 12,
     fontSize: 14,
+    color: "#777"
   },
   modalButtons: {
     flexDirection: "row",
@@ -380,14 +369,14 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     flex: 1,
-    padding: 10,
+    padding: 8,
     marginHorizontal: 5,
     backgroundColor: "#ffb300",
     borderRadius: 5,
     alignItems: "center",
   },
   cancelButton: {
-    backgroundColor: "#ccc",
+    backgroundColor: "#dc3545",
   },
   modalButtonText: {
     color: "#fff",

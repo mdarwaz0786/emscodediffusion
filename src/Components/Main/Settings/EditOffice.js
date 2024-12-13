@@ -311,8 +311,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 12,
-    marginBottom: 10,
     backgroundColor: "#fff",
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    zIndex: 1000,
   },
   headerTitle: {
     fontSize: 16,
@@ -335,7 +340,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     paddingBottom: 10,
-    paddingTop: 0,
+    paddingTop: 8,
   },
   input: {
     padding: 16,

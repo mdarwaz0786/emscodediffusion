@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, ScrollView } from "react-native";
 import axios from "axios";
 import Icon from "react-native-vector-icons/Feather";
 import { API_BASE_URL } from "@env";
@@ -106,7 +106,6 @@ const Holiday = ({ navigation }) => {
             data={holidays}
             renderItem={renderItem}
             keyExtractor={item => item?._id}
-            contentContainerStyle={styles.listContainer}
             refreshing={refreshing}
             onRefresh={handleRefresh}
           />
@@ -127,6 +126,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
+    zIndex: 1000,
   },
   headerTitle: {
     flex: 1,
@@ -138,18 +138,16 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: 15,
     fontWeight: "400",
-    marginBottom: 12,
+    marginBottom: 10,
     textAlign: "center",
     color: "#000",
-    marginTop: 5,
   },
   addButton: {
     backgroundColor: "#ffb300",
-    padding: 8,
+    padding: 10,
     borderRadius: 5,
     alignItems: "center",
-    marginBottom: 18,
-    marginTop: 5,
+    marginBottom: 8,
   },
   addButtonText: {
     color: "#fff",
@@ -161,19 +159,19 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   notificationCard: {
-    marginBottom: 16,
+    marginBottom: 12,
     borderRadius: 8,
     backgroundColor: "#fff",
-    padding: 16,
-    paddingTop: 12,
+    padding: 10,
+    paddingTop: 8,
   },
   cardHeader: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 2,
+    marginBottom: 3,
   },
   icon: {
-    marginRight: 10,
+    marginRight: 8,
   },
   cardContent: {
     flex: 1,
@@ -184,19 +182,16 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   cardDate: {
-    fontSize: 12,
-    color: "#888",
+    fontSize: 13,
+    color: "#777",
   },
   cardDescription: {
     fontSize: 14,
     color: "#555",
   },
-  listContainer: {
-    paddingBottom: 16,
-  },
   noHolidaysText: {
-    fontSize: 15,
-    color: "#aaa",
+    fontSize: 14,
+    color: "#777",
   },
   centeredView: {
     flex: 1,

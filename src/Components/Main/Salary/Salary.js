@@ -416,74 +416,6 @@ const SalarySlip = ({ route }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Filter Section */}
-      <View style={styles.filterContainer}>
-        <View style={styles.pickerRow}>
-          {/* Year Picker */}
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={year}
-              onValueChange={itemValue => setYear(itemValue)}
-              style={styles.picker}>
-              {Array.from({ length: 5 }, (_, index) => {
-                const yearOption = currentYear - index;
-                return (
-                  <Picker.Item
-                    key={yearOption}
-                    label={String(yearOption)}
-                    value={yearOption}
-                    style={styles.pickerItem}
-                  />
-                );
-              })}
-            </Picker>
-          </View>
-
-          {/* Month Picker */}
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={month}
-              onValueChange={itemValue => setMonth(itemValue)}
-              style={styles.picker}
-            >
-              {monthNames?.map((month, index) => (
-                <Picker.Item
-                  key={index}
-                  label={month}
-                  value={index + 1}
-                  style={styles.pickerItem}
-                />
-              ))}
-            </Picker>
-          </View>
-        </View>
-      </View>
-
-      {/* Employee */}
-      <View style={styles.headerContainer}>
-        <Text style={{ fontSize: 14, fontWeight: "400", color: "#333" }}>
-          {employee?.name}
-        </Text>
-        <TouchableOpacity
-          onPress={generatePDF}
-          style={{
-            backgroundColor: "#ffb300",
-            paddingVertical: 2,
-            paddingHorizontal: 7,
-            borderRadius: 5,
-          }}>
-          <Text
-            style={{
-              fontSize: 14,
-              color: "#FFF",
-              fontWeight: "500",
-              paddingVertical: 2,
-              paddingHorizontal: 5,
-            }}>
-            Download
-          </Text>
-        </TouchableOpacity>
-      </View>
       {
         loading ? (
           <View
@@ -500,6 +432,73 @@ const SalarySlip = ({ route }) => {
               />
             }
           >
+            {/* Filter Section */}
+            <View style={styles.filterContainer}>
+              <View style={styles.pickerRow}>
+                {/* Year Picker */}
+                <View style={styles.pickerContainer}>
+                  <Picker
+                    selectedValue={year}
+                    onValueChange={itemValue => setYear(itemValue)}
+                    style={styles.picker}>
+                    {Array.from({ length: 12 }, (_, index) => {
+                      const yearOption = currentYear - index;
+                      return (
+                        <Picker.Item
+                          key={yearOption}
+                          label={String(yearOption)}
+                          value={yearOption}
+                          style={styles.pickerItem}
+                        />
+                      );
+                    })}
+                  </Picker>
+                </View>
+
+                {/* Month Picker */}
+                <View style={styles.pickerContainer}>
+                  <Picker
+                    selectedValue={month}
+                    onValueChange={itemValue => setMonth(itemValue)}
+                    style={styles.picker}
+                  >
+                    {monthNames?.map((month, index) => (
+                      <Picker.Item
+                        key={index}
+                        label={month}
+                        value={index + 1}
+                        style={styles.pickerItem}
+                      />
+                    ))}
+                  </Picker>
+                </View>
+              </View>
+            </View>
+
+            {/* Employee */}
+            <View style={styles.headerContainer}>
+              <Text style={{ fontSize: 14, fontWeight: "400", color: "#333" }}>
+                {employee?.name}
+              </Text>
+              <TouchableOpacity
+                onPress={generatePDF}
+                style={{
+                  paddingVertical: 4,
+                  paddingHorizontal: 8,
+                  backgroundColor: "#ffb300",
+                  borderRadius: 5,
+                }}>
+                <Text
+                  style={{
+                    color: "#fff",
+                    fontSize: 14,
+                    fontWeight: "500",
+                  }}>
+                  Download
+                </Text>
+              </TouchableOpacity>
+            </View>
+
             <View style={styles.salarySlip}>
               {/* Company Header */}
               <View style={styles.slipHeader}>
@@ -605,8 +604,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 12,
-    marginBottom: 10,
     backgroundColor: "#fff",
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    zIndex: 1000,
   },
   headerTitle: {
     fontSize: 16,
@@ -626,17 +630,16 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   filterContainer: {
-    paddingHorizontal: 5,
     borderRadius: 10,
-    marginBottom: 10,
+    marginVertical: 10,
   },
   pickerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    columnGap: 10,
   },
   pickerContainer: {
     flex: 1,
-    marginHorizontal: 5,
   },
   picker: {
     backgroundColor: "#fff",
@@ -652,7 +655,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 10,
-    paddingHorizontal: 10,
   },
   scrollViewContent: {
     padding: 10,

@@ -256,13 +256,19 @@ const AddWorkSummary = ({ navigation }) => {
 const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
-    justifyContent: "flex-start",
     alignItems: "center",
-    columnGap: 75,
     padding: 12,
     backgroundColor: "#fff",
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    zIndex: 1000,
   },
   headerTitle: {
+    flex: 1,
+    textAlign: "center",
     fontSize: 16,
     fontWeight: "400",
     color: "#000",

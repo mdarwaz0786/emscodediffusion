@@ -110,13 +110,19 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
-    justifyContent: "flex-start",
     alignItems: "center",
-    columnGap: 100,
     padding: 12,
     backgroundColor: "#fff",
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    zIndex: 1000,
   },
   headerTitle: {
+    flex: 1,
+    textAlign: "center",
     fontSize: 16,
     fontWeight: "400",
     color: "#000",
@@ -139,12 +145,12 @@ const styles = StyleSheet.create({
   },
   faqAnswer: {
     fontSize: 14,
-    color: "#666",
+    color: "#555",
     marginBottom: 15,
   },
   text: {
     fontSize: 14,
-    color: "#666",
+    color: "#555",
     marginBottom: 15,
   },
   supportDetails: {
@@ -157,7 +163,6 @@ const styles = StyleSheet.create({
   link: {
     fontSize: 14,
     color: "#0066cc",
-    textDecorationLine: "underline",
   },
   footer: {
     fontSize: 14,

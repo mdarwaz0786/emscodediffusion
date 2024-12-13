@@ -131,7 +131,7 @@ const Employee = ({ navigation }) => {
             </View>
           ) : employees?.length === 0 ? (
             <View style={styles.centeredView}>
-              <Text style={styles.noHolidaysText}>Employee not found.</Text>
+              <Text style={styles.notFoundText}>Employee not found.</Text>
             </View>
           ) : (
             <FlatList
@@ -162,6 +162,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
+    zIndex: 1000,
   },
   headerTitle: {
     flex: 1,
@@ -175,7 +176,6 @@ const styles = StyleSheet.create({
     padding: 10,
     borderTopWidth: 1,
     borderTopColor: "#e0e0e0",
-    zIndex: 1,
   },
   heading: {
     flexDirection: "row",
@@ -195,44 +195,39 @@ const styles = StyleSheet.create({
   },
   employeeRole: {
     fontSize: 14,
-    color: "#888",
+    color: "#777",
   },
   optionsButton: {
-    padding: 5,
+    paddingVertical: 5,
   },
   popupMenu: {
     backgroundColor: "#fff",
-    borderRadius: 5,
+    borderRadius: 10,
     elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
     position: "absolute",
-    right: 0,
-    top: 0,
-    right: 60,
-    minWidth: 120,
-    zIndex: 999,
-    height: 51,
-    justifyContent: "center",
+    right: 50,
+    height: 52,
   },
   popupOption: {
     paddingVertical: 3,
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
   },
   popupOptionText: {
     fontSize: 14,
-    color: "#333",
+    color: "#555",
   },
   centeredView: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-  noHolidaysText: {
-    fontSize: 16,
-    color: "#888",
+  notFoundText: {
+    fontSize: 14,
+    color: "#777",
   },
 });
 
