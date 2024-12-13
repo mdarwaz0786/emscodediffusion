@@ -44,7 +44,6 @@ const Holiday = ({ navigation }) => {
     }
   }, [validToken, refreshKey]);
 
-
   const handleRefresh = () => {
     setRefreshing(true);
     refreshPage();
@@ -120,13 +119,18 @@ const Holiday = ({ navigation }) => {
 const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
-    justifyContent: "flex-start",
     alignItems: "center",
-    columnGap: 100,
     padding: 12,
     backgroundColor: "#fff",
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
   },
   headerTitle: {
+    flex: 1,
+    textAlign: "center",
     fontSize: 16,
     fontWeight: "400",
     color: "#000",

@@ -195,79 +195,6 @@ const Attendance = ({ route }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Filter Section */}
-      <View style={styles.filterContainer}>
-        <View style={styles.pickerRow}>
-          {/* Year Picker */}
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={year}
-              onValueChange={itemValue => setYear(itemValue)}
-              style={styles.picker}>
-              {Array.from({ length: 5 }, (_, index) => {
-                const yearOption = currentYear - index;
-                return (
-                  <Picker.Item
-                    key={yearOption}
-                    label={String(yearOption)}
-                    value={yearOption}
-                    style={styles.pickerItem}
-                  />
-                );
-              })}
-            </Picker>
-          </View>
-
-          {/* Month Picker */}
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={month}
-              onValueChange={itemValue => setMonth(itemValue)}
-              style={styles.picker}
-            >
-              {monthNames?.map((month, index) => (
-                <Picker.Item
-                  key={index}
-                  label={month}
-                  value={index + 1}
-                  style={styles.pickerItem}
-                />
-              ))}
-            </Picker>
-          </View>
-        </View>
-      </View>
-
-      {/* Employee */}
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: 10,
-          paddingTop: 0,
-        }}>
-        <Text style={{ fontSize: 14, fontWeight: "400", color: "#333" }}>{employee?.name}</Text>
-        {/* Summary Button */}
-        <TouchableOpacity
-          style={{
-            paddingVertical: 3,
-            paddingHorizontal: 8,
-            backgroundColor: "#ffb300",
-            borderRadius: 5,
-          }}
-          onPress={() => setModalVisible(true)}>
-          <Text
-            style={{
-              color: "#fff",
-              fontSize: 14,
-              fontWeight: "500",
-            }}>
-            Summary
-          </Text>
-        </TouchableOpacity>
-      </View>
-
       {/* Scrollable Attendance List */}
       <ScrollView
         style={styles.container}
@@ -278,6 +205,79 @@ const Attendance = ({ route }) => {
           />
         }
       >
+        {/* Filter Section */}
+        <View style={styles.filterContainer}>
+          <View style={styles.pickerRow}>
+            {/* Year Picker */}
+            <View style={[styles.pickerContainer, styles.yearPicker]}>
+              <Picker
+                selectedValue={year}
+                onValueChange={itemValue => setYear(itemValue)}
+                style={styles.picker}>
+                {Array.from({ length: 5 }, (_, index) => {
+                  const yearOption = currentYear - index;
+                  return (
+                    <Picker.Item
+                      key={yearOption}
+                      label={String(yearOption)}
+                      value={yearOption}
+                      style={styles.pickerItem}
+                    />
+                  );
+                })}
+              </Picker>
+            </View>
+
+            {/* Month Picker */}
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={month}
+                onValueChange={itemValue => setMonth(itemValue)}
+                style={styles.picker}
+              >
+                {monthNames?.map((month, index) => (
+                  <Picker.Item
+                    key={index}
+                    label={month}
+                    value={index + 1}
+                    style={styles.pickerItem}
+                  />
+                ))}
+              </Picker>
+            </View>
+          </View>
+        </View>
+
+        {/* Employee */}
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: 10,
+            paddingHorizontal: 0,
+            paddingTop: 0,
+          }}>
+          <Text style={{ fontSize: 14, fontWeight: "400", color: "#333" }}>{employee?.name}</Text>
+          {/* Summary Button */}
+          <TouchableOpacity
+            style={{
+              paddingVertical: 3,
+              paddingHorizontal: 8,
+              backgroundColor: "#ffb300",
+              borderRadius: 5,
+            }}
+            onPress={() => setModalVisible(true)}>
+            <Text
+              style={{
+                color: "#fff",
+                fontSize: 14,
+                fontWeight: "500",
+              }}>
+              Summary
+            </Text>
+          </TouchableOpacity>
+        </View>
         {loading ? (
           <View
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -432,8 +432,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 12,
-    marginBottom: 10,
     backgroundColor: "#fff",
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    zIndex: 1,
   },
   headerTitle: {
     fontSize: 16,
@@ -453,9 +458,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   filterContainer: {
-    paddingHorizontal: 5,
-    borderRadius: 10,
-    marginBottom: 10,
+    marginVertical: 10,
   },
   pickerRow: {
     flexDirection: "row",
@@ -463,7 +466,9 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     flex: 1,
-    marginHorizontal: 5,
+  },
+  yearPicker: {
+    marginRight: 10,
   },
   picker: {
     backgroundColor: "#fff",
@@ -478,7 +483,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 12,
     borderRadius: 10,
-    marginBottom: 15,
+    marginBottom: 10,
   },
   attendanceDate: {
     fontSize: 14,

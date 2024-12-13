@@ -131,14 +131,6 @@ const Home = () => {
     }
   };
 
-  // Handle marked attendance
-  const handleMarkedAttendance = () => {
-    fetchAttendance();
-    if (attendance[0]?.punchOut && attendance[0]?.punchIn) {
-      Toast.show({ type: "success", text1: "Attendance is marked for today." });
-    }
-  };
-
   // Get current date attendance for logged in employee
   const fetchAttendance = async () => {
     try {
@@ -290,25 +282,17 @@ const Home = () => {
             </View>
           ) : (
             <View style={styles.punchButtons}>
-              {!attendance[0]?.punchIn && !attendance[0]?.punchOut && (
+              {!attendance[0]?.punchIn ? (
                 <TouchableOpacity
                   style={[styles.punchButton, styles.punchInButton]}
                   onPress={() => handlePunchAction("punchIn")}>
                   <Text style={styles.punchButtonText}>Punch In</Text>
                 </TouchableOpacity>
-              )}
-              {!attendance[0]?.punchOut && attendance[0]?.punchIn && (
+              ) : (
                 <TouchableOpacity
                   style={[styles.punchButton, styles.punchOutButton]}
                   onPress={() => handlePunchAction("punchOut")}>
                   <Text style={styles.punchButtonText}>Punch Out</Text>
-                </TouchableOpacity>
-              )}
-              {attendance[0]?.punchOut && attendance[0]?.punchOut && (
-                <TouchableOpacity
-                  style={[styles.punchButton, styles.markedButton]}
-                  onPress={handleMarkedAttendance}>
-                  <Text style={styles.punchButtonText}>✓ Marked</Text>
                 </TouchableOpacity>
               )}
             </View>

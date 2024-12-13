@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.log(
-        "Error while storing token and fetching user details:",
+        "Error while storing token and fetching employee details:",
         error.message,
       );
       Toast.show({ type: "error", text1: "Login failed. Please try again." });
@@ -66,11 +66,12 @@ export const AuthProvider = ({ children }) => {
       } else {
         Toast.show({
           type: "error",
-          text1: "Please log in to continue.",
+          text1: "Please login to continue.",
         });
       };
     } catch (error) {
       console.log("Error during initializing auth:", error.message);
+      Toast.show({ type: "error", text1: "Session expired, login again to continue" });
       logOutTeam();
     } finally {
       setIsLoading(false);
