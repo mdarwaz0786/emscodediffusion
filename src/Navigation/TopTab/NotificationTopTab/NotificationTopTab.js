@@ -1,17 +1,9 @@
 import React, { lazy, Suspense } from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { ActivityIndicator, View } from 'react-native';
-
-// Lazy load screens
-const UpcomingHolidaysScreen = lazy(() =>
-  import('../../../Screens/Notifications/UpcomingHolidaysScreen.js')
-);
-const TodayAttendanceScreen = lazy(() =>
-  import('../../../Screens/Notifications/TodayAttendanceScree.js')
-);
-const TodayWorkSummaryScreen = lazy(() =>
-  import('../../../Screens/Notifications/TodayWorkSummaryScreen.js')
-);
+import TodayAttendanceScreen from '../../../Screens/Notifications/TodayAttendanceScree.js';
+import TodayWorkSummaryScreen from '../../../Screens/Notifications/TodayWorkSummaryScreen.js';
+import UpcomingHolidaysScreen from '../../../Screens/Notifications/UpcomingHolidaysScreen.js';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -26,6 +18,7 @@ const NotificationTopTab = () => {
       <Tab.Navigator
         initialRouteName="TodayAttendance"
         screenOptions={() => ({
+          lazy: true,
           tabBarActiveTintColor: '#ffb300',
           tabBarInactiveTintColor: '#777',
           tabBarLabelStyle: {
@@ -52,17 +45,17 @@ const NotificationTopTab = () => {
         <Tab.Screen
           name="TodayAttendance"
           component={TodayAttendanceScreen}
-          options={{ tabBarLabel: 'Attendance' }}
+          options={{ tabBarLabel: 'Attendance', unmountOnBlur: true }}
         />
         <Tab.Screen
           name="TodayWorkSummary"
           component={TodayWorkSummaryScreen}
-          options={{ tabBarLabel: 'Work Summary' }}
+          options={{ tabBarLabel: 'Work Summary', unmountOnBlur: true }}
         />
         <Tab.Screen
           name="UpcomingHolidays"
           component={UpcomingHolidaysScreen}
-          options={{ tabBarLabel: 'Holidays' }}
+          options={{ tabBarLabel: 'Holidays', unmountOnBlur: true }}
         />
       </Tab.Navigator>
     </Suspense>

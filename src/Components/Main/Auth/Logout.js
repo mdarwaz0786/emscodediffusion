@@ -13,7 +13,7 @@ const Logout = props => {
           index: 0,
           routes: [{ name: "Login" }],
         });
-      }, 1000);
+      }, 0);
     };
     performLogout();
   }, [logOutTeam]);
@@ -21,10 +21,6 @@ const Logout = props => {
   return (
     <View style={styles.container}>
       <ActivityIndicator size="large" color="#ffb300" />
-      <Text style={styles.message}>Thank you for using our app!</Text>
-      <Text style={styles.subMessage}>
-        You have been logged out successfully.
-      </Text>
     </View>
   );
 };
@@ -35,17 +31,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#fff",
-  },
-  message: {
-    fontSize: 15,
-    color: "#333",
-    marginTop: 10,
-    fontWeight: "400",
-  },
-  subMessage: {
-    fontSize: 14,
-    color: "#666",
-    marginTop: 5,
   },
 });
 

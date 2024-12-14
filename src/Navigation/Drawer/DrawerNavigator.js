@@ -2,12 +2,14 @@ import React, { Suspense, lazy } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { useAuth } from "../../Context/auth.context.js";
-import BottomTabNavigator from "../BottomTab/BottomTabNavigator.js";
 import LoginScreen from "../../Screens/Auth/LoginScreen.js";
 
 // Lazy load the screens
 const CustomDrawerNavigator = lazy(() =>
   import("./CustomDrawerNavigator.js")
+);
+const BottomTabNavigator = lazy(() =>
+  import("../BottomTab/BottomTabNavigator.js"),
 );
 const AboutUsScreen = lazy(() =>
   import("../../Screens/AboutUs/AboutUsScreen.js"),

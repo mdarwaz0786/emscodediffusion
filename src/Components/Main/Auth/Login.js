@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, Image, StyleSheet } from "react-native";
+import { View, Text, TextInput, Button, Image, StyleSheet, ActivityIndicator } from "react-native";
 import axios from "axios";
 import Toast from "react-native-toast-message";
 import { useAuth } from "../../../Context/auth.context.js";
@@ -8,33 +8,47 @@ import { API_BASE_URL } from "@env";
 const Login = () => {
   const [employeeId, setEmployeeId] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const { storeToken } = useAuth();
 
   // Ensure the employeeId starts with "EmpID" and the rest remains unchanged
   const transformedEmployeeId = `EmpID${employeeId.substring(5)}`;
 
   const handleLogin = async () => {
+    setLoading(true); // Start loading
     try {
       const response = await axios.post(
         `${API_BASE_URL}/api/v1/team/login-team`,
         {
           employeeId: transformedEmployeeId,
           password,
-        },
+        }
       );
       if (response?.data?.success) {
         storeToken(response?.data?.token);
         setEmployeeId("");
         setPassword("");
-        Toast.show({ type: "success", text1: response?.data?.message || "Please try again." });
-      }
+        Toast.show({ type: "success", text1: response?.data?.message || "Login successful" });
+      } else {
+        Toast.show({ type: "error", text1: "Login failed. Please try again." });
+      };
     } catch (error) {
-      console.error("Error while login:", error.message);
-      const errorMessage =
-        error?.response?.data?.message ||
-        "An unexpected error occurred. Please try again.";
-      Toast.show({ type: "error", text1: errorMessage });
-    }
+      console.log("Error while login:", error.message);
+
+      // Handle network error specifically
+      if (!error.response) {
+        Toast.show({
+          type: "error",
+          text1: "Network Error: Please check your internet connection.",
+        });
+      } else {
+        const errorMessage =
+          error?.response?.data?.message || "An unexpected error occurred. Please try again.";
+        Toast.show({ type: "error", text1: errorMessage });
+      };
+    } finally {
+      setLoading(false);
+    };
   };
 
   return (
@@ -71,7 +85,12 @@ const Login = () => {
           autoComplete="off"
         />
       </View>
-      <Button title="Login" onPress={handleLogin} color="#ffb300" />
+
+      {loading ? (
+        <ActivityIndicator size="large" color="#ffb300" />
+      ) : (
+        <Button title="Login" onPress={handleLogin} color="#ffb300" />
+      )}
     </View>
   );
 };

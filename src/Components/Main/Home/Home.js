@@ -72,7 +72,7 @@ const Home = () => {
     } catch (error) {
       Toast.show({
         type: "error",
-        text1: error?.message || "Failed to process attendance",
+        text1: "Please try again",
       });
     }
   };
@@ -105,6 +105,14 @@ const Home = () => {
       }
 
       const { time, date, employeeId } = getAttendanceData(team);
+
+      if (!time || !date || !employeeId) {
+        Toast.show({
+          type: "error",
+          text1: "Please try agian",
+        });
+        return;
+      }
 
       const requestData =
         actionType === "punchIn"
@@ -200,7 +208,7 @@ const Home = () => {
         setMonthlyStatistic(response?.data?.attendance);
       }
     } catch (error) {
-      console.error("Error while fetching monthly statistic:", error.message);
+      console.log("Error while fetching monthly statistic:", error.message);
     } finally {
       setRefreshing(false);
     }

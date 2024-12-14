@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }) => {
         };
       } else {
         Toast.show({
-          type: "error",
+          type: "info",
           text1: "Please login to continue.",
         });
       };

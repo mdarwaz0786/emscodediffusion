@@ -341,9 +341,10 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
   modalContainer: {
-    marginTop: 50,
+    marginTop: 100,
     backgroundColor: "#f5f5f5",
     padding: 20,
+    paddingTop: 12,
     borderRadius: 10,
     marginHorizontal: 20,
   },
@@ -356,13 +357,13 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     color: "#333",
-    marginBottom: 5,
+    marginBottom: 3,
   },
   input: {
     borderColor: "#ddd",
     borderWidth: 1,
     borderRadius: 5,
-    marginBottom: 16,
+    marginBottom: 10,
     padding: 10,
     paddingVertical: 7,
     fontSize: 13,
@@ -376,7 +377,7 @@ const styles = StyleSheet.create({
   buttonGroup: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginTop: 20,
+    marginTop: 8,
   },
   saveButton: {
     backgroundColor: "#ffb300",

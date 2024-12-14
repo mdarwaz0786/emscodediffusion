@@ -56,11 +56,11 @@ const isWithinOfficeLocation = async (
         return distance <= maxDistance;
       });
     } else {
-      throw new Error("Failed to fetch office locations.");
+      throw new Error("Failed to fetch office location.");
     }
   } catch (error) {
-    console.error(
-      "Error while fetching office locations or calculating proximity:",
+    console.log(
+      "Error while fetching office location or calculating proximity:",
       error.message,
     );
     return false;
