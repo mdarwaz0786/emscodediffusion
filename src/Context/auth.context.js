@@ -54,27 +54,48 @@ export const AuthProvider = ({ children }) => {
   const initializeAuth = async () => {
     try {
       setIsLoading(true);
-      const storedToken = await AsyncStorage.getItem("token");
-      if (storedToken) {
-        setToken(storedToken);
-        const cachedTeam = await AsyncStorage.getItem("team");
-        if (cachedTeam) {
-          setTeam(JSON.parse(cachedTeam));
-        } else {
-          setTeam(null);
-        };
+
+      // Retrieve cached data
+      const [storedToken, cachedTeam] = await AsyncStorage.multiGet(["token", "team"]);
+
+      if (storedToken[1]) {
+        setToken(storedToken[1]);
+
+        // Use cached team data to render UI quickly
+        if (cachedTeam[1]) {
+          setTeam(JSON.parse(cachedTeam[1]));
+        }
+
+        // Refresh team data in the background
+        refreshTeamData(storedToken[1]);
       } else {
-        Toast.show({
-          type: "info",
-          text1: "Please login to continue.",
-        });
-      };
+        Toast.show({ type: "info", text1: "Please login to continue." });
+      }
     } catch (error) {
-      console.log("Error during initializing auth:", error.message);
-      Toast.show({ type: "error", text1: "Session expired, login again to continue" });
-      logOutTeam();
+      console.log("Error during auth initialization:", error.message);
+      Toast.show({ type: "error", text1: "Session expired, login again to continue." });
+      await logOutTeam();
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Background refresh for team data
+  const refreshTeamData = async (token) => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/api/v1/team/loggedin-team`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response?.data?.success) {
+        setTeam(response.data.team);
+
+        // Update cache
+        await AsyncStorage.setItem("team", JSON.stringify(response?.data?.team));
+      }
+    } catch (error) {
+      console.log("Error while refreshing team data:", error.message);
     }
   };
 

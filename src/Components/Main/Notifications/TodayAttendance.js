@@ -58,7 +58,6 @@ const TodayAttendance = () => {
 
   return (
     <>
-      <Text style={styles.title}>Today's Attendance</Text>
       {/* Scrollable Attendance List */}
       <ScrollView
         style={styles.container}
@@ -69,6 +68,7 @@ const TodayAttendance = () => {
           />
         }
       >
+        <Text style={styles.title}>Today's Attendance</Text>
         {loading ? (
           <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <ActivityIndicator size="large" color="#ffb300" />
@@ -181,10 +181,10 @@ const styles = StyleSheet.create({
   },
   attendanceCard: {
     backgroundColor: "#fff",
-    padding: 12,
-    paddingTop: 10,
+    padding: 10,
+    paddingTop: 8,
     borderRadius: 10,
-    marginBottom: 15,
+    marginBottom: 12,
   },
   statusContainer: {
     flexDirection: "row",

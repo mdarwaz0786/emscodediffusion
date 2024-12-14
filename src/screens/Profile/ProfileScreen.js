@@ -7,7 +7,6 @@ import {
   Modal,
   TextInput,
   TouchableOpacity,
-  RefreshControl,
   ActivityIndicator,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -23,7 +22,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ProfileScreen = () => {
   const { team, setTeam, validToken } = useAuth();
-  const { refreshKey, refreshPage } = useRefresh();
   const id = team?._id;
   const [name, setName] = useState(team?.name);
   const [email, setEmail] = useState(team?.email);
@@ -33,8 +31,7 @@ const ProfileScreen = () => {
   const [isDobPickerVisible, setIsDobPickerVisible] = useState(false);
   const [isJoiningPickerVisible, setIsJoiningPickerVisible] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const toggleModal = () => setIsModalVisible(!isModalVisible);
 
@@ -68,18 +65,11 @@ const ProfileScreen = () => {
       };
     } catch (error) {
       console.log("Error while fetching employee data:", error.message);
-      Toast.show({ type: "error", text1: "Failed to fetch employee data" });
+      Toast.show({ type: "error", text1: "Failed to fetch data" });
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   };
-
-  useEffect(() => {
-    if (validToken) {
-      fetchTeamData();
-    }
-  }, [validToken, refreshKey]);
 
   const handleUpdate = async (id) => {
     try {
@@ -111,11 +101,6 @@ const ProfileScreen = () => {
     }
   };
 
-  const handleRefresh = () => {
-    setRefreshing(true);
-    refreshPage();
-  };
-
   return (
     <>
       {
@@ -126,12 +111,6 @@ const ProfileScreen = () => {
         ) : (
           <ScrollView
             contentContainerStyle={styles.container}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={handleRefresh}
-              />
-            }
           >
             <View style={styles.detailsCard}>
               <View style={styles.avatarContainer}>

@@ -15,7 +15,7 @@ const Login = () => {
   const transformedEmployeeId = `EmpID${employeeId.substring(5)}`;
 
   const handleLogin = async () => {
-    setLoading(true); // Start loading
+    setLoading(true);
     try {
       const response = await axios.post(
         `${API_BASE_URL}/api/v1/team/login-team`,
@@ -34,17 +34,17 @@ const Login = () => {
       };
     } catch (error) {
       console.log("Error while login:", error.message);
-
-      // Handle network error specifically
       if (!error.response) {
         Toast.show({
           type: "error",
-          text1: "Network Error: Please check your internet connection.",
+          text1: error.message,
         });
       } else {
-        const errorMessage =
-          error?.response?.data?.message || "An unexpected error occurred. Please try again.";
-        Toast.show({ type: "error", text1: errorMessage });
+        const errorMessage = error?.response?.data?.message || "An unexpected error occurred. Please try again.";
+        Toast.show({
+          type: "error",
+          text1: errorMessage,
+        });
       };
     } finally {
       setLoading(false);

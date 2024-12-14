@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   notificationCard: {
-    marginBottom: 15,
+    marginBottom: 12,
     borderRadius: 8,
     backgroundColor: "#fff",
     padding: 10,
@@ -144,8 +144,8 @@ const styles = StyleSheet.create({
     color: "#555",
   },
   notFoundText: {
-    fontSize: 15,
-    color: "#aaa",
+    fontSize: 14,
+    color: "#777",
   },
   centeredView: {
     flex: 1,

@@ -51,7 +51,6 @@ const TodayWorkSummary = () => {
 
   return (
     <>
-      <Text style={styles.title}>Today's Work Summary</Text>
       <ScrollView
         style={styles.container}
         refreshControl={
@@ -61,6 +60,7 @@ const TodayWorkSummary = () => {
           />
         }
       >
+        <Text style={styles.title}>Today's Work Summary</Text>
         {workSummary && team?.role?.permissions?.project?.fields?.workDetail?.show && (
           loading ? (
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "400",
     color: "#333",
-    marginTop: 10,
+    marginBottom: 10,
     textAlign: "center",
   },
   container: {
@@ -127,10 +127,12 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   card: {
-    marginBottom: 16,
+    marginBottom: 12,
     borderRadius: 10,
     backgroundColor: '#FFF',
     padding: 10,
+    paddingTop: 8,
+    paddingBottom: 4,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -156,7 +158,8 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   divider: {
-    marginTop: 12,
+    marginTop: 8,
+    marginBottom: -3,
     height: 1,
     backgroundColor: '#DDD',
   },
