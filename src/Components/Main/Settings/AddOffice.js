@@ -86,11 +86,14 @@ const AddOffice = ({ navigation }) => {
     formData.append("addressLine1", addressLine1);
     formData.append("addressLine2", addressLine2);
     formData.append("addressLine3", addressLine3);
-    formData.append("logo", {
-      uri: logo.uri,
-      type: logo.type,
-      name: logo.fileName,
-    });
+    // Append logo
+    if (logo && logo.uri) {
+      formData.append("logo", {
+        uri: logo.uri,
+        type: logo.type,
+        name: logo.fileName,
+      });
+    };
 
     try {
       const response = await axios.post(

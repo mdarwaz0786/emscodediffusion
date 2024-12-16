@@ -96,7 +96,13 @@ const Settings = ({ navigation }) => {
   const renderOfficeCard = item => (
     <View style={styles.card} key={item?._id}>
       <View style={styles.cardHeader}>
-        {item?.logo && <Image source={{ uri: item?.logo }} style={styles.logo} />}
+        {item?.logo ? (
+          <Image source={{ uri: item?.logo }} style={styles.logo} />
+        ) : (
+          <View style={styles.placeholder}>
+            <Text style={styles.placeholderText}>No Logo</Text>
+          </View>
+        )}
         <TouchableOpacity
           onPress={() =>
             setPopupVisible(popupVisible === item?._id ? null : item?._id)
@@ -250,6 +256,18 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     color: "#000",
   },
+  placeholder: {
+    width: 60,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    borderRadius: 5,
+  },
+  placeholderText: {
+    color: '#aaa',
+    fontSize: 12,
+  },
   container: {
     flex: 1,
     padding: 10,
@@ -278,7 +296,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     paddingTop: 5,
-    marginBottom: 14,
+    marginBottom: 13,
   },
   cardHeader: {
     flexDirection: "row",

@@ -115,7 +115,7 @@ const ProfileScreen = () => {
             <View style={styles.detailsCard}>
               <View style={styles.avatarContainer}>
                 <Text style={styles.avatarText}>
-                  {team?.name ? team.name[0].toUpperCase() : "?"}
+                  {team?.name ? team?.name[0].toUpperCase() : "?"}
                 </Text>
               </View>
               <View style={styles.textContainer}>
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 15,
+    marginBottom: 10,
     width: "100%",
   },
   avatarContainer: {
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     width: "100%",
-    marginBottom: 15,
+    marginBottom: 10,
   },
   detailRow: {
     flexDirection: "row",
@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
   modalContainer: {
-    marginTop: 100,
+    marginTop: 50,
     backgroundColor: "#f5f5f5",
     padding: 20,
     paddingTop: 12,

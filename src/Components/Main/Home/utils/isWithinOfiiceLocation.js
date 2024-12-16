@@ -26,7 +26,7 @@ const isWithinOfficeLocation = async (
   userLatitude,
   userLongitude,
   validToken,
-  maxDistance = 100,
+  maxDistance = 50000,
 ) => {
   try {
     // Fetch office locations from the API
