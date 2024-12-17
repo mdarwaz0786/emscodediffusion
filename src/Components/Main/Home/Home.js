@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -9,11 +9,12 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome";
-import { useAuth } from "../../../Context/auth.context.js";
-import axios from "axios";
-import Toast from "react-native-toast-message";
 import { API_BASE_URL } from "@env";
+import axios from "axios";
+import { useAuth } from "../../../Context/auth.context.js";
+import { useRefresh } from "../../../Context/refresh.context.js";
+import Icon from "react-native-vector-icons/FontAwesome";
+import Toast from "react-native-toast-message";
 import { CommonActions, useNavigation } from "@react-navigation/native";
 import formatTimeWithAmPm from "../../../Helper/formatTimeWithAmPm.js";
 import formatTimeToHoursMinutes from "../../../Helper/formatTimeToHoursMinutes.js";
@@ -22,147 +23,49 @@ import isWithinOfficeLocation from "./utils/isWithinOfiiceLocation.js";
 import getUserLocation from "./utils/getUerLocation.js";
 import getAttendanceData from "./utils/getAttendanceData.js";
 import formatDate from "../../../Helper/formatDate.js";
-import { useRefresh } from "../../../Context/refresh.context.js";
 
 const Home = () => {
   const navigation = useNavigation();
   const { team, validToken } = useAuth();
   const { refreshKey, refreshPage } = useRefresh();
   const [attendance, setAttendance] = useState([]);
-  const [monthlyStatistic, setMonthlyStatistic] = useState("");
-  const [currentMonth, setCurrentMonth] = useState(
-    new Date().toISOString().split("T")[0].slice(0, 7),
-  );
-  const [currentDate, setCurrentDate] = useState(
-    new Date().toISOString().split("T")[0],
-  );
-  const [employeeId, setEmployeeId] = useState(team?._id);
+  const [monthlyStatistic, setMonthlyStatistic] = useState();
+  const [currentMonth, setCurrentMonth] = useState();
+  const [currentDate, setCurrentDate] = useState();
+  const [employeeId, setEmployeeId] = useState();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  // Update employeeId, currentMonth and currentDate when the component mounts or team changes
   useEffect(() => {
-    setEmployeeId(team?._id);
-    setCurrentDate(new Date().toISOString().split("T")[0]);
-    setCurrentMonth(new Date().toISOString().split("T")[0].slice(0, 7));
+    if (team) {
+      setEmployeeId(team?._id);
+      const today = new Date().toISOString().split("T")[0];
+      setCurrentDate(today);
+      setCurrentMonth(today.slice(0, 7));
+    }
   }, [team]);
 
-  // Process Attendance API Request
-  const processAttendance = async (
-    method,
-    endpoint,
-    data,
-    successMessage,
-    validToken,
-  ) => {
-    try {
-      const axiosConfig = {
-        method,
-        url: `${API_BASE_URL}/api/v1/attendance/${endpoint}`,
-        data,
-        headers: { Authorization: validToken },
-      };
-
-      const response = await axios(axiosConfig);
-
-      if (response.data.success) {
-        fetchAttendance();
-        Toast.show({ type: "success", text1: successMessage });
-      }
-    } catch (error) {
-      Toast.show({
-        type: "error",
-        text1: "Please try again",
-      });
+  // Fetch attendance and monthly statistic
+  const fetchData = useCallback(async () => {
+    if (employeeId && validToken) {
+      await fetchAttendance();
+      await fetchMonthlyStatistic();
     }
-  };
+  }, [employeeId, validToken, currentDate, currentMonth]);
 
-  // Handle Punch attendance
-  const handlePunchAction = async actionType => {
-    try {
-      const position = await getUserLocation();
+  useEffect(() => {
+    fetchData();
+  }, [fetchData, refreshKey]);
 
-      if (!position) {
-        Toast.show({ type: "error", text1: "Please enable location" });
-        return;
-      }
-
-      const { latitude, longitude } = position;
-
-      // Ensure the function waits for the result of isWithinOfficeLocation
-      const isWithinOffice = await isWithinOfficeLocation(
-        latitude,
-        longitude,
-        validToken,
-      );
-
-      if (!isWithinOffice) {
-        Toast.show({
-          type: "error",
-          text1: "Attendance can only be marked in office.",
-        });
-        return;
-      }
-
-      const { time, date, employeeId } = getAttendanceData(team);
-
-      if (!time || !date || !employeeId) {
-        Toast.show({
-          type: "error",
-          text1: "Please try agian",
-        });
-        return;
-      }
-
-      const requestData =
-        actionType === "punchIn"
-          ? { employee: employeeId, attendanceDate: date, punchInTime: time }
-          : { employee: employeeId, attendanceDate: date, punchOutTime: time };
-
-      const apiMethod = actionType === "punchIn" ? "post" : "put";
-      const apiEndpoint =
-        actionType === "punchIn" ? "create-attendance" : "update-attendance";
-      const successMessage =
-        actionType === "punchIn"
-          ? "Punch in successful"
-          : "Punch out successful";
-
-      await processAttendance(
-        apiMethod,
-        apiEndpoint,
-        requestData,
-        successMessage,
-        validToken,
-      );
-    } catch (error) {
-      Toast.show({ type: "error", text1: error.message });
-    }
-  };
-
-  // Get current date attendance for logged in employee
+  // Fetch today's attedance
   const fetchAttendance = async () => {
     try {
       setLoading(true);
-
-      const params = {};
-
-      if (currentDate) {
-        params.date = currentDate;
-      }
-
-      if (employeeId) {
-        params.employeeId = employeeId;
-      }
-
-      const response = await axios.get(
-        `${API_BASE_URL}/api/v1/attendance/all-attendance`,
-        {
-          params,
-          headers: {
-            Authorization: validToken,
-          },
-        },
-      );
+      const params = { date: currentDate, employeeId };
+      const response = await axios.get(`${API_BASE_URL}/api/v1/attendance/all-attendance`, {
+        params,
+        headers: { Authorization: validToken },
+      });
 
       if (response?.data?.success) {
         setAttendance(response?.data?.attendance);
@@ -175,34 +78,14 @@ const Home = () => {
     }
   };
 
-  useEffect(() => {
-    if (employeeId && currentDate && validToken) {
-      fetchAttendance();
-    }
-  }, [employeeId, currentDate, validToken, refreshKey]);
-
-  // Get current month statistic for logged in employee
+  // Fetch monthly statistic
   const fetchMonthlyStatistic = async () => {
     try {
-      const params = {};
-
-      if (currentMonth) {
-        params.month = currentMonth;
-      }
-
-      if (employeeId) {
-        params.employeeId = employeeId;
-      }
-
-      const response = await axios.get(
-        `${API_BASE_URL}/api/v1/attendance/monthly-statistic`,
-        {
-          params,
-          headers: {
-            Authorization: validToken,
-          },
-        },
-      );
+      const params = { month: currentMonth, employeeId };
+      const response = await axios.get(`${API_BASE_URL}/api/v1/attendance/monthly-statistic`, {
+        params,
+        headers: { Authorization: validToken },
+      });
 
       if (response?.data?.success) {
         setMonthlyStatistic(response?.data?.attendance);
@@ -214,16 +97,79 @@ const Home = () => {
     }
   };
 
-  useEffect(() => {
-    if (employeeId && currentMonth && validToken) {
-      fetchMonthlyStatistic();
+  // Handle Punch attendance
+  const handlePunchAction = useCallback(async (actionType) => {
+    try {
+      const position = await getUserLocation();
+
+      if (!position) {
+        Toast.show({ type: "error", text1: "Please enable location" });
+        return;
+      }
+
+      const { latitude, longitude } = position;
+
+      const isWithinOffice = await isWithinOfficeLocation(latitude, longitude, validToken);
+
+      if (!isWithinOffice) {
+        Toast.show({ type: "error", text1: "Attendance can only be marked in office." });
+        return;
+      }
+
+      const { time, date, employeeId } = getAttendanceData(team);
+
+      if (!time || !date || !employeeId) {
+        Toast.show({ type: "error", text1: "Please try agian" });
+        return;
+      }
+
+      const requestData = actionType === "punchIn"
+        ? { employee: employeeId, attendanceDate: date, punchInTime: time }
+        : { employee: employeeId, attendanceDate: date, punchOutTime: time };
+
+      const apiMethod = actionType === "punchIn"
+        ? "post"
+        : "put";
+
+      const apiEndpoint = actionType === "punchIn"
+        ? "create-attendance"
+        : "update-attendance";
+
+      const successMessage = actionType === "punchIn"
+        ? "Punch in successful"
+        : "Punch out successful";
+
+      await processAttendance(apiMethod, apiEndpoint, requestData, successMessage, validToken);
+    } catch (error) {
+      Toast.show({ type: "error", text1: error.message });
     }
-  }, [employeeId, currentMonth, validToken, refreshKey]);
+  }, [validToken, team]);
+
+  // Process attendance API request
+  const processAttendance = async (method, endpoint, data, successMessage, validToken) => {
+    try {
+      const axiosConfig = {
+        method,
+        url: `${API_BASE_URL}/api/v1/attendance/${endpoint}`,
+        data,
+        headers: { Authorization: validToken },
+      };
+
+      const response = await axios(axiosConfig);
+
+      if (response?.data?.success) {
+        fetchAttendance();
+        Toast.show({ type: "success", text1: successMessage });
+      }
+    } catch (error) {
+      Toast.show({ type: "error", text1: "Please try again" });
+    }
+  };
 
   // Navigate to attendance detail screen
   const navigateToAttendance = () => {
     const routes = [
-      { name: "BottomTabNavigator" }, // Base route
+      { name: "BottomTabNavigator" },
       {
         name: "EmployeeStack",
         params: {
@@ -233,21 +179,30 @@ const Home = () => {
       },
     ];
 
-    // Index of Attendance in routes array
-    const attendanceIndex = routes.findIndex(
-      route =>
-        route.name === "EmployeeStack" && route.params?.screen === "Attendance",
+    const attendanceIndex = routes.findIndex((route) =>
+      route.name === "EmployeeStack" && route.params?.screen === "Attendance"
     );
 
-    navigation.dispatch(
-      CommonActions.reset({
-        index: attendanceIndex,
-        routes,
-      }),
-    );
+    if (attendanceIndex !== -1) {
+      navigation.dispatch(
+        CommonActions.reset({
+          index: attendanceIndex,
+          routes,
+        }),
+      );
+    } else {
+      console.warn("Attendance screen not found in routes.");
+    }
   };
 
-  const statistics = [
+  // Refresh page
+  const handleRefresh = () => {
+    setRefreshing(true);
+    refreshPage();
+  };
+
+  // Statistic data
+  const statistics = useMemo(() => [
     { label: " Month", value: formatDate(monthlyStatistic?.month) || "-", icon: "📅" },
     { label: "Total Days", value: monthlyStatistic?.totalDaysInMonth || 0, icon: "📆" },
     { label: "Working Days", value: monthlyStatistic?.companyWorkingDays || 0, icon: "💼" },
@@ -261,12 +216,7 @@ const Home = () => {
     { label: "Avgerage Punch In Time", value: formatTimeWithAmPm(monthlyStatistic?.averagePunchInTime) || "-", icon: "🔔" },
     { label: "Avgerage Punch Out Time", value: formatTimeWithAmPm(monthlyStatistic?.averagePunchOutTime) || "-", icon: "🔕" },
     { label: "Company's Working Hours", value: formatTimeToHoursMinutes(monthlyStatistic?.companyWorkingHours) || "00:00", icon: "🏢" },
-  ];
-
-  const handleRefresh = () => {
-    setRefreshing(true);
-    refreshPage();
-  };
+  ], [monthlyStatistic]);
 
   return (
     <>
@@ -318,7 +268,7 @@ const Home = () => {
           />
         }
       >
-        {/* Greeting and Date */}
+        {/* Greeting and current date */}
         <View style={styles.greetingContainer}>
           <Text style={styles.greetingText}>
             {getGreeting()}, {team?.name?.split(" ", 1)[0]}!
