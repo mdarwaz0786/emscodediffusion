@@ -1,16 +1,13 @@
 // Get attendance data
-const getAttendanceData = team => {
-  if (!team || !team._id) {
-    return {
-      time: null,
-      date: null,
-      employeeId: null,
-    };
-  };
+const getAttendanceData = (team) => {
+  if (!team || !team?._id) {
+    return { time: null, date: null, employeeId: null };
+  }
 
-  const time = new Date().toTimeString().split(" ")[0].slice(0, 5);
-  const date = new Date().toISOString().split("T")[0];
-  const employeeId = team._id;
+  const today = new Date();
+  const date = today.toISOString().split("T")[0];
+  const time = today.toTimeString().slice(0, 5);
+  const employeeId = team?._id;
 
   return { time, date, employeeId };
 };

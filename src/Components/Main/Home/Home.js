@@ -97,7 +97,7 @@ const Home = () => {
     }
   };
 
-  // Handle Punch attendance
+  // Handle punch attendance
   const handlePunchAction = useCallback(async (actionType) => {
     try {
       const position = await getUserLocation();
@@ -141,6 +141,7 @@ const Home = () => {
 
       await processAttendance(apiMethod, apiEndpoint, requestData, successMessage, validToken);
     } catch (error) {
+      console.log(error.message);
       Toast.show({ type: "error", text1: error.message });
     }
   }, [validToken, team]);
@@ -158,10 +159,11 @@ const Home = () => {
       const response = await axios(axiosConfig);
 
       if (response?.data?.success) {
-        fetchAttendance();
+        refreshPage();
         Toast.show({ type: "success", text1: successMessage });
       }
     } catch (error) {
+      console.log(error.message);
       Toast.show({ type: "error", text1: "Please try again" });
     }
   };
