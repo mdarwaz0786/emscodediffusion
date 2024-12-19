@@ -103,7 +103,7 @@ const Attendance = ({ route }) => {
         setAttendance([]);
       }
     } catch (error) {
-      console.error(
+      console.log(
         "Error while fetching attendance:",
         error?.response?.data?.message,
       );
@@ -147,7 +147,7 @@ const Attendance = ({ route }) => {
         setAttendanceSummary(response?.data?.attendance);
       }
     } catch (error) {
-      console.error("Error while fetching monthly statistic:", error.message);
+      console.log("Error while fetching monthly statistic:", error?.response?.data?.message);
     } finally {
       setRefreshing(false);
     }

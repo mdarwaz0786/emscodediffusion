@@ -31,7 +31,7 @@ const Holiday = ({ navigation }) => {
         setHolidays(response?.data?.holiday);
       }
     } catch (error) {
-      console.error("Error while fetching upcoming holiday:", error.message);
+      console.log("Error while fetching upcoming holiday:", error.message);
     } finally {
       setLoading(false);
       setRefreshing(false);

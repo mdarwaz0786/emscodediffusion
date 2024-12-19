@@ -65,7 +65,7 @@ const SalarySlip = ({ route }) => {
         setOffice(response?.data?.officeLocation);
       }
     } catch (error) {
-      console.error("Error while fetching office location:", error.message);
+      console.log("Error while fetching office location:", error.message);
     } finally {
       setRefreshing(false);
     }
@@ -130,7 +130,7 @@ const SalarySlip = ({ route }) => {
         setMonthlySalary("");
       }
     } catch (error) {
-      console.error("Error while fetching monthly salary:", error.message);
+      console.log("Error while fetching monthly salary:", error.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -390,7 +390,7 @@ const SalarySlip = ({ route }) => {
       Alert.alert("PDF Generated", `File saved to: ${newPath}`);
       console.log("PDF saved successfully at:", newPath);
     } catch (error) {
-      console.error("Error while generating PDF:", error);
+      console.log("Error while generating PDF:", error);
       Alert.alert("Error", "Failed to generate PDF");
     }
   };

@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useAuth } from "../../Context/auth.context.js";
-import { useRefresh } from "../../Context/refresh.context.js";
 import Toast from "react-native-toast-message";
 import { API_BASE_URL } from "@env";
 import formatTimeToHoursMinutes from "../../Helper/formatTimeToHoursMinutes.js";
@@ -64,8 +63,7 @@ const ProfileScreen = () => {
         );
       };
     } catch (error) {
-      console.log("Error while fetching employee data:", error.message);
-      Toast.show({ type: "error", text1: "Failed to fetch data" });
+      console.log("Error while fetching employee data:", error?.response?.data?.message);
     } finally {
       setLoading(false);
     }
@@ -96,7 +94,7 @@ const ProfileScreen = () => {
         Toast.show({ type: "success", text1: "Profile updated successfully" });
       }
     } catch (error) {
-      console.log("Error while updating profile:", error.message);
+      console.log("Error while updating profile:", error?.response?.data?.message);
       Toast.show({ type: "error", text1: "Error while updating profile" });
     }
   };

@@ -23,14 +23,12 @@ export const AuthProvider = ({ children }) => {
 
       if (response?.data?.success) {
         const newTeam = response?.data?.team;
-        if (JSON.stringify(newTeam) !== JSON.stringify(team)) {
-          setTeam(newTeam);
-          await AsyncStorage.setItem("team", JSON.stringify(newTeam));
-        }
+        setTeam(newTeam);
+        await AsyncStorage.setItem("team", JSON.stringify(newTeam));
         setToken(serverToken);
       }
     } catch (error) {
-      console.log("Error while storing token and fetching employee details:", error.message);
+      console.log("Error while storing token and fetching employee details:", error?.response?.data?.message);
       Toast.show({ type: "error", text1: "Login failed. Please try again." });
     }
   };
@@ -77,13 +75,11 @@ export const AuthProvider = ({ children }) => {
 
       if (response?.data?.success) {
         const newTeam = response?.data?.team;
-        if (JSON.stringify(newTeam) !== JSON.stringify(team)) {
-          setTeam(newTeam);
-          await AsyncStorage.setItem("team", JSON.stringify(newTeam));
-        }
+        setTeam(newTeam);
+        await AsyncStorage.setItem("team", JSON.stringify(newTeam));
       }
     } catch (error) {
-      console.log("Error while refreshing team data:", error.message);
+      console.log("Error while refreshing team data:", error?.response?.data?.message);
     }
   };
 

@@ -52,7 +52,7 @@ const AddHoliday = ({ navigation }) => {
         navigation.goBack();
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.log("Error:", error);
       Toast.show({ type: "error", text1: error.response.data.message });
     }
   };

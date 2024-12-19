@@ -121,7 +121,7 @@ const AddOffice = ({ navigation }) => {
         navigation.goBack();
       }
     } catch (error) {
-      console.error("Error:", error.message);
+      console.log("Error:", error.message);
       Toast.show({
         type: "error",
         text1: error.response?.data?.message || "An error occurred",

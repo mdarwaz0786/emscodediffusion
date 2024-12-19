@@ -92,7 +92,7 @@ const EditOffice = ({ navigation, route }) => {
         setAddressLine3(office?.addressLine3);
       }
     } catch (error) {
-      console.error("Error while fetching office location:", error.message);
+      console.log("Error while fetching office location:", error.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -150,7 +150,7 @@ const EditOffice = ({ navigation, route }) => {
         navigation.goBack();
       }
     } catch (error) {
-      console.error("Error:", error.message);
+      console.log("Error:", error.message);
       Toast.show({
         type: "error",
         text1: error.response?.data?.message || "An error occurred",

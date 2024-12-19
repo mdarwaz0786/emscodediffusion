@@ -46,7 +46,7 @@ const Settings = ({ navigation }) => {
         setOffice(response?.data?.officeLocation);
       }
     } catch (error) {
-      console.error("Error while fetching office location:", error.message);
+      console.log("Error while fetching office location:", error.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -76,7 +76,7 @@ const Settings = ({ navigation }) => {
           Toast.show({ type: "success", text1: "Deleted successfully" });
         }
       } catch (error) {
-        console.error("Error while deleting office location:", error.message);
+        console.log("Error while deleting office location:", error.message);
       } finally {
         setConfirmationVisible(false);
         setPopupVisible(null);

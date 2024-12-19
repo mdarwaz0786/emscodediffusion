@@ -71,7 +71,7 @@ const Home = () => {
         setAttendance(response?.data?.attendance);
       }
     } catch (error) {
-      console.log("Error while fetching attendance:", error.message);
+      console.log("Error while fetching attendance:", error?.response?.data?.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -91,7 +91,7 @@ const Home = () => {
         setMonthlyStatistic(response?.data?.attendance);
       }
     } catch (error) {
-      console.log("Error while fetching monthly statistic:", error.message);
+      console.log("Error while fetching monthly statistic:", error?.response?.data?.message);
     } finally {
       setRefreshing(false);
     }
@@ -193,7 +193,7 @@ const Home = () => {
         }),
       );
     } else {
-      console.warn("Attendance screen not found in routes.");
+      console.log("Attendance screen not found in routes.");
     }
   };
 

@@ -48,7 +48,7 @@ const AddWorkSummary = ({ navigation }) => {
         };
       };
     } catch (error) {
-      console.error("Error while fetching all projects:", error.message);
+      console.log("Error while fetching all projects:", error.message);
     };
   };
 
