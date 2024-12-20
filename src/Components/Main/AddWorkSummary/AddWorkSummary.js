@@ -147,7 +147,7 @@ const AddWorkSummary = ({ navigation }) => {
           color="#000"
           onPress={() => navigation.goBack()}
         />
-        <Text style={styles.headerTitle}>Add Daily Work Summary</Text>
+        <Text style={styles.headerTitle}>Add Work Summary</Text>
       </View>
 
       <ScrollView style={styles.container}>
@@ -237,7 +237,7 @@ const AddWorkSummary = ({ navigation }) => {
         </Text>
         <TextInput
           style={[styles.input, styles.textArea]}
-          placeholder="Enter Work Description"
+          placeholder="Write Work Description"
           placeholderTextColor="#777"
           value={workDescription}
           onChangeText={setWorkDescription}
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   picker: {
-    marginBottom: 10,
+    marginBottom: 15,
     backgroundColor: "#fff",
     color: "#777",
     borderWidth: 1,
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
   input: {
     height: 50,
     paddingLeft: 15,
-    marginBottom: 10,
+    marginBottom: 15,
     backgroundColor: "#fff",
     color: "#777",
     justifyContent: "center"
@@ -312,6 +312,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
     marginTop: 5,
+    marginBottom: 20,
   },
   submitButtonText: {
     color: "#fff",

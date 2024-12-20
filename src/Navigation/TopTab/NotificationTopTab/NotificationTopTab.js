@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react';
+import React, { Suspense } from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { ActivityIndicator, View } from 'react-native';
 import TodayAttendanceScreen from '../../../Screens/Notifications/TodayAttendanceScree.js';

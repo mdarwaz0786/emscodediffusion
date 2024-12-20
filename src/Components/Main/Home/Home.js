@@ -197,6 +197,11 @@ const Home = () => {
     }
   };
 
+  // Navigate to apply leave request screen
+  const navigateToApplyLeaveRequest = () => {
+    navigation.navigate("ApplyLeaveRequest");
+  };
+
   // Refresh page
   const handleRefresh = () => {
     setRefreshing(true);
@@ -306,7 +311,9 @@ const Home = () => {
             <Icon name="history" size={20} style={{ color: "#777" }} />
             <Text style={styles.quickActionText}>Attendance History</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.quickActionButton}>
+          <TouchableOpacity
+            style={styles.quickActionButton}
+            onPress={navigateToApplyLeaveRequest}>
             <Icon name="file-text-o" size={20} style={{ color: "#777" }} />
             <Text style={styles.quickActionText}>Leave Request</Text>
           </TouchableOpacity>

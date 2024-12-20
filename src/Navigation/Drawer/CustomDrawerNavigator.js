@@ -32,7 +32,7 @@ const CustomDrawerNavigator = () => {
       show: fieldPermissions?.settings?.show,
     },
     {
-      label: "Add Daily Work Summary",
+      label: "Add Work Summary",
       icon: "clipboard-outline",
       route: "AddWorkSummary",
       show: team?.role?.permissions?.project?.fields?.workDetail?.show,
@@ -64,18 +64,16 @@ const CustomDrawerNavigator = () => {
   ];
 
   // Filter drawer items based on the permissions
-  const visibleDrawerItems = drawerItems.filter(item => item.show);
+  const visibleDrawerItems = drawerItems.filter((item) => item.show);
 
   // Handle navigation
-  const handleNavigation = item => {
+  const handleNavigation = (item) => {
     if (item.resetScreen) {
       const routes = [{ name: item.route, params: { screen: item.resetScreen } }];
 
       // Dynamic index calculation
-      const targetIndex = routes.findIndex(
-        route =>
-          route.name === item.route &&
-          route.params?.screen === item.resetScreen,
+      const targetIndex = routes.findIndex((route) =>
+        route.name === item.route && route.params?.screen === item.resetScreen,
       );
 
       navigation.dispatch(

@@ -35,6 +35,9 @@ const HelpScreen = lazy(() =>
 const LogoutScreen = lazy(() =>
   import("../../Screens/Auth/LogoutScreen.js"),
 );
+const ApplyLeaveRequestScreen = lazy(() =>
+  import("../../Screens/LeaveRequest/ApplyLeaveRequestSceeen.js"),
+);
 
 const Drawer = createDrawerNavigator();
 
@@ -50,7 +53,7 @@ const DrawerNavigator = () => {
       }>
       <Drawer.Navigator
         initialRouteName={isLoggedIn ? "BottomTabNavigator" : "Login"}
-        drawerContent={props =>
+        drawerContent={(props) =>
           isLoggedIn ? <CustomDrawerNavigator {...props} /> : null
         }
         screenOptions={{
@@ -60,10 +63,7 @@ const DrawerNavigator = () => {
         }}>
         {isLoggedIn ? (
           <>
-            <Drawer.Screen
-              name="BottomTabNavigator"
-              component={BottomTabNavigator}
-            />
+            <Drawer.Screen name="BottomTabNavigator" component={BottomTabNavigator} />
             <Drawer.Screen name="EmployeeStack" component={EmployeeStack} />
             <Drawer.Screen name="HolidayStack" component={HolidayStack} />
             <Drawer.Screen name="SettingsStack" component={SettingsStack} />
@@ -72,6 +72,7 @@ const DrawerNavigator = () => {
             <Drawer.Screen name="Contact" component={ContactUsScreen} />
             <Drawer.Screen name="Help" component={HelpScreen} />
             <Drawer.Screen name="Logout" component={LogoutScreen} />
+            <Drawer.Screen name="ApplyLeaveRequest" component={ApplyLeaveRequestScreen} />
           </>
         ) : (
           <Drawer.Screen name="Login" component={LoginScreen} />
