@@ -125,11 +125,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 12,
     backgroundColor: "#fff",
-    elevation: 3,
+    elevation: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
-    shadowRadius: 3,
+    shadowRadius: 1,
     zIndex: 1000,
   },
   headerTitle: {
