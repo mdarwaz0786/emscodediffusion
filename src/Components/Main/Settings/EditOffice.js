@@ -33,7 +33,6 @@ const EditOffice = ({ navigation, route }) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { validToken } = useAuth();
-  const { refreshKey, refreshPage } = useRefresh();
 
   async function fetchLatLong() {
     const position = await getUserLocation();

@@ -9,6 +9,9 @@ const HolidayScreen = lazy(() =>
 const AddHolidayScreen = lazy(() =>
   import("../../../Screens/Holiday/AddHolidayScreen.js"),
 );
+const EditHolidayScreen = lazy(() =>
+  import("../../../Screens/Holiday/EditHolidayScreen.js"),
+);
 
 // Create a Stack Navigator
 const Stack = createStackNavigator();
@@ -26,6 +29,7 @@ const HolidayStack = () => {
         screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Holiday" component={HolidayScreen} />
         <Stack.Screen name="AddHoliday" component={AddHolidayScreen} />
+        <Stack.Screen name="EditHoliday" component={EditHolidayScreen} />
       </Stack.Navigator>
     </Suspense>
   );
