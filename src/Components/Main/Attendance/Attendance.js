@@ -37,12 +37,14 @@ const Attendance = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  // Update employeeId, month and date when the component mounts
+  // Update employeeId, month and date when the component mount or id change
   useEffect(() => {
-    setMonth(currentMonth);
-    setYear(currentYear);
-    setEmployeeId(id);
-    fetchSingleEmployee(id);
+    if (id) {
+      setMonth(currentMonth);
+      setYear(currentYear);
+      setEmployeeId(id);
+      fetchSingleEmployee(id);
+    }
   }, [id]);
 
   // Fetch single employee
@@ -113,12 +115,6 @@ const Attendance = ({ route }) => {
     }
   };
 
-  useEffect(() => {
-    if (validToken && month && year && employeeId) {
-      fetchAttendance();
-    }
-  }, [validToken, month, year, employeeId, refreshKey]);
-
   // Get selected month and year statistic for employee
   const fetchMonthlyStatistic = async () => {
     try {
@@ -155,6 +151,7 @@ const Attendance = ({ route }) => {
 
   useEffect(() => {
     if (employeeId && month && year && validToken) {
+      fetchAttendance();
       fetchMonthlyStatistic();
     }
   }, [employeeId, month, year, validToken, refreshKey]);
@@ -300,7 +297,13 @@ const Attendance = ({ route }) => {
                       ? styles.present
                       : item?.status === "Absent"
                         ? styles.absent
-                        : styles.holiday,
+                        : item?.status === "Holiday"
+                          ? styles.holiday
+                          : item?.status === "Sunday"
+                            ? styles.sunday
+                            : item?.status === "On Leave"
+                              ? styles.onLeave
+                              : styles.default,
                   ]}>{item?.status}</Text>
                 </View>
               </View>
@@ -327,9 +330,7 @@ const Attendance = ({ route }) => {
                     style={[
                       item?.lateIn === "00:00"
                         ? styles.onTime
-                        : item?.lateIn || item?.status === "Absent"
-                          ? styles.late
-                          : styles.holiday,
+                        : styles.late
                     ]}
                   >
                     {item?.lateIn === "00:00"
@@ -433,11 +434,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 12,
     backgroundColor: "#fff",
-    elevation: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
     zIndex: 1000,
   },
   headerTitle: {
@@ -509,6 +505,18 @@ const styles = StyleSheet.create({
   },
   holiday: {
     color: "#ffb300",
+    fontSize: 14,
+  },
+  sunday: {
+    color: "blue",
+    fontSize: 14,
+  },
+  onLeave: {
+    color: "purple",
+    fontSize: 14,
+  },
+  default: {
+    color: "black",
     fontSize: 14,
   },
   onTime: {

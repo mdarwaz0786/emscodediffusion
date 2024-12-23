@@ -94,7 +94,13 @@ const TodayAttendance = () => {
                       ? styles.present
                       : item?.status === "Absent"
                         ? styles.absent
-                        : styles.holiday,
+                        : item?.status === "Holiday"
+                          ? styles.holiday
+                          : item?.status === "Sunday"
+                            ? styles.sunday
+                            : item?.status === "On Leave"
+                              ? styles.onLeave
+                              : styles.default,
                   ]}>{item?.status}</Text>
                 </View>
               </View>
@@ -121,9 +127,7 @@ const TodayAttendance = () => {
                     style={[
                       item?.lateIn === "00:00"
                         ? styles.onTime
-                        : item?.lateIn || item?.status === "Absent"
-                          ? styles.late
-                          : styles.holiday,
+                        : styles.late
                     ]}
                   >
                     {item?.lateIn === "00:00"
@@ -206,6 +210,18 @@ const styles = StyleSheet.create({
   },
   holiday: {
     color: "#ffb300",
+    fontSize: 14,
+  },
+  sunday: {
+    color: "blue",
+    fontSize: 14,
+  },
+  onLeave: {
+    color: "purple",
+    fontSize: 14,
+  },
+  default: {
+    color: "black",
     fontSize: 14,
   },
   onTime: {

@@ -34,7 +34,7 @@ const Login = () => {
       };
     } catch (error) {
       console.log("Error while login:", error.message);
-      if (!error.response) {
+      if (!error?.response) {
         Toast.show({
           type: "error",
           text1: error.message,

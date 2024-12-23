@@ -13,7 +13,7 @@ const Logout = props => {
           index: 0,
           routes: [{ name: "Login" }],
         });
-      }, 0);
+      }, 1000);
     };
     performLogout();
   }, [logOutTeam]);
