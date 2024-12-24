@@ -58,8 +58,8 @@ const DrawerNavigator = () => {
         }
         screenOptions={{
           headerShown: false,
-          gestureEnabled: isLoggedIn,
-          swipeEnabled: isLoggedIn,
+          gestureEnabled: false,
+          swipeEnabled: false,
         }}>
         {isLoggedIn ? (
           <>

@@ -33,7 +33,6 @@ const Login = () => {
         Toast.show({ type: "error", text1: "Login failed. Please try again." });
       };
     } catch (error) {
-      console.log("Error while login:", error.message);
       if (!error?.response) {
         Toast.show({
           type: "error",
@@ -105,7 +104,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   logo: {
-    width: "60%",
+    width: "40%",
     resizeMode: "contain",
   },
   heading: {

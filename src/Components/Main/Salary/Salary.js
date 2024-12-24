@@ -13,7 +13,8 @@ import {
 import Icon from "react-native-vector-icons/Feather";
 import { Picker } from "@react-native-picker/picker";
 import RNHTMLtoPDF from "react-native-html-to-pdf";
-import RNFetchBlob from "rn-fetch-blob";
+import RNFS from 'react-native-fs';
+import RNFetchBlob from 'rn-fetch-blob';
 import requestStoragePermission from "./utils/requestStoragePermission.js";
 import { useAuth } from "../../../Context/auth.context.js";
 import { useRefresh } from "../../../Context/refresh.context.js";
@@ -21,6 +22,7 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { API_BASE_URL } from "@env";
 import getMonthName from "./utils/getMonthName.js";
+import getUniqueFileName from "./utils/getUniqueFileName.js";
 
 const SalarySlip = ({ route }) => {
   const id = route?.params?.id;
@@ -39,15 +41,12 @@ const SalarySlip = ({ route }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    requestStoragePermission();
-  }, []);
-
-  // Update employeeId, month and date when the component mounts
-  useEffect(() => {
-    setEmployeeId(id);
-    fetchSingleEmployee(id);
-    setMonth(currentMonth);
-    setYear(currentYear);
+    if (id) {
+      setEmployeeId(id);
+      fetchSingleEmployee(id);
+      setMonth(currentMonth);
+      setYear(currentYear);
+    }
   }, [id]);
 
   const fetchOfficeLocation = async () => {
@@ -77,7 +76,6 @@ const SalarySlip = ({ route }) => {
     }
   }, [validToken, refreshKey]);
 
-  // Fetch single employee
   const fetchSingleEmployee = async id => {
     try {
       const response = await axios.get(
@@ -99,7 +97,6 @@ const SalarySlip = ({ route }) => {
     }
   };
 
-  // Get current month salary for employee
   const fetchMonthlySalary = async () => {
     try {
       setLoading(true);
@@ -126,8 +123,6 @@ const SalarySlip = ({ route }) => {
 
       if (response?.data?.success) {
         setMonthlySalary(response?.data?.salary);
-      } else {
-        setMonthlySalary("");
       }
     } catch (error) {
       console.log("Error while fetching monthly salary:", error.message);
@@ -143,7 +138,6 @@ const SalarySlip = ({ route }) => {
     }
   }, [employeeId, month, year, validToken, refreshKey]);
 
-  // Function to reset filters to initial values
   const resetFilters = () => {
     setMonth(currentMonth);
     setYear(currentYear);
@@ -158,6 +152,13 @@ const SalarySlip = ({ route }) => {
   };
 
   const generatePDF = async () => {
+    const hasPermission = await requestStoragePermission();
+
+    if (!hasPermission) {
+      Alert.alert("Permission Denied", "Cannot save file without storage permission");
+      return;
+    };
+
     const html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -314,12 +315,9 @@ const SalarySlip = ({ route }) => {
       <!-- Employee Information -->
       <div class="employeeInfo">
         <div class="salaryMonth">${getMonthName(month)} ${year}</div>
-        <div class="employeeDetail"><span class="bold">Employee Name:</span>  ${employee?.name
-      }</div>
-        <div class="employeeDetail"><span class="bold">Designation:</span> ${employee?.designation?.name
-      }</div>
-        <div class="employeeDetail"><span class="bold">Employee ID:</span> ${employee?.employeeId
-      }</div>
+        <div class="employeeDetail"><span class="bold">Employee Name:</span> ${employee?.name}</div>
+        <div class="employeeDetail"><span class="bold">Designation:</span> ${employee?.designation?.name}</div>
+        <div class="employeeDetail"><span class="bold">Employee ID:</span> ${employee?.employeeId}</div>
         <div class="employeeDetail"><span class="bold">Department:</span> IT</div>
         <div class="employeeDetail"><span class="bold">Bank Account:</span> XXXX-XXXX-XXXX-XXXX</div>
       </div>
@@ -374,23 +372,36 @@ const SalarySlip = ({ route }) => {
 
 </html>`;
 
-    let options = {
-      html: html,
-      fileName: `Salary-${getMonthName(month)?.slice(0, 3)}-${year}-${employee?.name?.split(" ", 1)[0]
-        }`,
-      directory: "Downloads", // Ensure this is set to 'Downloads'
-    };
+    const fileNameBase = `Salary-${getMonthName(month).slice(0, 3)}-${year}-${employee?.name.split(" ", 1)[0]}`;
+    const directory = RNFS.DownloadDirectoryPath;
 
     try {
-      const file = await RNHTMLtoPDF.convert(options);
-      const newPath = await `${RNFetchBlob.fs.dirs.DownloadDir
-        }/Salary-${getMonthName(month)?.slice(0, 3)}-${year}-${employee?.name?.split(" ", 1)[0]
-        }.pdf`; // Set the new path
-      await RNFetchBlob.fs.mv(file.filePath, newPath); // Move the file to the new path
-      Alert.alert("PDF Generated", `File saved to: ${newPath}`);
-      console.log("PDF saved successfully at:", newPath);
+      // Ensure Downloads folder exists
+      if (!await RNFS.exists(directory)) {
+        await RNFS.mkdir(directory);
+      };
+
+      // Generate the PDF
+      const pdfOptions = {
+        html: html,
+        fileName: fileNameBase,
+        directory: 'Download',
+      };
+
+      const pdf = await RNHTMLtoPDF.convert(pdfOptions);
+
+      // Generate a unique file name
+      const uniqueFileName = await getUniqueFileName(directory, fileNameBase, 'pdf');
+      const newPath = `${directory}/${uniqueFileName}`;
+
+      // Move the PDF to the Downloads directory
+      await RNFS.moveFile(pdf.filePath, newPath);
+
+      // Notify the media scanner about the new file
+      await RNFetchBlob.fs.scanFile([{ path: newPath, mime: 'application/pdf' }]);
+
+      Alert.alert('PDF Generated', `File saved to: ${newPath}`);
     } catch (error) {
-      console.log("Error while generating PDF:", error);
       Alert.alert("Error", "Failed to generate PDF");
     }
   };
@@ -605,7 +616,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 12,
     backgroundColor: "#fff",
-
     zIndex: 1000,
   },
   headerTitle: {
@@ -675,7 +685,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   logo: {
-    width: "130%",
+    width: "95%",
     resizeMode: "contain",
   },
   companyInfo: {

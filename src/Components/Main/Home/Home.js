@@ -103,7 +103,7 @@ const Home = () => {
       const position = await getUserLocation();
 
       if (!position) {
-        Toast.show({ type: "error", text1: "Please enable location" });
+        Toast.show({ type: "error", text1: "Location permission is required to proceed." });
         return;
       }
 
@@ -142,7 +142,7 @@ const Home = () => {
       await processAttendance(apiMethod, apiEndpoint, requestData, successMessage, validToken);
     } catch (error) {
       console.log(error.message);
-      Toast.show({ type: "error", text1: error.message });
+      Toast.show({ type: "error", text1: error.message || "Try again" });
     }
   }, [validToken, team]);
 
@@ -164,7 +164,7 @@ const Home = () => {
       }
     } catch (error) {
       console.log(error.message);
-      Toast.show({ type: "error", text1: "Please try again" });
+      Toast.show({ type: "error", text1: error?.response?.data?.message || "Please try again" });
     }
   };
 

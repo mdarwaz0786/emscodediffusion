@@ -1,8 +1,9 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from "react-native";
 import { CommonActions, useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useAuth } from "../../Context/auth.context.js";
+import Logo from "../../Assets/logo.png";
 
 const CustomDrawerNavigator = () => {
   const navigation = useNavigation();
@@ -90,7 +91,7 @@ const CustomDrawerNavigator = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerText}>Code Diffusion Technologies</Text>
+        <Image source={Logo} style={styles.logo} />
       </View>
       <View style={styles.sidebar}>
         {visibleDrawerItems.map((item, index) => (
@@ -110,28 +111,30 @@ const CustomDrawerNavigator = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f4f4f4",
   },
   header: {
-    padding: 16,
-    backgroundColor: "#ffb300",
+    paddingLeft: 16,
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
-  headerText: {
-    fontSize: 15,
-    fontWeight: "500",
-    color: "#fff",
+  logo: {
+    width: "30%",
+    resizeMode: "contain",
   },
   sidebar: {
     flex: 1,
     paddingTop: 0,
+    backgroundColor: "#fff",
   },
   item: {
     flexDirection: "row",
     alignItems: "center",
     padding: 15,
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
+    borderTopWidth: 1,
+    borderTopColor: "#ddd",
   },
   itemText: {
     marginLeft: 10,
