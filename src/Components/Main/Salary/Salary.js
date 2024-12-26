@@ -307,7 +307,7 @@ const SalarySlip = ({ route }) => {
         <div class="companyInfo">
           <div class="companyName">${office[0]?.name}</div>
           <div class="companyAddress">${office[0]?.addressLine1}</div>
-          <div class="companyAddress">${office[0]?.addressLine3}</div>
+          <div class="companyAddress">${office[0]?.addressLine2}</div>
           <div class="companyAddress">${office[0]?.addressLine3}</div>
         </div>
       </div>
