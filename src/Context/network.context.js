@@ -34,4 +34,3 @@ export const NetworkProvider = ({ children }) => {
 };
 
 export const useNetwork = () => useContext(NetworkContext);
-''
