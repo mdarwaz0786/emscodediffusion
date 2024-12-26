@@ -9,8 +9,8 @@ const getUniqueFileName = async (basePath, baseName, extension) => {
     throw new Error('Invalid baseName. It must be a non-empty string.');
   };
 
-  if (typeof extension !== 'string') {
-    throw new Error('Invalid extension. It must be a string starting with a dot.');
+  if (typeof extension !== 'string' || extension.trim() === '') {
+    throw new Error('Invalid extension. It must be a non-empty string.');
   };
 
   let fileName = `${baseName}.${extension}`;

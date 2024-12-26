@@ -169,6 +169,7 @@ const styles = StyleSheet.create({
   employeeCard: {
     backgroundColor: "#ffffff",
     padding: 10,
+    paddingHorizontal: 14,
     borderTopWidth: 1,
     borderTopColor: "#e0e0e0",
   },
@@ -185,11 +186,11 @@ const styles = StyleSheet.create({
   employeeName: {
     fontSize: 14,
     fontWeight: "400",
-    color: "#555",
+    color: "#333",
     marginRight: 10,
   },
   employeeRole: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#777",
   },
   optionsButton: {

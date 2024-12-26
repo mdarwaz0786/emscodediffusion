@@ -200,8 +200,8 @@ const SalarySlip = ({ route }) => {
     }
 
     .companyLogo img {
-      width: 140px;
-      height: 70px;
+      width: 200px;
+      height: 50px;
       object-fit: contain;
     }
 
