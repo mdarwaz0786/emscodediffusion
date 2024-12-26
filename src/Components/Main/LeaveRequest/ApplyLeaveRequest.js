@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
@@ -76,7 +76,7 @@ const ApplyLeaveRequest = ({ navigation }) => {
           headers: {
             Authorization: validToken,
           },
-        }
+        },
       );
 
       if (response?.data?.success) {
@@ -131,7 +131,7 @@ const ApplyLeaveRequest = ({ navigation }) => {
         </Picker>
 
         <Text style={{ marginBottom: 5, color: "#555" }}>
-          From <Text style={{ color: "red" }}>*</Text>
+          Start Date <Text style={{ color: "red" }}>*</Text>
         </Text>
         {/* Start Date Picker */}
         <TouchableOpacity
@@ -150,7 +150,7 @@ const ApplyLeaveRequest = ({ navigation }) => {
         )}
 
         <Text style={{ marginBottom: 5, color: "#555" }}>
-          To <Text style={{ color: "red" }}>*</Text>
+          End Date <Text style={{ color: "red" }}>*</Text>
         </Text>
         {/* End Date Picker */}
         <TouchableOpacity
@@ -187,7 +187,7 @@ const ApplyLeaveRequest = ({ navigation }) => {
         </TouchableOpacity>
 
         <Text style={{ marginTop: 100, marginBottom: 20, color: "#555" }}>
-          <Text style={{ color: "red" }}>*</Text> Note: For single day leave select same date in From and To.
+          <Text style={{ color: "red" }}>*</Text> Note: For single day leave select same date in start and end.
         </Text>
       </ScrollView>
     </>

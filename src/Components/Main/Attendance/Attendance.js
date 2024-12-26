@@ -37,7 +37,6 @@ const Attendance = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  // Update employeeId, month and date when the component mount or id change
   useEffect(() => {
     if (id) {
       setMonth(currentMonth);
@@ -48,7 +47,7 @@ const Attendance = ({ route }) => {
   }, [id]);
 
   // Fetch single employee
-  const fetchSingleEmployee = async id => {
+  const fetchSingleEmployee = async (id) => {
     try {
       const response = await axios.get(
         `${API_BASE_URL}/api/v1/team/single-team/${id}`,
@@ -156,7 +155,7 @@ const Attendance = ({ route }) => {
     }
   }, [employeeId, month, year, validToken, refreshKey]);
 
-  // Function to reset filters to initial values
+  // Function to reset filters
   const resetFilters = () => {
     setMonth(currentMonth);
     setYear(currentYear);

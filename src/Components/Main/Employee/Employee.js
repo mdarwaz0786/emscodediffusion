@@ -49,11 +49,11 @@ const Employee = ({ navigation }) => {
     }
   }, [validToken, refreshKey]);
 
-  const navigateToAttendance = id => {
+  const navigateToAttendance = (id) => {
     navigation.navigate("Attendance", { id });
   };
 
-  const navigateToSalary = id => {
+  const navigateToSalary = (id) => {
     navigation.navigate("Salary", { id });
   };
 

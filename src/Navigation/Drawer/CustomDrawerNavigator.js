@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from "react-native";
-import { CommonActions, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useAuth } from "../../Context/auth.context.js";
 import Logo from "../../Assets/logo.png";
@@ -70,22 +70,10 @@ const CustomDrawerNavigator = () => {
   // Handle navigation
   const handleNavigation = (item) => {
     if (item.resetScreen) {
-      const routes = [{ name: item.route, params: { screen: item.resetScreen } }];
-
-      // Dynamic index calculation
-      const targetIndex = routes.findIndex((route) =>
-        route.name === item.route && route.params?.screen === item.resetScreen,
-      );
-
-      navigation.dispatch(
-        CommonActions.reset({
-          index: targetIndex,
-          routes,
-        }),
-      );
+      navigation.navigate(item.route, { screen: item.resetScreen });
     } else {
       navigation.navigate(item.route);
-    }
+    };
   };
 
   return (

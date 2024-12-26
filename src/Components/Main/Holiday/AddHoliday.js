@@ -40,7 +40,6 @@ const AddHoliday = ({ navigation }) => {
         {
           headers: {
             Authorization: validToken,
-            "Content-Type": "application/json",
           },
         },
       );
@@ -52,7 +51,7 @@ const AddHoliday = ({ navigation }) => {
         navigation.goBack();
       }
     } catch (error) {
-      console.log("Error:", error);
+      console.log("Error:", error.message);
       Toast.show({ type: "error", text1: error?.response?.data?.message || "Try again" });
     }
   };

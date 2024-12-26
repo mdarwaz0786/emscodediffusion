@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
+import { View, ActivityIndicator, StyleSheet } from "react-native";
 import { useAuth } from "../../../Context/auth.context.js";
 
 const Logout = props => {

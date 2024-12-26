@@ -168,33 +168,9 @@ const Home = () => {
     }
   };
 
-  // Navigate to attendance detail screen
-  const navigateToAttendance = () => {
-    const routes = [
-      { name: "BottomTabNavigator" },
-      {
-        name: "EmployeeStack",
-        params: {
-          screen: "Attendance",
-          params: { id: employeeId },
-        },
-      },
-    ];
-
-    const attendanceIndex = routes.findIndex((route) =>
-      route.name === "EmployeeStack" && route.params?.screen === "Attendance"
-    );
-
-    if (attendanceIndex !== -1) {
-      navigation.dispatch(
-        CommonActions.reset({
-          index: attendanceIndex,
-          routes,
-        }),
-      );
-    } else {
-      console.log("Attendance screen not found in routes.");
-    }
+  // Navigate to my attendance screen
+  const navigateToMyAttendance = () => {
+    navigation.navigate("MyAttendance", { id: employeeId });
   };
 
   // Navigate to apply leave request screen
@@ -307,15 +283,15 @@ const Home = () => {
         <View style={styles.quickActions}>
           <TouchableOpacity
             style={styles.quickActionButton}
-            onPress={navigateToAttendance}>
+            onPress={navigateToMyAttendance}>
             <Icon name="history" size={20} style={{ color: "#777" }} />
-            <Text style={styles.quickActionText}>Attendance History</Text>
+            <Text style={styles.quickActionText}>My Attendance</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.quickActionButton}
             onPress={navigateToApplyLeaveRequest}>
             <Icon name="file-text-o" size={20} style={{ color: "#777" }} />
-            <Text style={styles.quickActionText}>Leave Request</Text>
+            <Text style={styles.quickActionText}>Apply Leave</Text>
           </TouchableOpacity>
         </View>
 

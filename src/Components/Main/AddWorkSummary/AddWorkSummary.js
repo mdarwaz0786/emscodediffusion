@@ -27,6 +27,7 @@ const AddWorkSummary = ({ navigation }) => {
   const [isEndTimePickerVisible, setIsEndTimePickerVisible] = useState(false);
   const { validToken, team } = useAuth();
 
+  // Fetch assigned project
   const fetchAllProject = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/api/v1/project/all-project`, {
@@ -53,10 +54,10 @@ const AddWorkSummary = ({ navigation }) => {
   };
 
   useEffect(() => {
-    if (team) {
+    if (team, validToken) {
       fetchAllProject();
     };
-  }, [team]);
+  }, [team, validToken]);
 
   // Format time
   const formatTime = (time) => {
@@ -66,6 +67,12 @@ const AddWorkSummary = ({ navigation }) => {
   const handleSubmit = async () => {
     if (!date || !startTime || !endTime || !selectedProject || !workDescription) {
       Toast.show({ type: "error", text1: "All fields are required" });
+      return;
+    };
+
+    // Check if startTime is after endTime
+    if (startTime >= endTime) {
+      Toast.show({ type: "error", text1: "The start time cannot be later than or equal to the end time" });
       return;
     };
 
@@ -231,7 +238,7 @@ const AddWorkSummary = ({ navigation }) => {
           />
         )}
 
-        {/* Description */}
+        {/* Work Description */}
         <Text style={{ marginBottom: 5, color: "#555" }}>
           Work Descripton <Text style={{ color: "red" }}>*</Text>
         </Text>

@@ -28,6 +28,7 @@ const BottomTabNavigator = () => {
       }>
       <Tab.Navigator
         initialRouteName="Home"
+        backBehavior="history"
         screenOptions={({ route }) => ({
           headerShown: false,
           tabBarIcon: ({ color, size }) => {
