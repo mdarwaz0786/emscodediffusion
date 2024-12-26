@@ -3,15 +3,9 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { ActivityIndicator, View } from "react-native";
 
 // Lazy load the screens
-const EmployeeScreen = lazy(() =>
-  import("../../../Screens/Employee/EmployeeScreen.js"),
-);
-const SalaryScreen = lazy(() =>
-  import("../../../Screens/Salary/SalaryScreen.js"),
-);
-const AttendanceScreen = lazy(() =>
-  import("../../../Screens/Attendance/AttendanceScreen.js"),
-);
+const EmployeeScreen = lazy(() => import("../../../Screens/Employee/EmployeeScreen.js"));
+const SalaryScreen = lazy(() => import("../../../Screens/Salary/SalaryScreen.js"));
+const AttendanceScreen = lazy(() => import("../../../Screens/Attendance/AttendanceScreen.js"));
 
 // Create a Stack Navigator
 const Stack = createStackNavigator();

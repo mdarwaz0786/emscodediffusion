@@ -5,39 +5,16 @@ import { useAuth } from "../../Context/auth.context.js";
 import LoginScreen from "../../Screens/Auth/LoginScreen.js";
 
 // Lazy load the screens
-const CustomDrawerNavigator = lazy(() =>
-  import("./CustomDrawerNavigator.js")
-);
-const BottomTabNavigator = lazy(() =>
-  import("../BottomTab/BottomTabNavigator.js"),
-);
-const AboutUsScreen = lazy(() =>
-  import("../../Screens/AboutUs/AboutUsScreen.js"),
-);
-const AddWorkSummary = lazy(() =>
-  import("../../Components/Main/AddWorkSummary/AddWorkSummary.js"),
-);
-const ContactUsScreen = lazy(() =>
-  import("../../Screens/ContactUs/ContactUsScreen.js"),
-);
-const EmployeeStack = lazy(() =>
-  import("../Stack/EmployeeStack/EmployeeStack.js"),
-);
-const HolidayStack = lazy(() =>
-  import("../Stack/HolidayStack/HolidayStack.js"),
-);
-const SettingsStack = lazy(() =>
-  import("../Stack/SettingsStack/SettingsStack.js"),
-);
-const HelpScreen = lazy(() =>
-  import("../../Screens/Help/HelpScreen.js"),
-);
-const LogoutScreen = lazy(() =>
-  import("../../Screens/Auth/LogoutScreen.js"),
-);
-const ApplyLeaveRequestScreen = lazy(() =>
-  import("../../Screens/LeaveRequest/ApplyLeaveRequestSceeen.js"),
-);
+const BottomTabNavigator = lazy(() => import("../BottomTab/BottomTabNavigator.js"));
+const AboutUsScreen = lazy(() => import("../../Screens/AboutUs/AboutUsScreen.js"));
+const AddWorkSummary = lazy(() => import("../../Components/Main/AddWorkSummary/AddWorkSummary.js"));
+const ContactUsScreen = lazy(() => import("../../Screens/ContactUs/ContactUsScreen.js"));
+const EmployeeStack = lazy(() => import("../Stack/EmployeeStack/EmployeeStack.js"));
+const HolidayStack = lazy(() => import("../Stack/HolidayStack/HolidayStack.js"));
+const SettingsStack = lazy(() => import("../Stack/SettingsStack/SettingsStack.js"));
+const HelpScreen = lazy(() => import("../../Screens/Help/HelpScreen.js"));
+const LogoutScreen = lazy(() => import("../../Screens/Auth/LogoutScreen.js"));
+const ApplyLeaveRequestScreen = lazy(() => import("../../Screens/LeaveRequest/ApplyLeaveRequestSceeen.js"));
 
 const Drawer = createDrawerNavigator();
 
@@ -52,10 +29,7 @@ const DrawerNavigator = () => {
         </View>
       }>
       <Drawer.Navigator
-        initialRouteName={isLoggedIn ? "BottomTabNavigator" : "Login"}
-        drawerContent={(props) =>
-          isLoggedIn ? <CustomDrawerNavigator {...props} /> : null
-        }
+        initialRouteName="BottomTabNavigator"
         screenOptions={{
           headerShown: false,
           gestureEnabled: false,

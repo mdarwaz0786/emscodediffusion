@@ -45,17 +45,17 @@ const NotificationTopTab = () => {
         <Tab.Screen
           name="TodayAttendance"
           component={TodayAttendanceScreen}
-          options={{ tabBarLabel: 'Attendance', unmountOnBlur: true }}
+          options={{ tabBarLabel: 'Attendance' }}
         />
         <Tab.Screen
           name="TodayWorkSummary"
           component={TodayWorkSummaryScreen}
-          options={{ tabBarLabel: 'Work Summary', unmountOnBlur: true }}
+          options={{ tabBarLabel: 'Work Summary' }}
         />
         <Tab.Screen
           name="UpcomingHolidays"
           component={UpcomingHolidaysScreen}
-          options={{ tabBarLabel: 'Holidays', unmountOnBlur: true }}
+          options={{ tabBarLabel: 'Holidays' }}
         />
       </Tab.Navigator>
     </Suspense>

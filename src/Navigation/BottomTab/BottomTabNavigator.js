@@ -5,15 +5,9 @@ import { ActivityIndicator, View } from "react-native";
 import HomeScreen from "../../Screens/Home/HomeScreen.js";
 
 // Lazy load the screens
-const NotificationTobTab = lazy(() =>
-  import("../TopTab/NotificationTopTab/NotificationTopTab.js"),
-);
-const CustomDrawerNavigator = lazy(() =>
-  import("../Drawer/CustomDrawerNavigator.js"),
-);
-const ProfileScreen = lazy(() =>
-  import("../../Screens/Profile/ProfileScreen.js"),
-);
+const NotificationTobTab = lazy(() => import("../TopTab/NotificationTopTab/NotificationTopTab.js"),);
+const CustomDrawerNavigator = lazy(() => import("../Drawer/CustomDrawerNavigator.js"));
+const ProfileScreen = lazy(() => import("../../Screens/Profile/ProfileScreen.js"));
 
 const Tab = createBottomTabNavigator();
 

@@ -3,15 +3,9 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { ActivityIndicator, View } from "react-native";
 
 // Lazy load the screens
-const HolidayScreen = lazy(() =>
-  import("../../../Screens/Holiday/HolidayScreen.js"),
-);
-const AddHolidayScreen = lazy(() =>
-  import("../../../Screens/Holiday/AddHolidayScreen.js"),
-);
-const EditHolidayScreen = lazy(() =>
-  import("../../../Screens/Holiday/EditHolidayScreen.js"),
-);
+const HolidayScreen = lazy(() => import("../../../Screens/Holiday/HolidayScreen.js"));
+const AddHolidayScreen = lazy(() => import("../../../Screens/Holiday/AddHolidayScreen.js"));
+const EditHolidayScreen = lazy(() => import("../../../Screens/Holiday/EditHolidayScreen.js"));
 
 // Create a Stack Navigator
 const Stack = createStackNavigator();
