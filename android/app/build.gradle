@@ -85,6 +85,7 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
+    // react native reanimated configuration
     packagingOptions {
         pickFirst 'lib/x86/libreanimated.so'
         pickFirst 'lib/x86_64/libreanimated.so'
@@ -103,6 +104,7 @@ android {
     }
 
     namespace "com.myapp"
+
     defaultConfig {
         applicationId "com.myapp"
         minSdkVersion rootProject.ext.minSdkVersion
