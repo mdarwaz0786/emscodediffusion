@@ -107,14 +107,6 @@ const Holiday = ({ navigation }) => {
         {popupVisible === item?._id && (
           <View style={styles.popup}>
             <TouchableOpacity
-              style={styles.popupOption}
-              onPress={() => {
-                setPopupVisible(null);
-                navigation.navigate("EditHoliday", { id: item?._id });
-              }}>
-              <Text style={styles.popupOptionText}>Edit</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
               style={[styles.popupOption, styles.deleteOption]}
               onPress={() => {
                 setHolidayToDelete(item?._id);
@@ -284,7 +276,7 @@ const styles = StyleSheet.create({
   },
   popup: {
     position: "absolute",
-    top: 5,
+    top: 0,
     right: 40,
     paddingVertical: 5,
     paddingHorizontal: 10,
@@ -301,7 +293,7 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   popupOption: {
-    paddingVertical: 10,
+    paddingVertical: 5,
     paddingHorizontal: 10,
   },
   popupOptionText: {
@@ -309,7 +301,7 @@ const styles = StyleSheet.create({
     color: "#555",
   },
   deleteOption: {
-    borderTopWidth: 1,
+    borderTopWidth: 0,
     borderTopColor: "#eee",
   },
   modalOverlay: {
