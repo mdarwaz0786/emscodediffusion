@@ -17,6 +17,7 @@ const NotificationTopTab = () => {
       }>
       <Tab.Navigator
         initialRouteName="TodayAttendance"
+        backBehavior="history"
         screenOptions={() => ({
           lazy: true,
           tabBarActiveTintColor: '#ffb300',

@@ -171,6 +171,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderTopWidth: 1,
     borderTopColor: "#e0e0e0",
+    zIndex: -1,
   },
   heading: {
     flexDirection: "row",
@@ -185,11 +186,11 @@ const styles = StyleSheet.create({
   employeeName: {
     fontSize: 14,
     fontWeight: "400",
-    color: "#555",
+    color: "#333",
     marginRight: 10,
   },
   employeeRole: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#777",
   },
   optionsButton: {
@@ -197,18 +198,19 @@ const styles = StyleSheet.create({
   },
   popupMenu: {
     backgroundColor: "#fff",
-    borderRadius: 10,
+    borderRadius: 5,
     elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
     position: "absolute",
+    top: -10,
     right: 50,
-    height: 52,
+    height: 60,
   },
   popupOption: {
-    paddingVertical: 3,
+    paddingVertical: 5,
     paddingHorizontal: 15,
   },
   popupOptionText: {
