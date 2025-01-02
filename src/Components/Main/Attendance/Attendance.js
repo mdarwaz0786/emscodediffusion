@@ -538,3 +538,229 @@ const styles = StyleSheet.create({
 });
 
 export default Attendance;
+
+
+// import React, { useState, useEffect } from "react";
+// import {
+//   View,
+//   Text,
+//   StyleSheet,
+//   TouchableOpacity,
+//   Modal,
+//   ScrollView,
+// } from "react-native";
+// import { Picker } from "@react-native-picker/picker";
+// import axios from "axios";
+// import { API_BASE_URL } from "@env";
+
+// const Attendance = () => {
+//   const [month, setMonth] = useState(new Date().getMonth() + 1);
+//   const [year, setYear] = useState(new Date().getFullYear());
+//   const [attendance, setAttendance] = useState([]);
+//   const [selectedDay, setSelectedDay] = useState(null);
+//   const [modalVisible, setModalVisible] = useState(false);
+//   const [loading, setLoading] = useState(false);
+
+//   const daysInMonth = (month, year) => new Date(year, month, 0).getDate();
+
+//   useEffect(() => {
+//     fetchAttendance();
+//   }, [month, year]);
+
+//   const fetchAttendance = async () => {
+//     try {
+//       setLoading(true);
+//       const response = await axios.get(`${API_BASE_URL}/api/v1/attendance`, {
+//         params: { month, year },
+//       });
+//       setAttendance(response.data.attendance || []);
+//     } catch (error) {
+//       console.error("Error fetching attendance:", error.message);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const renderCalendar = () => {
+//     const totalDays = daysInMonth(month, year);
+//     const firstDayOfMonth = new Date(year, month - 1, 1).getDay();
+//     const daysArray = Array.from({ length: totalDays }, (_, i) => i + 1);
+//     const dayNames = ["S", "M", "T", "W", "T", "F", "S"];
+//     const calendarDays = [];
+
+//     // Add blank spaces for days before the first day of the month
+//     for (let i = 0; i < firstDayOfMonth; i++) {
+//       calendarDays.push(<View key={`empty-${i}`} style={styles.day}></View>);
+//     }
+
+//     // Add the actual days
+//     calendarDays.push(
+//       ...daysArray.map((day) => (
+//         <TouchableOpacity
+//           key={day}
+//           style={[
+//             styles.day,
+//             attendance.some((a) => new Date(a.date).getDate() === day)
+//               ? styles.attendedDay
+//               : styles.defaultDay,
+//           ]}
+//           onPress={() => handleDayClick(day)}
+//         >
+//           <Text style={styles.dayText}>{day}</Text>
+//         </TouchableOpacity>
+//       ))
+//     );
+
+//     // Fill remaining spaces to complete the last row (if necessary)
+//     const remainingSpaces = (7 - (calendarDays.length % 7)) % 7;
+//     for (let i = 0; i < remainingSpaces; i++) {
+//       calendarDays.push(<View key={`empty-end-${i}`} style={styles.day}></View>);
+//     }
+
+//     return (
+//       <>
+//         <View style={styles.dayRow}>
+//           {dayNames.map((name, index) => (
+//             <Text key={index} style={styles.dayName}>
+//               {name}
+//             </Text>
+//           ))}
+//         </View>
+//         <View style={styles.calendarDaysContainer}>{calendarDays}</View>
+//       </>
+//     );
+//   };
+
+//   const handleDayClick = (day) => {
+//     setSelectedDay(attendance.find((a) => new Date(a.date).getDate() === day));
+//     setModalVisible(true);
+//   };
+
+//   return (
+//     <View style={styles.container}>
+//       <View style={styles.filterContainer}>
+//         <Picker
+//           selectedValue={month}
+//           onValueChange={(value) => setMonth(value)}
+//           style={styles.picker}
+//         >
+//           {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+//             <Picker.Item key={m} label={`Month ${m}`} value={m} />
+//           ))}
+//         </Picker>
+//         <Picker
+//           selectedValue={year}
+//           onValueChange={(value) => setYear(value)}
+//           style={styles.picker}
+//         >
+//           {Array.from({ length: 5 }, (_, i) => year - i).map((y) => (
+//             <Picker.Item key={y} label={String(y)} value={y} />
+//           ))}
+//         </Picker>
+//       </View>
+
+//       <ScrollView contentContainerStyle={styles.calendarContainer}>
+//         {renderCalendar()}
+//       </ScrollView>
+
+//       {modalVisible && selectedDay && (
+//         <Modal visible={modalVisible} transparent animationType="slide">
+//           <View style={styles.modalContainer}>
+//             <Text style={styles.modalTitle}>Attendance Details</Text>
+//             <Text>Date: {new Date(selectedDay.date).toDateString()}</Text>
+//             <Text>Punch In: {selectedDay.punchIn}</Text>
+//             <Text>Punch Out: {selectedDay.punchOut}</Text>
+//             <TouchableOpacity
+//               style={styles.closeButton}
+//               onPress={() => setModalVisible(false)}
+//             >
+//               <Text style={styles.closeButtonText}>Close</Text>
+//             </TouchableOpacity>
+//           </View>
+//         </Modal>
+//       )}
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: "#f5f5f5",
+//     padding: 10,
+//   },
+//   filterContainer: {
+//     flexDirection: "row",
+//     justifyContent: "space-between",
+//     marginBottom: 10,
+//   },
+//   picker: {
+//     flex: 1,
+//     backgroundColor: "#fff",
+//     borderRadius: 5,
+//     marginHorizontal: 5,
+//   },
+//   calendarContainer: {
+//     marginTop: 10,
+//   },
+//   dayRow: {
+//     flexDirection: "row",
+//     justifyContent: "space-around",
+//     marginBottom: 5,
+//   },
+//   dayName: {
+//     width: "13%",
+//     textAlign: "center",
+//     fontWeight: "bold",
+//     color: "#333",
+//   },
+//   calendarDaysContainer: {
+//     flexDirection: "row",
+//     flexWrap: "wrap",
+//     justifyContent: "space-around",
+//   },
+//   day: {
+//     width: "13%",
+//     height: 50,
+//     justifyContent: "center",
+//     alignItems: "center",
+//     margin: 5,
+//     borderRadius: 5,
+//   },
+//   attendedDay: {
+//     backgroundColor: "#d1ffd7",
+//   },
+//   defaultDay: {
+//     backgroundColor: "#f0f0f0",
+//   },
+//   dayText: {
+//     color: "#333",
+//   },
+//   modalContainer: {
+//     flex: 1,
+//     backgroundColor: "white",
+//     margin: 20,
+//     padding: 20,
+//     borderRadius: 10,
+//     justifyContent: "center",
+//     alignItems: "center",
+//   },
+//   modalTitle: {
+//     fontSize: 18,
+//     fontWeight: "bold",
+//     marginBottom: 15,
+//   },
+//   closeButton: {
+//     marginTop: 20,
+//     padding: 10,
+//     backgroundColor: "#f44336",
+//     borderRadius: 5,
+//   },
+//   closeButtonText: {
+//     color: "#fff",
+//     fontWeight: "bold",
+//   },
+// });
+
+// export default Attendance;
+
