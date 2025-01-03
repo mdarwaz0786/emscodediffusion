@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   employeeCard: {
     backgroundColor: "#ffffff",
     padding: 10,
-    paddingHorizontal: 14,
+    paddingHorizontal: 20,
     borderTopWidth: 1,
     borderTopColor: "#e0e0e0",
     zIndex: -1,
