@@ -47,7 +47,11 @@ const Main = () => (
           <PaperProvider>
             <App />
             <NetworkStatusIndicator />
-            <StatusBar backgroundColor="#fff" barStyle="light-content" />
+            <StatusBar
+              barStyle="dark-content"
+              backgroundColor="#ffffff"
+              translucent={false}
+            />
             <Toast config={toastConfig} />
           </PaperProvider>
         </NetworkProvider>
