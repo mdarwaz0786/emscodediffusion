@@ -23,6 +23,7 @@ const AddOffice = ({ navigation }) => {
   const [contact, setContact] = useState("");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
+  const [attendanceRadius, setAttendanceRadius] = useState("");
   const [addressLine1, setAddressLine1] = useState("");
   const [addressLine2, setAddressLine2] = useState("");
   const [addressLine3, setAddressLine3] = useState("");
@@ -71,6 +72,7 @@ const AddOffice = ({ navigation }) => {
       !contact ||
       !latitude ||
       !longitude ||
+      !attendanceRadius ||
       !addressLine1
     ) {
       Toast.show({ type: "error", text1: "Please fill in all required fields" });
@@ -83,6 +85,7 @@ const AddOffice = ({ navigation }) => {
     formData.append("contact", contact);
     formData.append("latitude", latitude);
     formData.append("longitude", longitude);
+    formData.append("attendanceRadius", attendanceRadius);
     formData.append("addressLine1", addressLine1);
     formData.append("addressLine2", addressLine2);
     formData.append("addressLine3", addressLine3);
@@ -114,6 +117,7 @@ const AddOffice = ({ navigation }) => {
         setContact("");
         setLatitude("");
         setLongitude("");
+        setAttendanceRadius("");
         setAddressLine1("");
         setAddressLine2("");
         setAddressLine3("");
@@ -209,6 +213,17 @@ const AddOffice = ({ navigation }) => {
             <TextInput
               value={longitude}
               onChangeText={setLongitude}
+              style={styles.input}
+            />
+          </View>
+
+          <View style={{ marginBottom: 0 }}>
+            <Text style={{ marginBottom: 5, color: "#555" }}>
+              Attendance Radius (in meters)<Text style={{ color: "red" }}>*</Text>
+            </Text>
+            <TextInput
+              value={attendanceRadius}
+              onChangeText={setAttendanceRadius}
               style={styles.input}
             />
           </View>

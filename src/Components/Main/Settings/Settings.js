@@ -115,6 +115,7 @@ const Settings = ({ navigation }) => {
       <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Contact: </Text>{item?.contact}</Text>
       <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Latitude: </Text>{item?.latitude}</Text>
       <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Longitude: </Text>{item?.longitude}</Text>
+      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Attendance Raduis: </Text>{item?.attendanceRadius} meters</Text>
       <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Address: </Text>{item?.addressLine1}</Text>
       {item?.addressLine2 && (
         <Text style={styles.cardDetail}> {item?.addressLine2}</Text>

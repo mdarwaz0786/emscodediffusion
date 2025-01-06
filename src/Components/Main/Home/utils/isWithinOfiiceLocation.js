@@ -24,7 +24,7 @@ const getDistance = (lat1, lon1, lat2, lon2) => {
 };
 
 // Fetch office latitude and longitude and check proximity
-const isWithinOfficeLocation = async (userLatitude, userLongitude, validToken, maxDistance = 20) => {
+const isWithinOfficeLocation = async (userLatitude, userLongitude, validToken) => {
   try {
     const { data } = await axios.get(`${API_BASE_URL}/api/v1/officeLocation/all-officeLocation`, {
       headers: { Authorization: validToken },
@@ -36,8 +36,8 @@ const isWithinOfficeLocation = async (userLatitude, userLongitude, validToken, m
       latitude && longitude && !isNaN(latitude) && !isNaN(longitude)
     );
 
-    return validLocations?.some(({ latitude, longitude }) =>
-      getDistance(userLatitude, userLongitude, parseFloat(latitude), parseFloat(longitude)) <= maxDistance
+    return validLocations?.some(({ latitude, longitude, attendanceRadius }) =>
+      getDistance(userLatitude, userLongitude, parseFloat(latitude), parseFloat(longitude)) <= parseFloat(attendanceRadius)
     );
   } catch (error) {
     console.log("Error while fetching office location:", error.message);
