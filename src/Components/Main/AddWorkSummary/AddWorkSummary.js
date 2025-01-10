@@ -154,7 +154,7 @@ const AddWorkSummary = ({ navigation }) => {
           color="#000"
           onPress={() => navigation.goBack()}
         />
-        <Text style={styles.headerTitle}>Add Work Summary</Text>
+        <Text style={styles.headerTitle}>Write Work Summary</Text>
       </View>
 
       <ScrollView style={styles.container}>

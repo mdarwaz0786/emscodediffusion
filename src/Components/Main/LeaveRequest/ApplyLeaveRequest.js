@@ -8,7 +8,6 @@ import {
   ScrollView,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Picker } from "@react-native-picker/picker";
 import Icon from "react-native-vector-icons/Feather";
 import Toast from "react-native-toast-message";
 import { useAuth } from "../../../Context/auth.context.js";
@@ -17,7 +16,6 @@ import { API_BASE_URL } from "@env";
 
 const ApplyLeaveRequest = ({ navigation }) => {
   const [reason, setReason] = useState();
-  const [selectedLeaveType, setSelectedLeaveType] = useState();
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [isStartDatePickerVisible, setIsStartDatePickerVisible] = useState(false);
@@ -44,23 +42,8 @@ const ApplyLeaveRequest = ({ navigation }) => {
     setEndDate(currentDate);
   };
 
-  const leaveTypes = [
-    "Sick Leave",          // For health-related absences
-    "Casual Leave",        // For personal or short-term unexpected reasons
-    "Earned Leave",        // Accumulated leave earned based on days worked
-    "Annual Leave",        // For planned vacations or personal time off
-    "Maternity Leave",     // For childbirth and postnatal care (applicable to mothers)
-    "Paternity Leave",     // For fathers to support after childbirth
-    "Parental Leave",      // For non-birth-parent caretaking responsibilities
-    "Bereavement Leave",   // For attending to family or close friend loss
-    "Wedding Leave",       // For an employee's wedding
-    "Relocation Leave",    // For moving to a new location
-    "Emergency Leave",     // Emergencies requiring immediate leave
-    "Other",               // Remaining leave
-  ];
-
   const handleSubmit = async () => {
-    if (!startDate || !endDate || !selectedLeaveType || !reason) {
+    if (!startDate || !endDate || !reason) {
       Toast.show({ type: "error", text1: "All fields are required" });
       return;
     };
@@ -71,7 +54,7 @@ const ApplyLeaveRequest = ({ navigation }) => {
     try {
       const response = await axios.post(
         `${API_BASE_URL}/api/v1/leaveApproval/create-leaveApproval`,
-        { employee: team?._id, leaveType: selectedLeaveType, startDate: formattedStartDate, endDate: formattedEndDate, reason },
+        { employee: team?._id, startDate: formattedStartDate, endDate: formattedEndDate, reason },
         {
           headers: {
             Authorization: validToken,
@@ -83,7 +66,6 @@ const ApplyLeaveRequest = ({ navigation }) => {
         setReason();
         setStartDate(new Date());
         setEndDate(new Date());
-        setSelectedLeaveType();
         Toast.show({ type: "success", text1: "Submitted successfully" });
         navigation.goBack();
       }
@@ -107,29 +89,6 @@ const ApplyLeaveRequest = ({ navigation }) => {
       </View>
 
       <ScrollView style={styles.container}>
-        <Text style={{ marginBottom: 5, color: "#555" }}>
-          Leave Type <Text style={{ color: "red" }}>*</Text>
-        </Text>
-        <Picker
-          selectedValue={selectedLeaveType}
-          style={styles.picker}
-          onValueChange={(itemValue, itemIndex) => setSelectedLeaveType(itemValue)}
-        >
-          <Picker.Item
-            label="Select Leave Type"
-            value={null}
-            style={styles.pickerItem}
-          />
-          {leaveTypes?.map((leave, index) => (
-            <Picker.Item
-              key={index}
-              label={leave}
-              value={leave}
-              style={styles.pickerItem}
-            />
-          ))}
-        </Picker>
-
         <Text style={{ marginBottom: 5, color: "#555" }}>
           Start Date <Text style={{ color: "red" }}>*</Text>
         </Text>

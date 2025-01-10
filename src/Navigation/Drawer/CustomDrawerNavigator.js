@@ -33,10 +33,28 @@ const CustomDrawerNavigator = () => {
       show: fieldPermissions?.settings?.show,
     },
     {
-      label: "Add Work Summary",
-      icon: "clipboard-outline",
+      label: "Write Work Summary",
+      icon: "create-outline",
       route: "AddWorkSummary",
       show: team?.role?.permissions?.project?.fields?.workDetail?.show,
+    },
+    {
+      label: "Apply Leave",
+      icon: "calendar-outline",
+      route: "ApplyLeaveRequest",
+      show: true,
+    },
+    {
+      label: "Apply Missed Punch Out",
+      icon: "time-outline",
+      route: "ApplyMissedPunchOut",
+      show: true,
+    },
+    {
+      label: "Apply Comp Off",
+      icon: "briefcase-outline",
+      route: "ApplyCompOff",
+      show: true,
     },
     {
       label: "About Us",
