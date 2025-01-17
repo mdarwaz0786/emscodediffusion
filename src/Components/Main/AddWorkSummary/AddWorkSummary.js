@@ -7,8 +7,6 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { Picker } from "@react-native-picker/picker";
 import Icon from "react-native-vector-icons/Feather";
 import Toast from "react-native-toast-message";
 import { useAuth } from "../../../Context/auth.context.js";
@@ -17,81 +15,21 @@ import { API_BASE_URL } from "@env";
 
 const AddWorkSummary = ({ navigation }) => {
   const [date, setDate] = useState(new Date());
-  const [startTime, setStartTime] = useState(new Date());
-  const [endTime, setEndTime] = useState(new Date());
-  const [workDescription, setWorkDescription] = useState("");
-  const [projects, setProjects] = useState([]);
-  const [selectedProject, setSelectedProject] = useState(null);
-  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
-  const [isStartTimePickerVisible, setIsStartTimePickerVisible] = useState(false);
-  const [isEndTimePickerVisible, setIsEndTimePickerVisible] = useState(false);
+  const [summary, setSummary] = useState("");
   const { validToken, team } = useAuth();
 
-  // Fetch assigned project
-  const fetchAllProject = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/api/v1/project/all-project`, {
-        headers: {
-          Authorization: validToken,
-        },
-      });
-
-      if (response?.data?.success) {
-        const filteredProject = response?.data?.project?.filter((p) => {
-          const isLeader = p?.teamLeader?.some((l) => l?._id === team?._id);
-          const isResponsible = p?.responsiblePerson?.some((r) => r?._id === team?._id);
-          return isLeader || isResponsible;
-        });
-        if (team?.role?.name.toLowerCase() === "coordinator" || team?.role?.name.toLowerCase() === "admin") {
-          setProjects(response?.data?.project);
-        } else {
-          setProjects(filteredProject);
-        };
-      };
-    } catch (error) {
-      console.log("Error while fetching all projects:", error.message);
-    };
-  };
-
-  useEffect(() => {
-    if (team, validToken) {
-      fetchAllProject();
-    };
-  }, [team, validToken]);
-
-  // Format time
-  const formatTime = (time) => {
-    return time.toTimeString().substring(0, 5);
-  };
-
   const handleSubmit = async () => {
-    if (!date || !startTime || !endTime || !selectedProject || !workDescription) {
-      Toast.show({ type: "error", text1: "All fields are required" });
-      return;
-    };
-
-    // Check if startTime is after endTime
-    if (startTime >= endTime) {
-      Toast.show({ type: "error", text1: "The start time cannot be later than or equal to the end time" });
+    if (!summary) {
+      Toast.show({ type: "error", text1: "Work summary should not be empty" });
       return;
     };
 
     const formattedDate = date.toISOString().split("T")[0];
-    const formattedStartTime = formatTime(startTime);
-    const formattedEndTime = formatTime(endTime);
-
-    const workDetail = [{
-      teamMember: team?._id,
-      workDescription,
-      date: formattedDate,
-      startTime: formattedStartTime,
-      endTime: formattedEndTime,
-    }];
 
     try {
-      const response = await axios.put(
-        `${API_BASE_URL}/api/v1/project/update-project/${selectedProject}`,
-        { workDetail },
+      const response = await axios.post(
+        `${API_BASE_URL}/api/v1/workSummary/create-workSummary`,
+        { employee: team?._id, summary, date: formattedDate },
         {
           headers: {
             Authorization: validToken,
@@ -100,53 +38,18 @@ const AddWorkSummary = ({ navigation }) => {
       );
 
       if (response?.data?.success) {
-        setWorkDescription("");
-        setDate(new Date());
-        setStartTime(new Date());
-        setEndTime(new Date());
-        setSelectedProject(null);
+        setSummary("");
         Toast.show({ type: "success", text1: "Submitted successfully" });
         navigation.goBack();
       }
     } catch (error) {
-      console.log("Error:", error.message);
+      console.log(error.message);
       Toast.show({ type: "error", text1: error?.response?.data?.message || "Submission failed" });
     };
   };
 
-  const showDatePicker = () => {
-    setIsDatePickerVisible(true);
-  };
-
-  const showStartTimePicker = () => {
-    setIsStartTimePickerVisible(true);
-  };
-
-  const showEndTimePicker = () => {
-    setIsEndTimePickerVisible(true);
-  };
-
-  const onDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setIsDatePickerVisible(false);
-    setDate(currentDate);
-  };
-
-  const onStartTimeChange = (event, selectedTime) => {
-    const currentTime = selectedTime || startTime;
-    setIsStartTimePickerVisible(false);
-    setStartTime(currentTime);
-  };
-
-  const onEndTimeChange = (event, selectedTime) => {
-    const currentTime = selectedTime || endTime;
-    setIsEndTimePickerVisible(false);
-    setEndTime(currentTime);
-  };
-
   return (
     <>
-      {/* Header */}
       <View style={styles.header}>
         <Icon
           name="arrow-left"
@@ -158,100 +61,17 @@ const AddWorkSummary = ({ navigation }) => {
       </View>
 
       <ScrollView style={styles.container}>
-        <Text style={{ marginBottom: 5, color: "#555" }}>
-          Project <Text style={{ color: "red" }}>*</Text>
-        </Text>
-        <Picker
-          selectedValue={selectedProject}
-          style={styles.picker}
-          onValueChange={(itemValue, itemIndex) => setSelectedProject(itemValue)}
-        >
-          <Picker.Item
-            label="Select project"
-            value={null}
-            style={styles.pickerItem}
-          />
-          {projects?.map((project) => (
-            <Picker.Item
-              key={project?._id}
-              label={project?.projectName}
-              value={project?._id}
-              style={styles.pickerItem}
-            />
-          ))}
-        </Picker>
-
-        <Text style={{ marginBottom: 5, color: "#555" }}>
-          Date <Text style={{ color: "red" }}>*</Text>
-        </Text>
-        {/* Date Picker */}
-        <TouchableOpacity
-          style={[styles.input, styles.dateInput]}
-          onPress={showDatePicker}
-        >
-          <Text style={{ color: "#777" }}>{date.toISOString().split("T")[0]}</Text>
-        </TouchableOpacity>
-        {isDatePickerVisible && (
-          <DateTimePicker
-            value={date}
-            mode="date"
-            display="default"
-            onChange={onDateChange}
-          />
-        )}
-
-        <Text style={{ marginBottom: 5, color: "#555" }}>
-          Start Time <Text style={{ color: "red" }}>*</Text>
-        </Text>
-        {/* Start Time Picker */}
-        <TouchableOpacity
-          style={[styles.input, styles.dateInput]}
-          onPress={showStartTimePicker}
-        >
-          <Text style={{ color: "#777" }}>{formatTime(startTime)}</Text>
-        </TouchableOpacity>
-        {isStartTimePickerVisible && (
-          <DateTimePicker
-            value={startTime}
-            mode="time"
-            display="default"
-            onChange={onStartTimeChange}
-          />
-        )}
-
-        <Text style={{ marginBottom: 5, color: "#555" }}>
-          End Time <Text style={{ color: "red" }}>*</Text>
-        </Text>
-        {/* End Time Picker */}
-        <TouchableOpacity
-          style={[styles.input, styles.dateInput]}
-          onPress={showEndTimePicker}
-        >
-          <Text style={{ color: "#777" }}>{formatTime(endTime)}</Text>
-        </TouchableOpacity>
-        {isEndTimePickerVisible && (
-          <DateTimePicker
-            value={endTime}
-            mode="time"
-            display="default"
-            onChange={onEndTimeChange}
-          />
-        )}
-
-        {/* Work Description */}
-        <Text style={{ marginBottom: 5, color: "#555" }}>
-          Work Descripton <Text style={{ color: "red" }}>*</Text>
+        <Text style={{ marginBottom: 10, color: "#555" }}>
+          Work Summary <Text style={{ color: "red" }}>*</Text>
         </Text>
         <TextInput
           style={[styles.input, styles.textArea]}
-          placeholder="Write Work Description"
-          placeholderTextColor="#777"
-          value={workDescription}
-          onChangeText={setWorkDescription}
+          value={summary}
+          placeholder="write summary here..."
+          placeholderTextColor="#ddd"
+          onChangeText={setSummary}
           multiline
         />
-
-        {/* Submit Button */}
         <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
           <Text style={styles.submitButtonText}>Submit</Text>
         </TouchableOpacity>
@@ -280,18 +100,6 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingTop: 10,
   },
-  picker: {
-    marginBottom: 15,
-    backgroundColor: "#fff",
-    color: "#777",
-    borderWidth: 1,
-    borderColor: "#fff",
-  },
-  pickerItem: {
-    backgroundColor: "#fff",
-    color: "#555",
-    fontSize: 14,
-  },
   input: {
     height: 50,
     paddingLeft: 15,
@@ -302,11 +110,8 @@ const styles = StyleSheet.create({
   },
   textArea: {
     height: 150,
+    borderRadius: 10,
     textAlignVertical: "top",
-  },
-  dateInput: {
-    paddingVertical: 10,
-    paddingLeft: 15,
   },
   submitButton: {
     backgroundColor: "#ffb300",

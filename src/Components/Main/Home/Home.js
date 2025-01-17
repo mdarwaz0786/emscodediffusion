@@ -15,7 +15,7 @@ import { useAuth } from "../../../Context/auth.context.js";
 import { useRefresh } from "../../../Context/refresh.context.js";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Toast from "react-native-toast-message";
-import { CommonActions, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import formatTimeWithAmPm from "../../../Helper/formatTimeWithAmPm.js";
 import formatTimeToHoursMinutes from "../../../Helper/formatTimeToHoursMinutes.js";
 import getGreeting from "../../../Helper/generateGreeting.js";
@@ -305,6 +305,25 @@ const Home = () => {
           <Text style={{ color: "#777" }}>Break Time: 45 minutes</Text>
         </View>
 
+        {/* Leave Balance Section */}
+        <View style={styles.leaveBalanceSection}>
+          <Text style={styles.leaveTitle}>Leave Balance</Text>
+          <View style={styles.leaveBalanceItems}>
+            <View style={styles.leaveItem}>
+              <Text style={styles.leaveLabel}>Used</Text>
+              <Text style={styles.leaveValue}>0</Text>
+            </View>
+            <View style={styles.leaveItem}>
+              <Text style={styles.leaveLabel}>Alloted</Text>
+              <Text style={styles.leaveValue}>2</Text>
+            </View>
+            <View style={styles.leaveItem}>
+              <Text style={styles.leaveLabel}>Available</Text>
+              <Text style={styles.leaveValue}>2</Text>
+            </View>
+          </View>
+        </View>
+
         {/* Monthly Statistics */}
         <View style={styles.monthlyStats}>
           <Text style={[styles.sectionTitle, styles.staticTitle]}>Monthly Statistics</Text>
@@ -445,6 +464,41 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     marginBottom: 5,
     marginTop: -5,
+  },
+  leaveBalanceSection: {
+    padding: 16,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    marginBottom: 0,
+    marginTop: 20,
+  },
+  leaveTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#777",
+    marginBottom: 10,
+  },
+  leaveBalanceItems: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  leaveItem: {
+    backgroundColor: "#f8f9f8",
+    borderRadius: 8,
+    padding: 12,
+    width: "30%",
+    alignItems: "center",
+  },
+  leaveLabel: {
+    fontSize: 14,
+    color: "#777",
+    marginBottom: 5,
+  },
+  leaveValue: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#777",
   },
   monthlyStats: {
     paddingTop: 12,

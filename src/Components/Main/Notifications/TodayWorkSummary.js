@@ -4,13 +4,10 @@ import { useAuth } from "../../../Context/auth.context.js";
 import { useRefresh } from '../../../Context/refresh.context.js';
 import axios from "axios";
 import { API_BASE_URL } from "@env";
-import formatTimeToHoursMinutes from '../../../Helper/formatTimeToHoursMinutes.js';
-import formatTimeWithAmPm from '../../../Helper/formatTimeWithAmPm.js';
-import calculateTimeDifference from '../../../Helper/calculateTimeDifference.js';
 
 const TodayWorkSummary = () => {
   const [workSummary, setWorkSummary] = useState([]);
-  const { validToken, team } = useAuth();
+  const { validToken } = useAuth();
   const { refreshKey, refreshPage } = useRefresh();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -18,12 +15,9 @@ const TodayWorkSummary = () => {
   const fetchTodayWorkSummary = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_BASE_URL}/api/v1/project/work-detail`, {
+      const response = await axios.get(`${API_BASE_URL}/api/v1/workSummary/today-workSummary`, {
         headers: {
           Authorization: validToken,
-        },
-        params: {
-          date: new Date().toISOString().split("T")[0],
         },
       });
 
@@ -39,10 +33,8 @@ const TodayWorkSummary = () => {
   };
 
   useEffect(() => {
-    if (team?.role?.permissions?.project?.fields?.workDetail?.show) {
-      fetchTodayWorkSummary();
-    }
-  }, [team?.role?.permissions?.project?.fields?.workDetail?.show, refreshKey]);
+    fetchTodayWorkSummary();
+  }, [refreshKey]);
 
   const handleRefresh = () => {
     setRefreshing(true);
@@ -61,7 +53,7 @@ const TodayWorkSummary = () => {
         }
       >
         <Text style={styles.title}>Today's Work Summary</Text>
-        {workSummary && team?.role?.permissions?.project?.fields?.workDetail?.show && (
+        {workSummary && (
           loading ? (
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
               <ActivityIndicator size="large" color="#ffb300" />
@@ -72,39 +64,19 @@ const TodayWorkSummary = () => {
             </Text>
           ) : (
             workSummary?.map((w) => (
-              <View style={styles.card} key={w?.teamMember?._id}>
+              <View style={styles.card} key={w?._id}>
                 <View style={styles.cardHeader}>
                   <View style={styles.avatar}>
-                    <Text style={styles.avatarText}>{w?.teamMember?.name?.[0]}</Text>
+                    <Text style={styles.avatarText}>{w?.employee?.name?.[0]}</Text>
                   </View>
-                  <Text style={styles.cardTitle}>{w?.teamMember?.name}</Text>
+                  <Text style={styles.cardTitle}>{w?.employee?.name}</Text>
                 </View>
                 <View style={styles.cardContent}>
-                  {w?.workDetails?.map((s, index) => (
-                    <View style={styles.workDetailContainer} key={index}>
-                      <Text style={styles.workDetailText}>
-                        <Text style={styles.label}>Project Name: </Text>
-                        {s?.projectName}
-                      </Text>
-                      <Text style={styles.workDetailText}>
-                        <Text style={styles.label}>Start Time: </Text>
-                        {formatTimeWithAmPm(s?.startTime)}
-                      </Text>
-                      <Text style={styles.workDetailText}>
-                        <Text style={styles.label}>End Time: </Text>
-                        {formatTimeWithAmPm(s?.endTime)}
-                      </Text>
-                      <Text style={styles.workDetailText}>
-                        <Text style={styles.label}>Spent Hours: </Text>
-                        {formatTimeToHoursMinutes(calculateTimeDifference(s?.startTime, s?.endTime))}
-                      </Text>
-                      <Text style={styles.workDetailText}>
-                        <Text style={styles.label}>Work Description: </Text>
-                        {s?.workDescription}
-                      </Text>
-                      {index < w?.workDetails?.length - 1 && <View style={styles.divider} />}
-                    </View>
-                  ))}
+                  <View style={styles.workDetailContainer}>
+                    <Text style={styles.workDetailText}>
+                      {w?.summary}
+                    </Text>
+                  </View>
                 </View>
               </View>
             )))
