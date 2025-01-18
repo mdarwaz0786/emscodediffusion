@@ -88,6 +88,8 @@ const Attendance = ({ route }) => {
         params.year = year;
       }
 
+      params.sort = "Descending";
+
       const response = await axios.get(
         `${API_BASE_URL}/api/v1/attendance/all-attendance`,
         {

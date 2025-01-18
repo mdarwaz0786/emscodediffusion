@@ -36,7 +36,7 @@ const CustomDrawerNavigator = () => {
       label: "Write Work Summary",
       icon: "create-outline",
       route: "AddWorkSummary",
-      show: team?.role?.permissions?.project?.fields?.workDetail?.show,
+      show: true,
     },
     {
       label: "Apply Leave",
@@ -48,6 +48,12 @@ const CustomDrawerNavigator = () => {
       label: "Apply Missed Punch Out",
       icon: "time-outline",
       route: "ApplyMissedPunchOut",
+      show: true,
+    },
+    {
+      label: "Apply Late Punch In",
+      icon: "alarm-outline",
+      route: "ApplyLatePunchIn",
       show: true,
     },
     {

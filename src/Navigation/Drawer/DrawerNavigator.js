@@ -17,6 +17,7 @@ const LogoutScreen = lazy(() => import("../../Screens/Auth/LogoutScreen.js"));
 const ApplyLeaveRequestScreen = lazy(() => import("../../Screens/LeaveRequest/ApplyLeaveRequestSceeen.js"));
 const MyAttendanceScreen = lazy(() => import("../../Components/Main/Attendance/MyAttendance.js"));
 const ApplyMissedPunchOut = lazy(() => import("../../Components/Main/ApplyMissedPunchOut/ApplyMissedPunchout.js"));
+const ApplyLatePunchIn = lazy(() => import("../../Components/Main/ApplyLatePunchIn/ApplyLatePunchIn.js"));
 const ApplyCompOff = lazy(() => import("../../Components/Main/ApplyCompOff/ApplyCompOff.js"));
 
 const Drawer = createDrawerNavigator();
@@ -52,6 +53,7 @@ const DrawerNavigator = () => {
             <Drawer.Screen name="ApplyLeaveRequest" component={ApplyLeaveRequestScreen} />
             <Drawer.Screen name="MyAttendance" component={MyAttendanceScreen} />
             <Drawer.Screen name="ApplyMissedPunchOut" component={ApplyMissedPunchOut} />
+            <Drawer.Screen name="ApplyLatePunchIn" component={ApplyLatePunchIn} />
             <Drawer.Screen name="ApplyCompOff" component={ApplyCompOff} />
           </>
         ) : (
