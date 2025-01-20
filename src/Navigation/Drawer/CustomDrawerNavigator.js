@@ -33,6 +33,18 @@ const CustomDrawerNavigator = () => {
       show: fieldPermissions?.settings?.show,
     },
     {
+      label: "Salary Slip",
+      icon: "receipt-outline",
+      route: "SalarySlip",
+      show: true,
+    },
+    {
+      label: "Leave Balance",
+      icon: "wallet-outline",
+      route: "LeaveBalance",
+      show: true,
+    },
+    {
       label: "Write Work Summary",
       icon: "create-outline",
       route: "AddWorkSummary",
@@ -101,29 +113,32 @@ const CustomDrawerNavigator = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <>
       <View style={styles.header}>
-        <Image source={Logo} style={styles.logo} />
+        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+          <Image source={Logo} style={styles.logo} />
+        </TouchableOpacity>
       </View>
-      <View style={styles.sidebar}>
-        {visibleDrawerItems.map((item, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.item}
-            onPress={() => handleNavigation(item)}>
-            <Icon name={item.icon} size={22} color="#ffb300" />
-            <Text style={styles.itemText}>{item.label}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </ScrollView>
+      <ScrollView style={styles.container}>
+        <View style={styles.sidebar}>
+          {visibleDrawerItems.map((item, index) => (
+            <View key={index}>
+              <View style={styles.separator} />
+              <TouchableOpacity
+                style={styles.item}
+                onPress={() => handleNavigation(item)}>
+                <Icon name={item.icon} size={22} color="#ffb300" />
+                <Text style={styles.itemText}>{item.label}</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   header: {
     paddingLeft: 16,
     backgroundColor: "#fff",
@@ -132,8 +147,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   logo: {
-    width: "30%",
+    width: 100,
+    height: 50,
     resizeMode: "contain",
+  },
+  container: {
+    flex: 1,
   },
   sidebar: {
     flex: 1,
@@ -145,13 +164,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 15,
     paddingVertical: 12,
-    borderTopWidth: 1,
-    borderTopColor: "#ddd",
   },
   itemText: {
     marginLeft: 10,
     fontSize: 15,
     color: "#777",
+  },
+  separator: {
+    height: 1,
+    backgroundColor: "#ddd",
   },
 });
 

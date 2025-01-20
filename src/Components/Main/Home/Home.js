@@ -206,7 +206,9 @@ const Home = () => {
       {/* Header Card with Profile Icon and Punch Buttons non scrollable */}
       <View style={styles.cardContainer}>
         <View style={styles.header}>
-          <View style={styles.profileContainer}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Profile')}
+            style={styles.profileContainer}>
             <Image
               style={styles.profileIcon}
               source={require("../../../Assets/user-icon.png")}
@@ -215,7 +217,7 @@ const Home = () => {
               <Text style={styles.employeeName}>{team?.name}</Text>
               <Text style={styles.positionText}>{team?.role?.name}</Text>
             </View>
-          </View>
+          </TouchableOpacity>
           {loading ? (
             <View
               style={{ flex: 1, justifyContent: "flex-end", alignItems: "flex-end" }}>

@@ -14,6 +14,8 @@ const HolidayStack = lazy(() => import("../Stack/HolidayStack/HolidayStack.js"))
 const SettingsStack = lazy(() => import("../Stack/SettingsStack/SettingsStack.js"));
 const HelpScreen = lazy(() => import("../../Screens/Help/HelpScreen.js"));
 const LogoutScreen = lazy(() => import("../../Screens/Auth/LogoutScreen.js"));
+const LeaveBalance = lazy(() => import("../../Components/Main/LeaveBalance/LeaveBalance.js"));
+const SalarySlip = lazy(() => import("../../Components/Main/SalarySlip/SalarySlip.js"));
 const ApplyLeaveRequestScreen = lazy(() => import("../../Screens/LeaveRequest/ApplyLeaveRequestSceeen.js"));
 const MyAttendanceScreen = lazy(() => import("../../Components/Main/Attendance/MyAttendance.js"));
 const ApplyMissedPunchOut = lazy(() => import("../../Components/Main/ApplyMissedPunchOut/ApplyMissedPunchout.js"));
@@ -50,6 +52,8 @@ const DrawerNavigator = () => {
             <Drawer.Screen name="Contact" component={ContactUsScreen} />
             <Drawer.Screen name="Help" component={HelpScreen} />
             <Drawer.Screen name="Logout" component={LogoutScreen} />
+            <Drawer.Screen name="LeaveBalance" component={LeaveBalance} />
+            <Drawer.Screen name="SalarySlip" component={SalarySlip} />
             <Drawer.Screen name="ApplyLeaveRequest" component={ApplyLeaveRequestScreen} />
             <Drawer.Screen name="MyAttendance" component={MyAttendanceScreen} />
             <Drawer.Screen name="ApplyMissedPunchOut" component={ApplyMissedPunchOut} />
