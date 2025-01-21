@@ -1,40 +1,85 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
   Text,
   TouchableOpacity,
+  ScrollView,
+  Platform,
+  RefreshControl,
 } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Icon from "react-native-vector-icons/Feather";
 import Toast from "react-native-toast-message";
 import { API_BASE_URL } from "@env";
 import axios from "axios";
 import { useAuth } from "../../../Context/auth.context.js";
+import { useRefresh } from "../../../Context/refresh.context.js";
+import { ActivityIndicator } from "react-native-paper";
 
 const ApplyCompOff = ({ navigation }) => {
-  const [date, setDate] = useState(null);
-  const [showPicker, setShowPicker] = useState(false);
   const { validToken, team } = useAuth();
+  const { refreshKey, refreshPage } = useRefresh();
+  const [employee, setEmployee] = useState();
+  const [date, setDate] = useState(null);
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   const showDatePicker = () => {
-    setShowPicker(true);
+    setIsDatePickerVisible(true);
   };
 
   const onDateChange = (event, selectedDate) => {
-    setShowPicker(false);
+    setIsDatePickerVisible(false);
     if (event.type === "set" && selectedDate) {
       setDate(selectedDate);
-    }
+    };
   };
+
+  const fetchSingleEmployee = async (employeeId) => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/api/v1/team/single-team/${employeeId}`,
+        {
+          headers: {
+            Authorization: validToken,
+          },
+        },
+      );
+
+      if (response?.data?.success) {
+        setEmployee(response?.data?.team);
+      };
+    } catch (error) {
+      console.log("Error:", error.message);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    };
+  };
+
+  useEffect(() => {
+    if (team && validToken) {
+      fetchSingleEmployee(team?._id);
+    };
+  }, [team, validToken, refreshKey]);
 
   const handleSubmit = async () => {
     if (!date) {
-      Toast.show({ type: "error", text1: "Date is required" });
+      Toast.show({ type: "error", text1: "All fields are required" });
       return;
-    }
+    };
+
+    if (!selectedDate) {
+      Toast.show({ type: "error", text1: "All fields are required" });
+      return;
+    };
 
     const compOffData = {
+      date: selectedDate,
       attendanceDate: date.toISOString().split("T")[0],
       employee: team?._id,
     };
@@ -51,14 +96,19 @@ const ApplyCompOff = ({ navigation }) => {
       );
 
       if (response?.data?.success) {
-        setDate(new Date());
+        setDate(null);
         Toast.show({ type: "success", text1: "Submitted successfully" });
         navigation.goBack();
-      }
+      };
     } catch (error) {
       console.log("Error:", error.message);
       Toast.show({ type: "error", text1: error?.response?.data?.message || "Try again" });
-    }
+    };
+  };
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    refreshPage();
   };
 
   return (
@@ -73,32 +123,65 @@ const ApplyCompOff = ({ navigation }) => {
         />
         <Text style={styles.headerTitle}>Apply Comp Off</Text>
       </View>
+      {
+        loading ? (
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <ActivityIndicator size="larger" color="#ffb300" />
+          </View>
+        ) : (
+          <ScrollView
+            style={styles.container}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+              />
+            }
+          >
+            <Text style={{ marginBottom: 5, color: "#555" }}>
+              For Date <Text style={{ color: "red" }}>*</Text>
+            </Text>
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={selectedDate}
+                onValueChange={(itemValue) => setSelectedDate(itemValue)}
+                style={styles.picker}
+              >
+                <Picker.Item style={styles.pickerItem} label="Select date" value="" />
+                {
+                  employee?.eligibleCompOffDate?.map((value) => (
+                    <Picker.Item style={styles.pickerItem} key={value?._id} label={value?.date} value={value?.date} />
+                  ))
+                }
+              </Picker>
+            </View>
+            <Text style={{ marginBottom: 5, color: "#555" }}>
+              Comp Off Date <Text style={{ color: "red" }}>*</Text>
+            </Text>
+            {/* Comp Off Date Picker */}
+            <TouchableOpacity
+              style={[styles.input, styles.dateInput]}
+              onPress={showDatePicker}
+            >
+              <Text style={{ color: "#777" }}>{date ? date.toISOString().split("T")[0] : "Select date"}</Text>
+            </TouchableOpacity>
+            {isDatePickerVisible && (
+              <DateTimePicker
+                value={date || new Date()}
+                mode="date"
+                display="default"
+                onChange={onDateChange}
+              />
+            )}
 
-      <View style={styles.container}>
-        <Text style={{ marginBottom: 5, color: "#555" }}>
-          Date <Text style={{ color: "red" }}>*</Text>
-        </Text>
-        {/* Date Picker */}
-        <TouchableOpacity
-          style={[styles.input, styles.dateInput]}
-          onPress={showDatePicker}>
-          <Text style={{ color: "#777" }}> {date ? date.toISOString().split("T")[0] : "Select Date"}</Text>
-        </TouchableOpacity>
-
-        {showPicker && (
-          <DateTimePicker
-            value={date || new Date()}
-            mode="date"
-            display="default"
-            onChange={onDateChange}
-          />
-        )}
-
-        {/* Submit Button */}
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>Submit</Text>
-        </TouchableOpacity>
-      </View>
+            {/* Submit Button */}
+            <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+              <Text style={styles.submitButtonText}>Submit</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        )
+      }
     </>
   );
 };
@@ -109,7 +192,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 12,
     backgroundColor: "#fff",
-
     zIndex: 1000,
   },
   headerTitle: {
@@ -130,7 +212,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ddd",
     borderRadius: 5,
-    marginBottom: 10,
+    marginBottom: 20,
     backgroundColor: "#fff",
     color: "#777",
   },
@@ -138,6 +220,23 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingLeft: 15,
     color: "#777",
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 5,
+    marginBottom: 16,
+    backgroundColor: "#fff",
+    height: 45,
+    justifyContent: Platform.OS === "android" ? "center" : "flex-end",
+    paddingLeft: 8,
+  },
+  picker: {
+    color: "#777",
+  },
+  pickerItem: {
+    fontSize: 14,
+    color: "#555",
   },
   submitButton: {
     backgroundColor: "#ffb300",

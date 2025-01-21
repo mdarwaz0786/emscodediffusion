@@ -27,9 +27,10 @@ const ApplyLeaveRequest = ({ navigation }) => {
   };
 
   const onStartDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
     setIsStartDatePickerVisible(false);
-    setStartDate(currentDate);
+    if (event.type === "set" && selectedDate) {
+      setStartDate(selectedDate);
+    };
   };
 
   const showEndDatePicker = () => {
@@ -37,9 +38,10 @@ const ApplyLeaveRequest = ({ navigation }) => {
   };
 
   const onEndDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
     setIsEndDatePickerVisible(false);
-    setEndDate(currentDate);
+    if (event.type === "set" && selectedDate) {
+      setEndDate(selectedDate);
+    };
   };
 
   const handleSubmit = async () => {

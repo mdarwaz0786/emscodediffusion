@@ -45,7 +45,7 @@ const ApplyMissedPunchOut = ({ navigation }) => {
     if (!date || !time) {
       Toast.show({ type: "error", text1: "All fields are required" });
       return;
-    }
+    };
 
     const formattedDate = date.toISOString().split("T")[0];
     const formattedTime = time.toTimeString().substring(0, 5);
@@ -54,7 +54,7 @@ const ApplyMissedPunchOut = ({ navigation }) => {
       attendanceDate: formattedDate,
       employee: team?._id,
       punchOutTime: formattedTime,
-    }
+    };
 
     try {
       const response = await axios.post(
@@ -99,7 +99,7 @@ const ApplyMissedPunchOut = ({ navigation }) => {
         <TouchableOpacity
           style={[styles.input, styles.dateInput]}
           onPress={showDatePicker}>
-          <Text style={{ color: "#777" }}> {date ? date.toISOString().split("T")[0] : "Select date"}</Text>
+          <Text style={{ color: "#777" }}>{date ? date.toISOString().split("T")[0] : "Select date"}</Text>
         </TouchableOpacity>
 
         {isDatePickerVisible && (
