@@ -140,9 +140,10 @@ const ApplyCompOff = ({ navigation }) => {
             }
           >
             <Text style={{ marginBottom: 5, color: "#555" }}>
-              For Date <Text style={{ color: "red" }}>*</Text>
+              Worked Date <Text style={{ color: "red" }}>*</Text>
             </Text>
             <View style={styles.pickerContainer}>
+              {/* Worked Date Picker */}
               <Picker
                 selectedValue={selectedDate}
                 onValueChange={(itemValue) => setSelectedDate(itemValue)}
