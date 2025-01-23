@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from "react-native";
-import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import Icon from "react-native-vector-icons/Feather";
 import { API_BASE_URL } from "@env";
@@ -10,98 +9,70 @@ import { useRefresh } from "../../../Context/refresh.context.js";
 import formatDate from "../../../Helper/formatDate.js";
 
 const Holiday = ({ navigation }) => {
-  const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().getMonth() + 1;
-  const [month, setMonth] = useState(currentMonth);
-  const [year, setYear] = useState(currentYear);
   const [holidays, setHolidays] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { refreshKey, refreshPage } = useRefresh();
-  const { validToken } = useAuth();
-
-  useEffect(() => {
-    setMonth(currentMonth);
-    setYear(currentYear);
-  }, []);
+  const { validToken, team } = useAuth();
 
   const fetchAllHoliday = async () => {
     try {
       setLoading(true);
 
-      const params = {};
-
-      if (month) {
-        const formattedMonth = month.toString().padStart(2, "0");
-        params.month = formattedMonth;
-      }
-
-      if (year) {
-        params.year = year;
-      }
-
-      const response = await axios.get(`${API_BASE_URL}/api/v1/holiday/all-holiday`,
-        {
-          params,
-          headers: {
-            Authorization: validToken
-          },
+      const response = await axios.get(`${API_BASE_URL}/api/v1/holiday/byMonth-holiday`, {
+        headers: {
+          Authorization: validToken,
         },
-      );
+      });
 
       if (response?.data?.success) {
-        setHolidays(response?.data?.holiday);
-      }
+        setHolidays(response?.data?.data);
+      };
     } catch (error) {
-      console.log("Error while fetching holiday:", error.message);
+      console.log("Error:", error.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
-    }
+    };
   };
 
   useEffect(() => {
-    if (validToken && year && month) {
+    if (validToken) {
       fetchAllHoliday();
     }
-  }, [validToken, refreshKey, year, month]);
+  }, [validToken, refreshKey]);
 
   const handleRefresh = () => {
     setRefreshing(true);
     refreshPage();
   };
 
-  const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-
-  const renderItem = ({ item, index }) => {
-    if (index % 2 !== 0) return null;
-    const nextItem = holidays[index + 1];
+  const renderHolidayItem = ({ item }) => {
     return (
-      <View style={styles.rowContainer}>
-        <View style={styles.notificationCard}>
-          <View style={styles.cardHeader}>
-            <Calender name="calendar" size={22} color="#ffb300" style={styles.icon} />
-            <View style={styles.cardContent}>
-              <Text style={styles.cardTitle}>{item?.reason}</Text>
-              <Text style={styles.cardDate}>{formatDate(item?.date)}</Text>
-            </View>
-          </View>
+      <TouchableOpacity
+        style={styles.notificationCard}
+        onPress={() =>
+          team?.role?.name.toLowerCase() === "admin" &&
+          navigation.navigate('EditHoliday', { id: item?._id })
+        }>
+        <View style={styles.cardHeader}>
+          <Calender name="calendar" size={20} color="#ffb300" style={styles.icon} />
+          <Text style={[styles.cardTitle, { marginRight: 10 }]}>{formatDate(item?.date)}</Text>
+          <Text style={styles.cardTitle}>{item?.reason}</Text>
         </View>
+      </TouchableOpacity>
+    );
+  };
 
-        {nextItem && (
-          <View style={styles.notificationCard}>
-            <View style={styles.cardHeader}>
-              <Calender name="calendar" size={22} color="#ffb300" style={styles.icon} />
-              <View style={styles.cardContent}>
-                <Text style={styles.cardTitle}>{nextItem?.reason}</Text>
-                <Text style={styles.cardDate}>{formatDate(nextItem?.date)}</Text>
-              </View>
-            </View>
-          </View>
-        )}
+  const renderMonthGroup = ({ item }) => {
+    return (
+      <View style={styles.monthGroup}>
+        <Text style={styles.monthTitle}>{item?.monthName}</Text>
+        <FlatList
+          data={item?.holidays}
+          renderItem={renderHolidayItem}
+          keyExtractor={(holiday) => holiday?._id}
+        />
       </View>
     );
   };
@@ -111,52 +82,13 @@ const Holiday = ({ navigation }) => {
       <View style={styles.header}>
         <Icon name="arrow-left" size={20} color="#000" onPress={() => navigation.goBack()} />
         <Text style={styles.headerTitle}>Holiday</Text>
-        <TouchableOpacity style={styles.buttonAdd} onPress={() => navigation.navigate("AddHoliday")}>
-          <Text style={styles.buttonAddText}>Add Holiday</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Filter Section */}
-      <View style={styles.filterContainer}>
-        <View style={styles.pickerRow}>
-          {/* Year Picker */}
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={year}
-              onValueChange={itemValue => setYear(itemValue)}
-              style={styles.picker}>
-              {Array.from({ length: 5 }, (_, index) => {
-                const yearOption = currentYear - index;
-                return (
-                  <Picker.Item
-                    key={yearOption}
-                    label={String(yearOption)}
-                    value={yearOption}
-                    style={styles.pickerItem}
-                  />
-                );
-              })}
-            </Picker>
-          </View>
-
-          {/* Month Picker */}
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={month}
-              onValueChange={itemValue => setMonth(itemValue)}
-              style={styles.picker}
-            >
-              {monthNames?.map((month, index) => (
-                <Picker.Item
-                  key={index}
-                  label={month}
-                  value={index + 1}
-                  style={styles.pickerItem}
-                />
-              ))}
-            </Picker>
-          </View>
-        </View>
+        {
+          (team?.role?.name.toLowerCase() === "admin") && (
+            <TouchableOpacity style={styles.buttonAdd} onPress={() => navigation.navigate("AddHoliday")}>
+              <Text style={styles.buttonAddText}>Add Holiday</Text>
+            </TouchableOpacity>
+          )
+        }
       </View>
 
       <View style={styles.container}>
@@ -171,8 +103,8 @@ const Holiday = ({ navigation }) => {
         ) : (
           <FlatList
             data={holidays}
-            renderItem={renderItem}
-            keyExtractor={(item) => item?._id}
+            renderItem={renderMonthGroup}
+            keyExtractor={(item) => item?.monthName}
             refreshing={refreshing}
             onRefresh={handleRefresh}
           />
@@ -207,30 +139,10 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "500",
   },
-  filterContainer: {
-    marginTop: 10,
-    paddingHorizontal: 15,
-  },
-  pickerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    columnGap: 10,
-  },
-  pickerContainer: {
-    flex: 1,
-  },
-  picker: {
-    backgroundColor: "#fff",
-    color: "#333",
-  },
-  pickerItem: {
-    fontSize: 14,
-    color: "#333",
-    backgroundColor: "#fff",
-  },
   container: {
     flex: 1,
-    padding: 10,
+    padding: 20,
+    paddingTop: 12,
   },
   rowContainer: {
     flexDirection: "row",
@@ -241,9 +153,8 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 8,
     backgroundColor: "#fff",
-    padding: 10,
-    paddingTop: 8,
-    marginHorizontal: 5,
+    padding: 15,
+    marginBottom: 16,
   },
   cardHeader: {
     flexDirection: "row",
@@ -252,17 +163,10 @@ const styles = StyleSheet.create({
   icon: {
     marginRight: 8,
   },
-  cardContent: {
-    flex: 1,
-  },
   cardTitle: {
     fontSize: 14,
     fontWeight: "400",
-    color: "#333",
-  },
-  cardDate: {
-    fontSize: 13,
-    color: "#777",
+    color: "#555",
   },
   noHolidaysText: {
     fontSize: 14,
@@ -272,6 +176,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  monthGroup: {
+    marginBottom: 10,
+  },
+  monthTitle: {
+    textAlign: "center",
+    fontSize: 15,
+    fontWeight: "400",
+    marginBottom: 8,
+    color: "#333",
   },
 });
 

@@ -28,17 +28,6 @@ const ApplyCompOff = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const showDatePicker = () => {
-    setIsDatePickerVisible(true);
-  };
-
-  const onDateChange = (event, selectedDate) => {
-    setIsDatePickerVisible(false);
-    if (event.type === "set" && selectedDate) {
-      setDate(selectedDate);
-    };
-  };
-
   const fetchSingleEmployee = async (employeeId) => {
     try {
       const response = await axios.get(
@@ -66,6 +55,17 @@ const ApplyCompOff = ({ navigation }) => {
       fetchSingleEmployee(team?._id);
     };
   }, [team, validToken, refreshKey]);
+
+  const showDatePicker = () => {
+    setIsDatePickerVisible(true);
+  };
+
+  const onDateChange = (event, selectedDate) => {
+    setIsDatePickerVisible(false);
+    if (event.type === "set" && selectedDate) {
+      setDate(selectedDate);
+    };
+  };
 
   const handleSubmit = async () => {
     if (!date) {
@@ -127,7 +127,7 @@ const ApplyCompOff = ({ navigation }) => {
         loading ? (
           <View
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator size="larger" color="#ffb300" />
+            <ActivityIndicator size="small" color="#ffb300" />
           </View>
         ) : (
           <ScrollView
@@ -165,7 +165,7 @@ const ApplyCompOff = ({ navigation }) => {
               style={[styles.input, styles.dateInput]}
               onPress={showDatePicker}
             >
-              <Text style={{ color: "#777" }}>{date ? date.toISOString().split("T")[0] : "Select date"}</Text>
+              <Text style={{ color: "#666" }}>{date ? date.toISOString().split("T")[0] : "Select date"}</Text>
             </TouchableOpacity>
             {isDatePickerVisible && (
               <DateTimePicker
@@ -233,11 +233,11 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
   },
   picker: {
-    color: "#777",
+    color: "#555",
   },
   pickerItem: {
     fontSize: 14,
-    color: "#555",
+    color: "#fff",
   },
   submitButton: {
     backgroundColor: "#ffb300",

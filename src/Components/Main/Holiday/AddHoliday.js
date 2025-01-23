@@ -15,15 +15,31 @@ import { useAuth } from "../../../Context/auth.context.js";
 
 const AddHoliday = ({ navigation }) => {
   const [reason, setReason] = useState("");
-  const [date, setDate] = useState(new Date());
-  const [showPicker, setShowPicker] = useState(false);
+  const [date, setDate] = useState(null);
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const { validToken } = useAuth();
 
+  const showDatePicker = () => {
+    setIsDatePickerVisible(true);
+  };
+
+  const onDateChange = (event, selectedDate) => {
+    setIsDatePickerVisible(false);
+    if (event.type === "set" && selectedDate) {
+      setDate(selectedDate);
+    };
+  };
+
   const handleSubmit = async () => {
-    if (!reason || !date) {
-      Toast.show({ type: "error", text1: "All fields are required" });
+    if (!reason) {
+      Toast.show({ type: "error", text1: "Reason is required" });
       return;
-    }
+    };
+
+    if (!date) {
+      Toast.show({ type: "error", text1: "Date is required" });
+      return;
+    };
 
     const formattedDate = date.toISOString().split("T")[0];
 
@@ -46,24 +62,14 @@ const AddHoliday = ({ navigation }) => {
 
       if (response?.data?.success) {
         setReason("");
-        setDate(new Date());
+        setDate(null);
         Toast.show({ type: "success", text1: "Submitted successfully" });
         navigation.goBack();
-      }
+      };
     } catch (error) {
       console.log("Error:", error.message);
       Toast.show({ type: "error", text1: error?.response?.data?.message || "Try again" });
-    }
-  };
-
-  const showDatePicker = () => {
-    setShowPicker(true);
-  };
-
-  const onDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setShowPicker(false);
-    setDate(currentDate);
+    };
   };
 
   return (
@@ -96,13 +102,13 @@ const AddHoliday = ({ navigation }) => {
         {/* Date Picker */}
         <TouchableOpacity
           style={[styles.input, styles.dateInput]}
-          onPress={showDatePicker}>
-          <Text style={{ color: "#777" }}>{date.toISOString().split("T")[0]}</Text>
+          onPress={showDatePicker}
+        >
+          <Text style={{ color: "#777" }}>{date && date.toISOString().split("T")[0]}</Text>
         </TouchableOpacity>
-
-        {showPicker && (
+        {isDatePickerVisible && (
           <DateTimePicker
-            value={date}
+            value={date || new Date()}
             mode="date"
             display="default"
             onChange={onDateChange}

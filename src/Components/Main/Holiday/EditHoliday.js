@@ -21,7 +21,7 @@ const EditHoliday = ({ navigation, route }) => {
   const id = route?.params?.id;
   const [reason, setReason] = useState("");
   const [date, setDate] = useState(null);
-  const [showPicker, setShowPicker] = useState(false);
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { validToken } = useAuth();
@@ -42,13 +42,13 @@ const EditHoliday = ({ navigation, route }) => {
       if (response?.data?.success) {
         setDate(new Date(response?.data?.holiday?.date));
         setReason(response?.data?.holiday?.reason);
-      }
+      };
     } catch (error) {
-      console.log("Error while fetching upcoming holiday:", error.message);
+      console.log("Error:", error.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
-    }
+    };
   };
 
   useEffect(() => {
@@ -58,25 +58,26 @@ const EditHoliday = ({ navigation, route }) => {
   }, [id, refreshKey]);
 
   const showDatePicker = () => {
-    setShowPicker(true);
+    setIsDatePickerVisible(true);
   };
 
   const onDateChange = (event, selectedDate) => {
-    if (event.type === 'dismissed') {
-      setShowPicker(false);
-      return;
+    setIsDatePickerVisible(false);
+    if (event.type === "set" && selectedDate) {
+      setDate(selectedDate);
     };
-
-    const currentDate = selectedDate || date;
-    setShowPicker(false);
-    setDate(currentDate);
   };
 
   const handleSubmit = async (id) => {
-    if (!reason || !date) {
-      Toast.show({ type: "error", text1: "All fields are required" });
+    if (!reason) {
+      Toast.show({ type: "error", text1: "Reason is required" });
       return;
-    }
+    };
+
+    if (!date) {
+      Toast.show({ type: "error", text1: "Date is required" });
+      return;
+    };
 
     const holidayData = {
       reason,
@@ -100,11 +101,11 @@ const EditHoliday = ({ navigation, route }) => {
         setDate(null);
         Toast.show({ type: "success", text1: "Submitted successfully" });
         navigation.goBack();
-      }
+      };
     } catch (error) {
-      console.log("Error:", error);
+      console.log("Error:", error.message);
       Toast.show({ type: "error", text1: error?.response?.data?.message || "Try again" });
-    }
+    };
   };
 
   const handleRefresh = () => {
@@ -165,11 +166,11 @@ const EditHoliday = ({ navigation, route }) => {
             {/* Date Picker */}
             <TouchableOpacity
               style={[styles.input, styles.dateInput]}
-              onPress={showDatePicker}>
-              <Text style={{ color: "#777" }}>{formatDate(date)}</Text>
+              onPress={showDatePicker}
+            >
+              <Text style={{ color: "#777" }}>{date && date.toISOString().split("T")[0]}</Text>
             </TouchableOpacity>
-
-            {showPicker && (
+            {isDatePickerVisible && (
               <DateTimePicker
                 value={date || new Date()}
                 mode="date"
@@ -195,7 +196,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 12,
     backgroundColor: "#fff",
-
     zIndex: 1000,
   },
   headerTitle: {

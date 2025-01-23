@@ -14,7 +14,6 @@ import axios from "axios";
 import { API_BASE_URL } from "@env";
 
 const AddWorkSummary = ({ navigation }) => {
-  const [date, setDate] = useState(new Date());
   const [summary, setSummary] = useState("");
   const { validToken, team } = useAuth();
 
@@ -24,7 +23,7 @@ const AddWorkSummary = ({ navigation }) => {
       return;
     };
 
-    const formattedDate = date.toISOString().split("T")[0];
+    const formattedDate = new Date().toISOString().split("T")[0];
 
     try {
       const response = await axios.post(
@@ -34,14 +33,14 @@ const AddWorkSummary = ({ navigation }) => {
           headers: {
             Authorization: validToken,
           },
-        }
+        },
       );
 
       if (response?.data?.success) {
         setSummary("");
         Toast.show({ type: "success", text1: "Submitted successfully" });
         navigation.goBack();
-      }
+      };
     } catch (error) {
       console.log(error.message);
       Toast.show({ type: "error", text1: error?.response?.data?.message || "Submission failed" });
@@ -61,14 +60,14 @@ const AddWorkSummary = ({ navigation }) => {
       </View>
 
       <ScrollView style={styles.container}>
-        <Text style={{ marginBottom: 10, color: "#555" }}>
+        <Text style={{ marginBottom: 10, color: "#333" }}>
           Work Summary <Text style={{ color: "red" }}>*</Text>
         </Text>
         <TextInput
           style={[styles.input, styles.textArea]}
           value={summary}
           placeholder="write summary here..."
-          placeholderTextColor="#ddd"
+          placeholderTextColor="#aaa"
           onChangeText={setSummary}
           multiline
         />
@@ -105,12 +104,12 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     marginBottom: 15,
     backgroundColor: "#fff",
-    color: "#777",
+    color: "#555",
     justifyContent: "center"
   },
   textArea: {
     height: 150,
-    borderRadius: 10,
+    borderRadius: 5,
     textAlignVertical: "top",
   },
   submitButton: {
