@@ -237,7 +237,6 @@ const styles = StyleSheet.create({
   },
   pickerItem: {
     fontSize: 14,
-    color: "#fff",
   },
   submitButton: {
     backgroundColor: "#ffb300",
