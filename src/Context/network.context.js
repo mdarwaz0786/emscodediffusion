@@ -1,33 +1,24 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import NetInfo from "@react-native-community/netinfo";
-import { Alert } from "react-native";
 
 const NetworkContext = createContext();
 
 export const NetworkProvider = ({ children }) => {
   const [isConnected, setIsConnected] = useState(true);
-  const [isInternetSlow, setIsInternetSlow] = useState(false);
-
-  const showAlert = (title, message) => {
-    Alert.alert(title, message);
-  };
+  const [hasInternet, setHasInternet] = useState(true);
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener((state) => {
       setIsConnected(state.isConnected);
-      if (state.isConnected && state.isInternetReachable) {
-        const speed = state.details.linkSpeed;
-        setIsInternetSlow(speed < 1);
-      } else {
-        setIsInternetSlow(true);
-      };
+      setHasInternet(state.isInternetReachable);
     });
-
     return () => unsubscribe();
   }, []);
 
+  const isNetworkOkay = isConnected && hasInternet;
+
   return (
-    <NetworkContext.Provider value={{ isConnected, isInternetSlow, showAlert }}>
+    <NetworkContext.Provider value={{ isNetworkOkay, isConnected, hasInternet }}>
       {children}
     </NetworkContext.Provider>
   );

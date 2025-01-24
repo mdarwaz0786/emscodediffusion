@@ -9,7 +9,6 @@ import Toast from "react-native-toast-message";
 import { AuthProvider } from "./src/Context/auth.context.js";
 import { RefreshProvider } from "./src/Context/refresh.context.js";
 import { NetworkProvider } from "./src/Context/network.context.js";
-import NetworkStatusIndicator from "./src/Components/Common/NetWorkStatusIndicator.js";
 
 // Custom Toast Configuration
 const toastConfig = {
@@ -46,12 +45,7 @@ const Main = () => (
         <NetworkProvider>
           <PaperProvider>
             <App />
-            <NetworkStatusIndicator />
-            <StatusBar
-              barStyle="dark-content"
-              backgroundColor="#ffffff"
-              translucent={false}
-            />
+            <StatusBar barStyle="dark-content" backgroundColor="#ffffff" translucent={false} />
             <Toast config={toastConfig} />
           </PaperProvider>
         </NetworkProvider>
