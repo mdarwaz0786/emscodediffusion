@@ -177,6 +177,8 @@ const Attendance = ({ route }) => {
     refreshPage();
   };
 
+  const joiningYear = new Date(employee?.joining).getFullYear();
+
   return (
     <>
       {/* Header */}
@@ -212,7 +214,7 @@ const Attendance = ({ route }) => {
                 selectedValue={year}
                 onValueChange={itemValue => setYear(itemValue)}
                 style={styles.picker}>
-                {Array.from({ length: 12 }, (_, index) => {
+                {Array.from({ length: currentYear - joiningYear + 1 }, (_, index) => {
                   const yearOption = currentYear - index;
                   return (
                     <Picker.Item
