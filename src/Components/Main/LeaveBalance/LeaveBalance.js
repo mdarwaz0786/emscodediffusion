@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { View, Text, FlatList, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const LeaveBalanceScreen = () => {
@@ -46,6 +46,91 @@ const LeaveBalanceScreen = () => {
     </View>
   );
 
+  const renderHeader = () => (
+    <View style={styles.card}>
+      <Text style={styles.cardTitle}>Leave Balance Overview</Text>
+      <View style={styles.balanceInfo}>
+        <View style={styles.balanceRow}>
+          <Icon name="check-circle" size={20} color="#4caf50" />
+          <Text style={styles.balanceText}>Total Granted Leaves: {leaveData.allotedLeaveBalance}</Text>
+        </View>
+        <View style={styles.balanceRow}>
+          <Icon name="today" size={20} color="#2196f3" />
+          <Text style={styles.balanceText}>Available Leave Balance: {leaveData.currentLeaveBalance}</Text>
+        </View>
+        <View style={styles.balanceRow}>
+          <Icon name="event-available" size={20} color="#f44336" />
+          <Text style={styles.balanceText}>Total Leaves Taken: {leaveData.usedLeaveBalance}</Text>
+        </View>
+      </View>
+    </View>
+  );
+
+  const renderUsedLeaves = () => (
+    <View style={styles.historySection}>
+      <Text style={styles.sectionTitle}>Leaves Utilized</Text>
+      <FlatList
+        data={showAllUsed ? leaveData.leaveBalanceUsedHistory : leaveData.leaveBalanceUsedHistory.slice(0, 2)}
+        renderItem={renderHistoryItem}
+        keyExtractor={(item, index) => index.toString()}
+      />
+      {leaveData.leaveBalanceUsedHistory.length > 2 && !showAllUsed && (
+        <TouchableOpacity style={styles.moreButton} onPress={() => setShowAllUsed(true)}>
+          <Text style={styles.moreText}>More</Text>
+          <Icon name="expand-more" size={20} color="#2196f3" />
+        </TouchableOpacity>
+      )}
+      {showAllUsed && (
+        <TouchableOpacity style={styles.moreButton} onPress={() => setShowAllUsed(false)}>
+          <Text style={styles.moreText}>Less</Text>
+          <Icon name="expand-less" size={20} color="#2196f3" />
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+
+  const renderAllotedLeaves = () => (
+    <View style={styles.historySection}>
+      <Text style={styles.sectionTitle}>Granted Leaves</Text>
+      <FlatList
+        data={showAllAlloted ? leaveData.leaveBalanceAllotedHistory : leaveData.leaveBalanceAllotedHistory.slice(0, 2)}
+        renderItem={renderHistoryItem}
+        keyExtractor={(item, index) => index.toString()}
+      />
+      {leaveData.leaveBalanceAllotedHistory.length > 2 && !showAllAlloted && (
+        <TouchableOpacity style={styles.moreButton} onPress={() => setShowAllAlloted(true)}>
+          <Text style={styles.moreText}>More</Text>
+          <Icon name="expand-more" size={20} color="#2196f3" />
+        </TouchableOpacity>
+      )}
+      {showAllAlloted && (
+        <TouchableOpacity style={styles.moreButton} onPress={() => setShowAllAlloted(false)}>
+          <Text style={styles.moreText}>Less</Text>
+          <Icon name="expand-less" size={20} color="#2196f3" />
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+
+  const data = [
+    { key: 'header' },
+    { key: 'usedLeaves' },
+    { key: 'allotedLeaves' },
+  ];
+
+  const renderItem = ({ item }) => {
+    switch (item.key) {
+      case 'header':
+        return renderHeader();
+      case 'usedLeaves':
+        return renderUsedLeaves();
+      case 'allotedLeaves':
+        return renderAllotedLeaves();
+      default:
+        return null;
+    };
+  };
+
   return (
     <>
       <View style={styles.header}>
@@ -56,69 +141,12 @@ const LeaveBalanceScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <ScrollView contentContainerStyle={styles.container}>
-        {/* Header Card */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Leave Balance Overview</Text>
-          <View style={styles.balanceInfo}>
-            <View style={styles.balanceRow}>
-              <Icon name="check-circle" size={20} color="#4caf50" />
-              <Text style={styles.balanceText}>Total Granted Leaves: {leaveData.allotedLeaveBalance}</Text>
-            </View>
-            <View style={styles.balanceRow}>
-              <Icon name="today" size={20} color="#2196f3" />
-              <Text style={styles.balanceText}>Available Leave Balance: {leaveData.currentLeaveBalance}</Text>
-            </View>
-            <View style={styles.balanceRow}>
-              <Icon name="event-available" size={20} color="#f44336" />
-              <Text style={styles.balanceText}>Total Leaves Taken: {leaveData.usedLeaveBalance}</Text>
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.historySection}>
-          <Text style={styles.sectionTitle}>Leaves Utilized</Text>
-          <FlatList
-            data={showAllUsed ? leaveData.leaveBalanceUsedHistory : leaveData.leaveBalanceUsedHistory.slice(0, 2)}
-            renderItem={renderHistoryItem}
-            keyExtractor={(item, index) => index.toString()}
-          />
-          {leaveData.leaveBalanceUsedHistory.length > 2 && !showAllUsed && (
-            <TouchableOpacity style={styles.moreButton} onPress={() => setShowAllUsed(true)}>
-              <Text style={styles.moreText}>More</Text>
-              <Icon name="expand-more" size={20} color="#2196f3" />
-            </TouchableOpacity>
-          )}
-          {showAllUsed && (
-            <TouchableOpacity style={styles.moreButton} onPress={() => setShowAllUsed(false)}>
-              <Text style={styles.moreText}>Less</Text>
-              <Icon name="expand-less" size={20} color="#2196f3" />
-            </TouchableOpacity>
-          )}
-        </View>
-
-        {/* Leave History Sections */}
-        <View style={styles.historySection}>
-          <Text style={styles.sectionTitle}>Granted Leaves</Text>
-          <FlatList
-            data={showAllAlloted ? leaveData.leaveBalanceAllotedHistory : leaveData.leaveBalanceAllotedHistory.slice(0, 2)}
-            renderItem={renderHistoryItem}
-            keyExtractor={(item, index) => index.toString()}
-          />
-          {leaveData.leaveBalanceAllotedHistory.length > 2 && !showAllAlloted && (
-            <TouchableOpacity style={styles.moreButton} onPress={() => setShowAllAlloted(true)}>
-              <Text style={styles.moreText}>More</Text>
-              <Icon name="expand-more" size={20} color="#2196f3" />
-            </TouchableOpacity>
-          )}
-          {showAllAlloted && (
-            <TouchableOpacity style={styles.moreButton} onPress={() => setShowAllAlloted(false)}>
-              <Text style={styles.moreText}>Less</Text>
-              <Icon name="expand-less" size={20} color="#2196f3" />
-            </TouchableOpacity>
-          )}
-        </View>
-      </ScrollView>
+      <FlatList
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.key}
+        contentContainerStyle={styles.container}
+      />
     </>
   );
 };
@@ -218,20 +246,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     marginRight: 8,
-  },
-  actionButton: {
-    backgroundColor: '#2196f3',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 30,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '500',
   },
 });
 
