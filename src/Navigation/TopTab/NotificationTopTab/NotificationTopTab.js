@@ -1,11 +1,26 @@
 import React, { Suspense } from 'react';
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { ActivityIndicator, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import TodayAttendanceScreen from '../../../Screens/Notifications/TodayAttendanceScree.js';
 import TodayWorkSummaryScreen from '../../../Screens/Notifications/TodayWorkSummaryScreen.js';
 import UpcomingHolidaysScreen from '../../../Screens/Notifications/UpcomingHolidaysScreen.js';
+import Icon from 'react-native-vector-icons/Ionicons';
+import ApprovalRequestScreen from '../../../Screens/Notifications/ApprovalRequestScreen.js';
 
 const Tab = createMaterialTopTabNavigator();
+
+const NotificationHeader = () => {
+  const navigation = useNavigation();
+  return (
+    <View style={styles.headerContainer}>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <Icon name="arrow-back" size={20} color='#ffb300' />
+      </TouchableOpacity>
+      <Text style={styles.headerText}>Notifications</Text>
+    </View>
+  );
+};
 
 const NotificationTopTab = () => {
   return (
@@ -15,52 +30,82 @@ const NotificationTopTab = () => {
           <ActivityIndicator size="large" color="#ffb300" />
         </View>
       }>
-      <Tab.Navigator
-        initialRouteName="TodayAttendance"
-        backBehavior="history"
-        screenOptions={() => ({
-          lazy: true,
-          tabBarActiveTintColor: '#ffb300',
-          tabBarInactiveTintColor: '#777',
-          tabBarLabelStyle: {
-            fontSize: 15,
-            fontWeight: '400',
-            marginHorizontal: -1,
-            textTransform: 'none',
-          },
-          tabBarStyle: {
-            backgroundColor: '#fff',
-            elevation: 0,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 0 },
-            shadowOpacity: 0,
-            shadowRadius: 0,
-          },
-          tabBarIndicatorStyle: {
-            backgroundColor: '#ffb300',
-            height: 3,
-            borderRadius: 2,
-          },
-        })}
-      >
-        <Tab.Screen
-          name="TodayAttendance"
-          component={TodayAttendanceScreen}
-          options={{ tabBarLabel: 'Attendance' }}
-        />
-        <Tab.Screen
-          name="TodayWorkSummary"
-          component={TodayWorkSummaryScreen}
-          options={{ tabBarLabel: 'Work Summary' }}
-        />
-        <Tab.Screen
-          name="UpcomingHolidays"
-          component={UpcomingHolidaysScreen}
-          options={{ tabBarLabel: 'Holidays' }}
-        />
-      </Tab.Navigator>
+      <View style={{ flex: 1 }}>
+        <NotificationHeader />
+        <Tab.Navigator
+          initialRouteName="TodayAttendance"
+          backBehavior="history"
+          screenOptions={{
+            lazy: true,
+            tabBarScrollEnabled: true,
+            tabBarActiveTintColor: '#ffb300',
+            tabBarInactiveTintColor: '#777',
+            tabBarLabelStyle: {
+              fontSize: 15,
+              fontWeight: '400',
+              textTransform: 'none',
+            },
+            tabBarStyle: {
+              backgroundColor: '#fff',
+              elevation: 0,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 0 },
+              shadowOpacity: 0,
+              shadowRadius: 0,
+            },
+            tabBarItemStyle: {
+              width: "auto",
+            },
+            tabBarIndicatorStyle: {
+              backgroundColor: '#ffb300',
+              height: 3,
+              borderRadius: 2,
+            },
+          }}
+        >
+          <Tab.Screen
+            name="TodayAttendance"
+            component={TodayAttendanceScreen}
+            options={{ tabBarLabel: 'Attendance', }}
+          />
+          <Tab.Screen
+            name="TodayWorkSummary"
+            component={TodayWorkSummaryScreen}
+            options={{ tabBarLabel: 'Work Summary' }}
+          />
+          <Tab.Screen
+            name="UpcomingHolidays"
+            component={UpcomingHolidaysScreen}
+            options={{ tabBarLabel: 'Holidays' }}
+          />
+          <Tab.Screen
+            name="ApprovalRequest"
+            component={ApprovalRequestScreen}
+            options={{ tabBarLabel: 'Approval' }}
+          />
+        </Tab.Navigator>
+      </View>
     </Suspense>
   );
 };
+
+const styles = StyleSheet.create({
+  headerContainer: {
+    backgroundColor: '#fff',
+    paddingTop: 20,
+    paddingBottom: 12,
+    paddingLeft: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  backButton: {
+    marginRight: 10,
+  },
+  headerText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#ffb300',
+  },
+});
 
 export default NotificationTopTab;
