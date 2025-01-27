@@ -74,14 +74,14 @@ const NotificationTopTab = () => {
             options={{ tabBarLabel: 'Work Summary' }}
           />
           <Tab.Screen
-            name="UpcomingHolidays"
-            component={UpcomingHolidaysScreen}
-            options={{ tabBarLabel: 'Holidays' }}
-          />
-          <Tab.Screen
             name="ApprovalRequest"
             component={ApprovalRequestScreen}
             options={{ tabBarLabel: 'Approval' }}
+          />
+          <Tab.Screen
+            name="UpcomingHolidays"
+            component={UpcomingHolidaysScreen}
+            options={{ tabBarLabel: 'Holidays' }}
           />
         </Tab.Navigator>
       </View>

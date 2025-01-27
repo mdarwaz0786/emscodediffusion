@@ -4,6 +4,7 @@ import axios from "axios";
 import Toast from "react-native-toast-message";
 import { useAuth } from "../../../Context/auth.context.js";
 import { API_BASE_URL } from "@env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Login = () => {
   const [employeeId, setEmployeeId] = useState("");
@@ -17,11 +18,13 @@ const Login = () => {
   const handleLogin = async () => {
     setLoading(true);
     try {
+      let fcmToken = await AsyncStorage.getItem("fcmToken");
       const response = await axios.post(
         `${API_BASE_URL}/api/v1/team/login-team`,
         {
           employeeId: transformedEmployeeId,
           password,
+          fcmToken,
         }
       );
       if (response?.data?.success) {

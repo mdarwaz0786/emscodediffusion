@@ -6,7 +6,7 @@ import PunchOutRequest from './Approvals/MissedPunchOut.js';
 import PunchInRequest from './Approvals/LatePunchIn.js';
 
 const ApprovalRequest = () => {
-  const [activeRequestType, setActiveRequestType] = useState('leave');
+  const [activeRequestType, setActiveRequestType] = useState('compOff');
 
   const renderRequestComponent = () => {
     switch (activeRequestType) {
@@ -24,10 +24,10 @@ const ApprovalRequest = () => {
   };
 
   const approvalTypes = [
+    { type: 'compOff', label: 'Comp Off' },
     { type: 'leave', label: 'Leave' },
     { type: 'punchOut', label: 'Punch Out' },
     { type: 'punchIn', label: 'Punch In' },
-    { type: 'compOff', label: 'Comp Off' },
   ];
 
   return (

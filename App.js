@@ -5,6 +5,8 @@ import DrawerNavigator from "./src/Navigation/Drawer/DrawerNavigator.js";
 import { useAuth } from "./src/Context/auth.context.js";
 import { useNetwork } from "./src/Context/network.context.js";
 import NoInternet from "./src/Components/Common/NoInternet.js";
+import { requestUserPermission } from "./src/Helper/notificationService.js";
+import notifee from "@notifee/react-native";
 
 const App = () => {
   const { isLoading } = useAuth();
@@ -15,6 +17,21 @@ const App = () => {
       SplashScreen.hide();
     };
   }, [isLoading]);
+
+  useEffect(() => {
+    requestUserPermission();
+    createNotificationChannel();
+  }, []);
+
+  const createNotificationChannel = async () => {
+    await notifee.createChannel({
+      id: 'default',
+      name: 'Default Channel',
+      sound: 'default',
+      vibration: true,
+      importance: AndroidPriority.HIGH,
+    });
+  };
 
   return (
     <NavigationContainer>
