@@ -65,7 +65,6 @@ const styles = StyleSheet.create({
   },
   buttonWrapper: {
     paddingTop: 20,
-    paddingBottom: 8,
   },
   scrollViewContent: {
     flexDirection: 'row',

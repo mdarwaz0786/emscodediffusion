@@ -53,6 +53,8 @@ const Login = () => {
     };
   };
 
+  console.log(API_BASE_URL)
+
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>

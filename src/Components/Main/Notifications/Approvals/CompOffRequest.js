@@ -3,9 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 import { useAuth } from '../../../../Context/auth.context.js';
+import { useRefresh } from '../../../../Context/refresh.context.js';
 import { API_BASE_URL } from "@env";
 import Toast from "react-native-toast-message";
-import { useRefresh } from '../../../../Context/refresh.context.js';
+import formatDate from '../../../../Helper/formatDate.js';
 
 const CompOffRequest = () => {
   const { validToken, team } = useAuth();
@@ -27,7 +28,7 @@ const CompOffRequest = () => {
         setCompOffRequests(response?.data?.data);
       };
     } catch (error) {
-      console.error('Error:', error.message);
+      console.log('Error:', error.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -52,8 +53,8 @@ const CompOffRequest = () => {
         Toast.show({ type: "success", text1: "Updated successful" });
       };
     } catch (error) {
-      Toast.show({ type: "error", text1: "Error while updating" });
-      console.log('Error:', error?.response?.data?.message || "Try again");
+      Toast.show({ type: "error", text1: error?.response?.data?.message || "Error while updating" });
+      console.log('Error:', error?.response?.data?.message || "Error while updating");
     };
   };
 
@@ -66,7 +67,8 @@ const CompOffRequest = () => {
     return (
       <View style={styles.requestItem}>
         <Text style={styles.employeeName}>{item?.employee?.name}</Text>
-        <Text style={styles.date}>Comp Off Date: {item?.attendanceDate}</Text>
+        <Text style={styles.date}>Worked Date: {formatDate(item?.date)}</Text>
+        <Text style={styles.date}>Comp Off Date: {formatDate(item?.attendanceDate)}</Text>
         <View style={styles.pickerContainer}>
           <Picker
             selectedValue={item?.status}
@@ -120,19 +122,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '400',
     color: '#333',
+    marginBottom: 2,
   },
   date: {
     fontSize: 14,
     color: '#666',
-    marginVertical: 5,
+    marginVertical: 1,
   },
   pickerContainer: {
     marginTop: 10,
     borderWidth: 1,
     borderColor: '#ddd',
-    borderRadius: 10,
+    borderRadius: 5,
     backgroundColor: '#fff',
-    height: 40,
+    height: 35,
     justifyContent: 'center',
     paddingLeft: 10,
     width: '45%',

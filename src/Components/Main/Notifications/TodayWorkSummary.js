@@ -23,18 +23,21 @@ const TodayWorkSummary = () => {
 
       if (response?.data?.success) {
         setWorkSummary(response?.data?.data);
-      }
+      };
     } catch (error) {
       console.log(error.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
-    }
+    };
   };
 
   useEffect(() => {
+    if (validToken) {
+      fetchTodayWorkSummary();
+    };
     fetchTodayWorkSummary();
-  }, [refreshKey]);
+  }, [validToken, refreshKey]);
 
   const handleRefresh = () => {
     setRefreshing(true);

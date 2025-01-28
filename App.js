@@ -6,7 +6,9 @@ import { useAuth } from "./src/Context/auth.context.js";
 import { useNetwork } from "./src/Context/network.context.js";
 import NoInternet from "./src/Components/Common/NoInternet.js";
 import { requestUserPermission } from "./src/Helper/notificationService.js";
+import messaging from "@react-native-firebase/messaging";
 import notifee from "@notifee/react-native";
+import { Alert } from "react-native";
 
 const App = () => {
   const { isLoading } = useAuth();
@@ -21,6 +23,17 @@ const App = () => {
   useEffect(() => {
     requestUserPermission();
     createNotificationChannel();
+
+    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+      const { notification } = remoteMessage;
+
+      Alert.alert(
+        notification?.title || "New Notification",
+        notification?.body || "You have a new message!"
+      );
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const createNotificationChannel = async () => {

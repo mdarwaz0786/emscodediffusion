@@ -1,60 +1,79 @@
 import { Picker } from '@react-native-picker/picker';
-import React, { useState } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import axios from 'axios';
+import { useAuth } from '../../../../Context/auth.context.js';
+import { useRefresh } from '../../../../Context/refresh.context.js';
+import { API_BASE_URL } from "@env";
+import Toast from "react-native-toast-message";
+import formatDate from '../../../../Helper/formatDate.js';
 
 const LeaveRequest = () => {
-  const [compOffRequests, setLeaveRequests] = useState([
-    {
-      _id: '1',
-      employee: { name: 'John Doe' },
-      attendanceDate: '2025-01-20',
-      status: 'Pending',
-    },
-    {
-      _id: '2',
-      employee: { name: 'Jane Smith' },
-      attendanceDate: '2025-01-21',
-      status: 'Approved',
-    },
-    {
-      _id: '3',
-      employee: { name: 'Michael Johnson' },
-      attendanceDate: '2025-01-22',
-      status: 'Rejected',
-    },
-    {
-      _id: '4',
-      employee: { name: 'John Doe' },
-      attendanceDate: '2025-01-20',
-      status: 'Pending',
-    },
-    {
-      _id: '5',
-      employee: { name: 'Jane Smith' },
-      attendanceDate: '2025-01-21',
-      status: 'Approved',
-    },
-    {
-      _id: '6',
-      employee: { name: 'Michael Johnson' },
-      attendanceDate: '2025-01-22',
-      status: 'Rejected',
-    },
-  ]);
+  const { validToken, team } = useAuth();
+  const { refreshKey, refreshPage } = useRefresh();
+  const [leaveRequest, setLeaveRequest] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const handleStatusChange = (requestId, newStatus) => {
-    const updatedRequests = compOffRequests.map((request) => request._id === requestId ? { ...request, status: newStatus } : request);
-    setLeaveRequests(updatedRequests);
+  const fetchPendingRequests = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/v1/leaveApproval/pending-leaveApproval`, {
+        headers: {
+          Authorization: validToken,
+        },
+      });
+
+      if (response?.data?.success) {
+        setLeaveRequest(response?.data?.data);
+      };
+    } catch (error) {
+      console.log('Error:', error.message);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    };
+  };
+
+  useEffect(() => {
+    if (validToken) {
+      fetchPendingRequests();
+    };
+  }, [validToken, refreshKey]);
+
+  const handleStatusChange = async (requestId, newStatus) => {
+    try {
+      const response = await axios.put(`${API_BASE_URL}/api/v1/leaveApproval/update-leaveApproval`,
+        { leaveId: requestId, leaveStatus: newStatus, approverId: team?._id },
+        { headers: { Authorization: validToken } },
+      );
+
+      if (response?.data?.success) {
+        fetchPendingRequests();
+        Toast.show({ type: "success", text1: "Updated successful" });
+      };
+    } catch (error) {
+      Toast.show({ type: "error", text1: error?.response?.data?.message || "Error while updating" });
+      console.log('Error:', error?.response?.data?.message || "Error while updating");
+    };
+  };
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    refreshPage();
   };
 
   const renderItem = ({ item }) => {
     return (
       <View style={styles.requestItem}>
         <Text style={styles.employeeName}>{item?.employee?.name}</Text>
-        <Text style={styles.date}>Comp Off Date: {item?.attendanceDate}</Text>
+        <Text style={styles.date}>From Date: {formatDate(item?.startDate)}</Text>
+        <Text style={styles.date}>To Date: {formatDate(item?.endDate)}</Text>
+        <Text style={styles.date}>Duration: {item?.leaveDuration} Days</Text>
+        <Text style={styles.date}>Reason: {item?.reason}</Text>
         <View style={styles.pickerContainer}>
           <Picker
-            selectedValue={item.status}
+            selectedValue={item?.status}
             onValueChange={(newStatus) => handleStatusChange(item?._id, newStatus)}
             style={styles.picker}
           >
@@ -69,11 +88,23 @@ const LeaveRequest = () => {
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={compOffRequests}
-        renderItem={renderItem}
-        keyExtractor={(item) => item._id}
-      />
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color="#ffb300" />
+        </View>
+      ) : leaveRequest?.length === 0 ? (
+        <View style={styles.centeredView}>
+          <Text style={styles.notFoundText}>No leave request at the moment.</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={leaveRequest}
+          renderItem={renderItem}
+          keyExtractor={(item) => item?._id}
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+        />
+      )}
     </View>
   );
 };
@@ -81,6 +112,7 @@ const LeaveRequest = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 10,
   },
   requestItem: {
     marginBottom: 15,
@@ -92,28 +124,38 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '400',
     color: '#333',
+    marginBottom: 2,
   },
   date: {
     fontSize: 14,
     color: '#666',
-    marginVertical: 5,
+    marginVertical: 1,
   },
   pickerContainer: {
     marginTop: 10,
     borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 10,
-    backgroundColor: "#fff",
-    height: 40,
-    justifyContent: "center",
+    borderColor: '#ddd',
+    borderRadius: 5,
+    backgroundColor: '#fff',
+    height: 35,
+    justifyContent: 'center',
     paddingLeft: 10,
-    width: "45%",
+    width: '45%',
   },
   picker: {
-    color: "#555",
+    color: '#555',
   },
   pickerItem: {
     fontSize: 14,
+  },
+  notFoundText: {
+    fontSize: 14,
+    color: "#777",
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

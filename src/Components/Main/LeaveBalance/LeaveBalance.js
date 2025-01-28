@@ -1,30 +1,93 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useAuth } from '../../../Context/auth.context.js';
+import axios from 'axios';
+import { API_BASE_URL } from "@env";
+import formatDate from '../../../Helper/formatDate.js';
 
 const LeaveBalanceScreen = () => {
+  const { validToken, team } = useAuth();
   const [showAllAlloted, setShowAllAlloted] = useState(false);
   const [showAllUsed, setShowAllUsed] = useState(false);
+  const [showAllLeaves, setShowAllLeaves] = useState(false);
+  const [employee, setEmployee] = useState("");
+  const [leaves, setLeaves] = useState([]);
+  const [employeeId, setEmployeeId] = useState(team?._id);
   const navigation = useNavigation();
 
-  const leaveData = {
-    allotedLeaveBalance: "2",
-    currentLeaveBalance: "2",
-    usedLeaveBalance: "0",
-    leaveBalanceAllotedHistory: [
-      { date: "01-01-2025", alloted: "2" },
-      { date: "01-02-2025", alloted: "2" },
-      { date: "01-03-2025", alloted: "2" },
-      { date: "01-04-2025", alloted: "2" },
-    ],
-    leaveBalanceUsedHistory: [
-      { date: "15-01-2025", reason: "Sick Leave" },
-      { date: "20-01-2025", reason: "Personal Work" },
-      { date: "25-01-2025", reason: "Personal Reason" },
-      { date: "28-01-2025", reason: "Sick Leave" },
-    ],
+  useEffect(() => {
+    if (team) {
+      setEmployeeId(team?._id);
+    };
+  }, [team]);
+
+  const fetchSingleEmployee = async (employeeId) => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/api/v1/team/single-team/${employeeId}`,
+        {
+          headers: {
+            Authorization: validToken,
+          },
+        },
+      );
+
+      if (response?.data?.success) {
+        setEmployee(response?.data?.team);
+      }
+    } catch (error) {
+      console.log(error.message);
+    };
   };
+
+  const fetchApprovedLeaves = async () => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/api/v1/leaveApproval/all-leaveApproval`,
+        {
+          params: { employeeId },
+          headers: {
+            Authorization: validToken,
+          },
+        },
+      );
+
+      if (response?.data?.success) {
+        setLeaves(response?.data?.data);
+      }
+    } catch (error) {
+      console.log(error.message);
+    };
+  };
+
+  useEffect(() => {
+    if (validToken && employeeId) {
+      fetchApprovedLeaves();
+      fetchSingleEmployee(employeeId);
+    };
+  }, [validToken, employeeId]);
+
+  const renderHeader = () => (
+    <View style={styles.card}>
+      <Text style={styles.cardTitle}>Leave Balance Overview</Text>
+      <View style={styles.balanceInfo}>
+        <View style={styles.balanceRow}>
+          <Icon name="check-circle" size={20} color="#4caf50" />
+          <Text style={styles.balanceText}>Total Granted Leaves: {employee?.allotedLeaveBalance}</Text>
+        </View>
+        <View style={styles.balanceRow}>
+          <Icon name="today" size={20} color="#2196f3" />
+          <Text style={styles.balanceText}>Available Leave Balance: {employee?.currentLeaveBalance}</Text>
+        </View>
+        <View style={styles.balanceRow}>
+          <Icon name="event-available" size={20} color="#f44336" />
+          <Text style={styles.balanceText}>Total Leaves Taken: {employee?.usedLeaveBalance}</Text>
+        </View>
+      </View>
+    </View>
+  );
 
   const renderHistoryItem = ({ item }) => (
     <View style={styles.historyItem}>
@@ -35,46 +98,30 @@ const LeaveBalanceScreen = () => {
       {item.alloted ? (
         <View style={styles.historyRow}>
           <Icon name="check-circle" size={20} color="#2196f3" />
-          <Text style={styles.historyText}>Alloted: {item.alloted}</Text>
+          <Text style={styles.historyText}>Alloted: {item?.alloted}</Text>
         </View>
       ) : (
         <View style={styles.historyRow}>
           <Icon name="event-note" size={20} color="#f44336" />
-          <Text style={styles.historyText}>Reason: {item.reason}</Text>
+          <Text style={styles.historyText}>Reason: {item?.reason}</Text>
         </View>
       )}
     </View>
   );
 
-  const renderHeader = () => (
-    <View style={styles.card}>
-      <Text style={styles.cardTitle}>Leave Balance Overview</Text>
-      <View style={styles.balanceInfo}>
-        <View style={styles.balanceRow}>
-          <Icon name="check-circle" size={20} color="#4caf50" />
-          <Text style={styles.balanceText}>Total Granted Leaves: {leaveData.allotedLeaveBalance}</Text>
-        </View>
-        <View style={styles.balanceRow}>
-          <Icon name="today" size={20} color="#2196f3" />
-          <Text style={styles.balanceText}>Available Leave Balance: {leaveData.currentLeaveBalance}</Text>
-        </View>
-        <View style={styles.balanceRow}>
-          <Icon name="event-available" size={20} color="#f44336" />
-          <Text style={styles.balanceText}>Total Leaves Taken: {leaveData.usedLeaveBalance}</Text>
-        </View>
-      </View>
-    </View>
-  );
-
   const renderUsedLeaves = () => (
     <View style={styles.historySection}>
-      <Text style={styles.sectionTitle}>Leaves Utilized</Text>
+      {
+        employee?.leaveBalanceUsedHistory?.length > 0 && (
+          <Text style={styles.sectionTitle}>Leaves Utilized</Text>
+        )
+      }
       <FlatList
-        data={showAllUsed ? leaveData.leaveBalanceUsedHistory : leaveData.leaveBalanceUsedHistory.slice(0, 2)}
+        data={showAllUsed ? employee?.leaveBalanceUsedHistory : employee?.leaveBalanceUsedHistory?.slice(0, 2)}
         renderItem={renderHistoryItem}
         keyExtractor={(item, index) => index.toString()}
       />
-      {leaveData.leaveBalanceUsedHistory.length > 2 && !showAllUsed && (
+      {employee?.leaveBalanceUsedHistory?.length > 2 && !showAllUsed && (
         <TouchableOpacity style={styles.moreButton} onPress={() => setShowAllUsed(true)}>
           <Text style={styles.moreText}>More</Text>
           <Icon name="expand-more" size={20} color="#2196f3" />
@@ -91,13 +138,17 @@ const LeaveBalanceScreen = () => {
 
   const renderAllotedLeaves = () => (
     <View style={styles.historySection}>
-      <Text style={styles.sectionTitle}>Granted Leaves</Text>
+      {
+        employee?.leaveBalanceAllotedHistory?.length > 0 && (
+          <Text style={styles.sectionTitle}>Granted Leaves</Text>
+        )
+      }
       <FlatList
-        data={showAllAlloted ? leaveData.leaveBalanceAllotedHistory : leaveData.leaveBalanceAllotedHistory.slice(0, 2)}
+        data={showAllAlloted ? employee?.leaveBalanceAllotedHistory : employee?.leaveBalanceAllotedHistory?.slice(0, 2)}
         renderItem={renderHistoryItem}
         keyExtractor={(item, index) => index.toString()}
       />
-      {leaveData.leaveBalanceAllotedHistory.length > 2 && !showAllAlloted && (
+      {employee?.leaveBalanceAllotedHistory?.length > 2 && !showAllAlloted && (
         <TouchableOpacity style={styles.moreButton} onPress={() => setShowAllAlloted(true)}>
           <Text style={styles.moreText}>More</Text>
           <Icon name="expand-more" size={20} color="#2196f3" />
@@ -112,10 +163,63 @@ const LeaveBalanceScreen = () => {
     </View>
   );
 
+  const renderApprovedLeaves = () => (
+    <View style={styles.historySection}>
+      {leaves?.length > 0 && (
+        <Text style={styles.sectionTitle}>Approved Leaves</Text>
+      )}
+      <FlatList
+        data={showAllLeaves ? leaves : leaves?.slice(0, 2)}
+        renderItem={({ item }) => (
+          <View style={styles.historyItem}>
+            <View style={styles.historyRow}>
+              <Icon name="event" size={20} color="#4caf50" />
+              <Text style={styles.historyText}>
+                From {formatDate(item?.startDate)} to {formatDate(item?.endDate)}
+              </Text>
+            </View>
+            <View style={styles.historyRow}>
+              <Icon name="person" size={20} color="#2196f3" />
+              <Text style={styles.historyText}>
+                Approved By: {item?.leaveApprovedBy?.name || "N/A"}
+              </Text>
+            </View>
+            <View style={styles.historyRow}>
+              <Icon name="info" size={20} color={item?.leaveStatus === "Approved" ? "#4caf50" : "#f44336"} />
+              <Text style={styles.historyText}>
+                Status: {item?.leaveStatus}
+              </Text>
+            </View>
+            {item?.reason && (
+              <View style={styles.historyRow}>
+                <Icon name="comment" size={20} color="#757575" />
+                <Text style={styles.historyText}>Reason: {item?.reason}</Text>
+              </View>
+            )}
+          </View>
+        )}
+        keyExtractor={(item, index) => index.toString()}
+      />
+      {leaves?.length > 2 && !showAllLeaves && (
+        <TouchableOpacity style={styles.moreButton} onPress={() => setShowAllLeaves(true)}>
+          <Text style={styles.moreText}>More</Text>
+          <Icon name="expand-more" size={20} color="#2196f3" />
+        </TouchableOpacity>
+      )}
+      {showAllLeaves && (
+        <TouchableOpacity style={styles.moreButton} onPress={() => setShowAllLeaves(false)}>
+          <Text style={styles.moreText}>Less</Text>
+          <Icon name="expand-less" size={20} color="#2196f3" />
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+
   const data = [
     { key: 'header' },
     { key: 'usedLeaves' },
     { key: 'allotedLeaves' },
+    { key: 'approvedLeaves' },
   ];
 
   const renderItem = ({ item }) => {
@@ -126,6 +230,8 @@ const LeaveBalanceScreen = () => {
         return renderUsedLeaves();
       case 'allotedLeaves':
         return renderAllotedLeaves();
+      case 'approvedLeaves':
+        return renderApprovedLeaves();
       default:
         return null;
     };

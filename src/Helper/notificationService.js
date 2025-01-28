@@ -37,7 +37,7 @@ const getFcmToken = async () => {
       await AsyncStorage.setItem('fcmToken', fcmToken);
     };
   } catch (error) {
-    console.log('Error during generating token:', error);
+    console.log('Error during generating fcm token:', error.message);
   };
 };
 
