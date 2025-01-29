@@ -43,15 +43,68 @@ const SalarySlip = () => {
     fetchOfficeLocation();
   }, []);
 
-  const generatePDF = async () => {
-    const hasPermission = await requestStoragePermission();
+  const generateCalendarHTML = (attendanceData = []) => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDay = new Date(year, month, 1).getDay();
 
-    if (!hasPermission) {
-      Alert.alert("Permission Denied", "Cannot save file without storage permission");
-      return;
+    const attendanceColors = {
+      Present: "green",
+      Absent: "red",
+      Holiday: "#ffb300",
+      Sunday: "blue",
+      "On Leave": "purple",
+      "Comp Off": "orange",
+      default: "black",
     };
 
-    const html = `
+    let calendarHTML = `
+    <h6 class="calendar-title">Attendance (${now.toLocaleString("default", { month: "long" })} ${year})</h6>
+    <table class="calendar-table">
+      <thead>
+        <tr>
+          <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
+        </tr>
+      </thead>
+      <tbody>
+    `;
+
+    let day = 1;
+    for (let i = 0; i < 6; i++) {
+      calendarHTML += "<tr>";
+      for (let j = 0; j < 7; j++) {
+        if (i === 0 && j < firstDay) {
+          calendarHTML += "<td></td>";
+        } else if (day > daysInMonth) {
+          calendarHTML += "<td></td>";
+        } else {
+          const dateString = `${year}-${(month + 1).toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
+          const attendance = attendanceData.find((entry) => entry.attendanceDate === dateString);
+          const status = attendance?.status || "Absent";
+          const color = attendanceColors[status] || attendanceColors.default;
+
+          calendarHTML += `
+          <td style="border: 1px solid #ddd; padding: 8px; text-align: center; background: #fff;">
+            <div>${day}</div>
+            <div style="color: ${color}; font-weight: bold;">${status}</div>
+          </td>
+        `;
+          day++;
+        };
+      };
+      calendarHTML += "</tr>";
+      if (day > daysInMonth) break;
+    };
+
+    calendarHTML += `</tbody></table>`;
+    return calendarHTML;
+  };
+
+  const calendarHTML = generateCalendarHTML();
+
+  const html = `
 <!DOCTYPE html>
 <html lang="en">
 
@@ -60,173 +113,206 @@ const SalarySlip = () => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Salary Slip</title>
   <style>
- * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
-}
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    }
 
-.page-wrapper {
- margin: 20px;
-}
+    .page-wrapper {
+      margin: 20px;
+    }
 
-.content {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 5px;
-}
+    .content {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+    }
 
-.salary-slip {
-  padding: 20px;
-  background-color: white;
-}
+    .salary-slip {
+      padding: 20px;
+      background-color: white;
+    }
 
-.logo-section {
-  margin-bottom: 30px;
-}
+    .logo-section {
+      margin-top: 10px;
+      margin-bottom: 60px;
+      width: 180px;
+      height: 40px;
+      object-fit: contain;
+    }
 
-.logo {
-  width: 150px;
-  height: 30px;
-  object-fit: contain;
-}
+    .company-details {
+      margin-bottom: 20px;
+    }
 
-.company-details {
-  margin-bottom: 20px;
-}
+    .company-name {
+      font-weight: 600;
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
 
-.company-name {
-  font-weight: 600;
-  font-size: 20px;
-  margin-bottom: 20px;
-}
+    .salary-title {
+      margin-top: 50px;
+      font-size: 18px;
+      font-weight: 600;
+      text-align: center;
+    }
 
-.salary-title {
-  margin-top: 50px;
-  font-size: 18px;
-  font-weight: 600;
-  text-align: center;
-}
+    .payment-title,
+    .attendance-summary-title {
+      margin-top: 50px;
+      font-size: 18px;
+      font-weight: 600;
+    }
 
-.payment-title,
-.attendance-summary-title {
-  margin-top: 50px;
-  font-size: 18px;
-  font-weight: 600;
-}
+    .salary-details {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      border: 1px solid #ddd;
+      padding-left: 18px;
+      padding-right: 20px;
+    }
 
-.salary-details {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-  border: 1px solid #ddd;
-  padding-left: 18px;
-  padding-right: 20px;
-}
+    .left-section,
+    .right-section {
+      width: 50%;
+    }
 
-.left-section,
-.right-section {
-  width: 50%;
-}
+    .right-section {
+      border-left: 1px solid #ddd;
+    }
 
-.right-section {
-  border-left: 1px solid #ddd;
-}
+    .right-section .row {
+      margin-left: 15px;
+    }
 
-.right-section .row {
-  margin-left: 15px;
-}
+    .row {
+      display: flex;
+      margin-bottom: 10px;
+    }
 
-.row {
-  display: flex;
-  margin-bottom: 10px;
-}
+    .label {
+      width: 40%;
+      font-size: 15px;
+      font-weight: 600;
+      color: #222;
+    }
 
-.label {
-  width: 40%;
-  font-size: 15px;
-  font-weight: 600;
-  color: #222;
-}
+    .value {
+      width: 60%;
+      font-size: 15px;
+    }
 
-.value {
-  width: 60%;
-  font-size: 15px;
-}
+    .salary-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
 
-.salary-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
+    .salary-table th,
+    .salary-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      padding-left: 15px;
+      text-align: left;
+      font-size: 15px;
+      margin-top: 10px;
+    }
 
-.salary-table th,
-.salary-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  padding-left: 15px;
-  text-align: left;
-  font-size: 15px;
-  margin-top: 10px;
-}
+    .net-pay {
+      margin-top: 40px;
+      border: 1px solid #ddd;
+      padding: 10px;
+      padding-left: 15px;
+    }
 
-.net-pay {
-  margin-top: 40px;
-  border: 1px solid #ddd;
-  padding: 10px;
-  padding-left: 15px;
-}
+    .net-pay .value {
+      font-size: 15px;
+      font-weight: 600;
+      color: #222;
+    }
 
-.net-pay .value {
-  font-size: 15px;
-  font-weight: 600;
-  color: #222;
-}
+    .attendance-summary {
+      border: 1px solid #ddd;
+      margin-top: 15px;
+    }
 
-.attendance-summary {
-  border: 1px solid #ddd;
-  margin-top: 15px;
-}
+    .attendance-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding-left: 15px;
+      padding-right: 15px;
+    }
 
-.attendance-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  padding-left: 15px;
-  padding-right: 15px;
-}
+    .attendance-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-.attendance-column {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+    .attendance-title {
+      font-weight: 600;
+      color: #222;
+      font-size: 15px;
+      margin-top: 10px;
+    }
 
-.attendance-title {
-  font-weight: 600;
-  color: #222;
-  font-size: 15px;
-  margin-top: 10px;
-}
+    .attendance-data {
+      font-weight: normal;
+      margin-top: 10px;
+      font-size: 15px
+    }
 
-.attendance-data {
-  font-weight: normal;
-  margin-top: 10px;
-  font-size: 15px
-}
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 14px;
+      color: #333;
+    }
 
-.footer {
-  text-align: center;
-  margin-top: 30px;
-  font-size: 14px;
-  color: #333;
-}
-</style>
+    .page-break {
+      page-break-after: always;
+    }
+
+    .second-page-logo {
+      margin-top: 50px;
+    }
+
+    .calendar-title {
+      margin-top: 50px;
+      margin-bottom: 20px;
+      font-size: 18px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .calendar-table {
+      width: 100%;
+      border-collapse:
+        collapse;
+      margin-top: 10px;
+    }
+
+    .calendar-table th,
+    .calendar-table td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+      background: "#ddd";
+    }
+
+    .calendar-table th {
+      background: "#ddd";
+    }
+  </style>
 </head>
 
 <body>
@@ -234,7 +320,6 @@ body {
     <div class="content">
       <div class="salary-slip">
         <img src="${office[0]?.logo}" class="logo-section" alt="logo" />
-        </div>
         <div class="company-details">
           <h4 class="company-name">${office[0]?.name}</h4>
           <hr />
@@ -343,13 +428,36 @@ body {
             </div>
           </div>
         </div>
+
+        <p class="footer">This is a digitally generated document and does not require a signature or seal.</p>
+
+        <div class="page-break"></div>
+
+        <img src="${office[0]?.logo}" class="logo-section second-page-logo" alt="logo" />
+
+        <div class="company-details">
+          <h4 class="company-name">${office[0]?.name}</h4>
+          <hr />
+        </div>
+
+        <!-- Dynamic Calendar -->
+        ${calendarHTML}
+
         <p class="footer">This is a digitally generated document and does not require a signature or seal.</p>
       </div>
     </div>
   </div>
-</body>
+ </body>
 
 </html>`;
+
+  const generatePDF = async () => {
+    const hasPermission = await requestStoragePermission();
+
+    if (!hasPermission) {
+      Alert.alert("Permission Denied", "Cannot save file without storage permission");
+      return;
+    };
 
     const fileNameBase = "salary";
     const directory = RNFS.DownloadDirectoryPath;
@@ -395,7 +503,7 @@ body {
 
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <TouchableOpacity onPress={generatePDF} style={{ padding: 10, backgroundColor: 'blue', marginBottom: 10 }}>
-          <Text style={{ color: 'white' }}>Generate pdf</Text>
+          <Text style={{ color: 'white' }}>Generate</Text>
         </TouchableOpacity>
       </View>
     </>
