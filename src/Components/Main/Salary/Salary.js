@@ -76,7 +76,7 @@ const SalarySlip = ({ route }) => {
     }
   }, [validToken, refreshKey]);
 
-  const fetchSingleEmployee = async id => {
+  const fetchSingleEmployee = async (id) => {
     try {
       const response = await axios.get(
         `${API_BASE_URL}/api/v1/team/single-team/${id}`,
@@ -177,12 +177,11 @@ const SalarySlip = ({ route }) => {
     body {
       font-family: Arial, sans-serif;
       background-color: #f5f5f5;
-      width: 70vw;
       margin: 0 auto;
     }
 
     .scrollViewContent {
-      padding: 20px;
+      padding: 0px;
     }
 
     .salarySlip {
