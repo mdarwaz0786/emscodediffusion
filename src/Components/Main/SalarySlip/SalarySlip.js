@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Alert,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import RNHTMLtoPDF from "react-native-html-to-pdf";
@@ -15,10 +16,47 @@ import getUniqueFileName from "./utils/getUniqueFileName.js";
 import { useAuth } from "../../../Context/auth.context.js";
 import { API_BASE_URL } from "@env";
 import axios from "axios";
+import numberToWord from "../../../Helper/numberToWord.js";
+import getMonthName from "../../../Helper/getMonthName.js"
+import formatDate from "../../../Helper/formatDate.js";
 
 const SalarySlip = () => {
-  const { validToken } = useAuth();
+  const { validToken, team } = useAuth();
+  const [month, setMonth] = useState("");
+  const [year, setYear] = useState("");
+  const [transactionId, setTransactionId] = useState("");
+  const [amountPaid, setAmountPaid] = useState("");
   const [office, setOffice] = useState([]);
+  const [salary, setSalary] = useState([]);
+  const [attendanceData, setAttendanceData] = useState([]);
+  const [employee, setEmployee] = useState("");
+  const [monthlyStatic, setMonthlyStatic] = useState("");
+
+  useEffect(() => {
+    fetchOfficeLocation();
+    fetchSalary();
+    fetchEmployee();
+  }, []);
+
+  const generatePDF = async (m, y, t, a) => {
+    const hasPermission = await requestStoragePermission();
+
+    if (!hasPermission) {
+      Alert.alert("Permission Denied", "Cannot save file without storage permission");
+      return;
+    };
+
+    setMonth(m);
+    setYear(y);
+    setTransactionId(t);
+    setAmountPaid(a);
+
+    if (month && year && transactionId && amountPaid) {
+      await fetchAttendance();
+      await fetchMonthlyStatistic();
+      await generatePDFAfterFetching();
+    };
+  };
 
   const fetchOfficeLocation = async () => {
     try {
@@ -39,16 +77,94 @@ const SalarySlip = () => {
     };
   };
 
-  useEffect(() => {
-    fetchOfficeLocation();
-  }, []);
+  const fetchEmployee = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/v1/team/single-team/${team?._id}`, {
+        headers: {
+          Authorization: validToken,
+        },
+      });
+      if (response?.data?.success) {
+        setEmployee(response?.data?.team);
+      };
+    } catch (error) {
+      console.log("Error while fetching employee:", error.message);
+    };
+  };
 
-  const generateCalendarHTML = (attendanceData = []) => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const firstDay = new Date(year, month, 1).getDay();
+  const fetchSalary = async () => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/api/v1/salary/all-salary`,
+        {
+          params: { employeeId: team?._id },
+          headers: {
+            Authorization: validToken,
+          },
+        },
+      );
+
+      if (response?.data?.success) {
+        setSalary(response?.data?.data);
+      };
+    } catch (error) {
+      console.log("Error while fetching salary:", error.message);
+    };
+  };
+
+  const fetchMonthlyStatistic = async () => {
+    try {
+      const params = {};
+
+      if (month && year) {
+        const formattedMonth = month.toString().padStart(2, "0");
+        params.month = `${year}-${formattedMonth}`;
+      };
+
+      if (team?._id) {
+        params.employeeId = team?._id;
+      };
+
+      const response = await axios.get(`${API_BASE_URL}/api/v1/attendance/monthly-statistic`, {
+        params,
+        headers: {
+          Authorization: validToken,
+        },
+      });
+
+      if (response?.data?.success) {
+        setMonthlyStatic(response?.data?.attendance);
+      };
+    } catch (error) {
+      console.log("Error while fetching monthly statistic:", error.message);
+    };
+  };
+
+  const fetchAttendance = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/v1/attendance/all-attendance`, {
+        headers: {
+          Authorization: validToken,
+        },
+        params: {
+          year,
+          month,
+          employeeId: team?._id,
+        },
+      });
+
+      if (response?.data?.success) {
+        setAttendanceData(response?.data?.attendance);
+      };
+    } catch (error) {
+      console.log(error.message);
+    };
+  };
+
+  const generateCalendarHTML = () => {
+    const monthIndex = parseInt(month, 10) - 1;
+    const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+    const firstDay = new Date(year, monthIndex, 1).getDay();
 
     const attendanceColors = {
       Present: "green",
@@ -61,7 +177,7 @@ const SalarySlip = () => {
     };
 
     let calendarHTML = `
-    <h6 class="calendar-title">Attendance (${now.toLocaleString("default", { month: "long" })} ${year})</h6>
+    <h6 class="calendar-title">Attendance ${getMonthName(month)} ${year}</h6>
     <table class="calendar-table">
       <thead>
         <tr>
@@ -72,6 +188,7 @@ const SalarySlip = () => {
     `;
 
     let day = 1;
+
     for (let i = 0; i < 6; i++) {
       calendarHTML += "<tr>";
       for (let j = 0; j < 7; j++) {
@@ -80,9 +197,9 @@ const SalarySlip = () => {
         } else if (day > daysInMonth) {
           calendarHTML += "<td></td>";
         } else {
-          const dateString = `${year}-${(month + 1).toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
-          const attendance = attendanceData.find((entry) => entry.attendanceDate === dateString);
-          const status = attendance?.status || "Absent";
+          const dateString = `${year}-${month?.padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
+          const attendance = attendanceData?.find((entry) => entry?.attendanceDate === dateString);
+          const status = attendance?.status || "";
           const color = attendanceColors[status] || attendanceColors.default;
 
           calendarHTML += `
@@ -101,8 +218,6 @@ const SalarySlip = () => {
     calendarHTML += `</tbody></table>`;
     return calendarHTML;
   };
-
-  const calendarHTML = generateCalendarHTML();
 
   const html = `
 <!DOCTYPE html>
@@ -289,15 +404,14 @@ const SalarySlip = () => {
     .calendar-title {
       margin-top: 50px;
       margin-bottom: 20px;
-      font-size: 18px;
-      font-weight: 600;
+      font-size: 16px;
+      font-weight: 500;
       text-align: center;
     }
 
     .calendar-table {
       width: 100%;
-      border-collapse:
-        collapse;
+      border-collapse:collapse;
       margin-top: 10px;
     }
 
@@ -325,48 +439,48 @@ const SalarySlip = () => {
           <hr />
         </div>
 
-        <h6 class="salary-title">Salary Slip (January 2025)</h6>
+        <h6 class="salary-title">Salary Slip ${getMonthName(month)} ${year}</h6>
         <div class="salary-details">
           <div class="left-section">
             <div class="row" style="margin-top: 8px;">
               <div class="label">Employee Name</div>
-              <div class="value">John Doe</div>
+              <div class="value">${employee?.name}</div>
             </div>
             <div class="row">
               <div class="label">Designation</div>
-              <div class="value">Software Engineer</div>
+              <div class="value">${employee?.designation?.name}</div>
             </div>
             <div class="row">
               <div class="label">Department</div>
-              <div class="value">IT</div>
+              <div class="value">${employee?.department?.name || "IT"}</div>
             </div>
             <div class="row">
               <div class="label">Date of Joining</div>
-              <div class="value">01/01/2020</div>
+              <div class="value">${formatDate(employee?.joining)}</div>
             </div>
             <div class="row">
               <div class="label">Phone Number</div>
-              <div class="value">123-456-7890</div>
+              <div class="value">${employee?.mobile}</div>
             </div>
           </div>
 
           <div class="right-section">
             <div class="row" style="margin-top: 8px;">
               <div class="label">Transaction Id</div>
-              <div class="value">TX12345</div>
+              <div class="value">${transactionId}</div>
             </div>
             <div class="row">
               <div class="label">Employee ID</div>
-              <div class="value">EMP12345</div>
+              <div class="value">${employee?.employeeId}</div>
             </div>
             <div class="row">
               <div class="label">Monthly Gross</div>
-              <div class="value">₹50,000</div>
+              <div class="value">${employee?.monthlySalary}</div>
             </div>
           </div>
         </div>
 
-        <h6 class="payment-title">Payment & Salary (January 2025)</h6>
+        <h6 class="payment-title">Payment & Salary  ${getMonthName(month)} ${year}</h6>
         <table class="salary-table">
           <thead>
             <tr>
@@ -377,13 +491,13 @@ const SalarySlip = () => {
           <tbody>
             <tr>
               <td>Salary</td>
-              <td>₹50,000</td>
+              <td>${amountPaid}</td>
             </tr>
           </tbody>
           <tfoot>
             <tr>
               <th>Total Earnings</th>
-              <th>₹50,000</th>
+              <th>${amountPaid}</th>
             </tr>
           </tfoot>
         </table>
@@ -391,40 +505,40 @@ const SalarySlip = () => {
         <div class="net-pay">
           <div class="row">
             <div class="label">Net Payable (Total Earnings)</div>
-            <div class="value">₹50,000</div>
+            <div class="value">${amountPaid}</div>
           </div>
           <div class="row">
             <div class="label">Amount in Words</div>
-            <div class="value">Fifty Thousand</div>
+            <div class="value">${numberToWord(amountPaid)}</div>
           </div>
         </div>
 
-        <h6 class="attendance-summary-title">Attendance Summary (January 2025)</h6>
+        <h6 class="attendance-summary-title">Attendance Summary ${getMonthName(month)} ${year}</h6>
         <div class="attendance-summary">
           <div class="attendance-row">
             <div class="attendance-column">
               <div class="attendance-title">Present</div>
-              <div class="attendance-data">20</div>
+              <div class="attendance-data">${monthlyStatic?.employeePresentDays}</div>
             </div>
             <div class="attendance-column">
               <div class="attendance-title">Absent</div>
-              <div class="attendance-data">2</div>
+              <div class="attendance-data">${monthlyStatic?.employeeAbsentDays}</div>
             </div>
             <div class="attendance-column">
               <div class="attendance-title">Leave</div>
-              <div class="attendance-data">1</div>
+              <div class="attendance-data">${monthlyStatic?.employeeLeaveDays}</div>
             </div>
             <div class="attendance-column">
               <div class="attendance-title">Comp Off</div>
-              <div class="attendance-data">1</div>
+              <div class="attendance-data">${monthlyStatic?.employeeCompOffDays}</div>
             </div>
             <div class="attendance-column">
               <div class="attendance-title">Weekly Off</div>
-              <div class="attendance-data">4</div>
+              <div class="attendance-data">${monthlyStatic?.totalSundays}</div>
             </div>
             <div class="attendance-column">
               <div class="attendance-title">Holiday</div>
-              <div class="attendance-data">2</div>
+              <div class="attendance-data">${monthlyStatic?.totalHolidays}</div>
             </div>
           </div>
         </div>
@@ -441,7 +555,37 @@ const SalarySlip = () => {
         </div>
 
         <!-- Dynamic Calendar -->
-        ${calendarHTML}
+        ${generateCalendarHTML()}
+
+        <h6 class="attendance-summary-title">Attendance Summary ${getMonthName(month)} ${year}</h6>
+        <div class="attendance-summary">
+          <div class="attendance-row">
+            <div class="attendance-column">
+              <div class="attendance-title">Present</div>
+              <div class="attendance-data">${monthlyStatic?.employeePresentDays}</div>
+            </div>
+            <div class="attendance-column">
+              <div class="attendance-title">Absent</div>
+              <div class="attendance-data">${monthlyStatic?.employeeAbsentDays}</div>
+            </div>
+            <div class="attendance-column">
+              <div class="attendance-title">Leave</div>
+              <div class="attendance-data">${monthlyStatic?.employeeLeaveDays}</div>
+            </div>
+            <div class="attendance-column">
+              <div class="attendance-title">Comp Off</div>
+              <div class="attendance-data">${monthlyStatic?.employeeCompOffDays}</div>
+            </div>
+            <div class="attendance-column">
+              <div class="attendance-title">Weekly Off</div>
+              <div class="attendance-data">${monthlyStatic?.totalSundays}</div>
+            </div>
+            <div class="attendance-column">
+              <div class="attendance-title">Holiday</div>
+              <div class="attendance-data">${monthlyStatic?.totalHolidays}</div>
+            </div>
+          </div>
+        </div>
 
         <p class="footer">This is a digitally generated document and does not require a signature or seal.</p>
       </div>
@@ -451,15 +595,8 @@ const SalarySlip = () => {
 
 </html>`;
 
-  const generatePDF = async () => {
-    const hasPermission = await requestStoragePermission();
-
-    if (!hasPermission) {
-      Alert.alert("Permission Denied", "Cannot save file without storage permission");
-      return;
-    };
-
-    const fileNameBase = "salary";
+  const generatePDFAfterFetching = async () => {
+    const fileNameBase = `${getMonthName(month)}-${year}-${employee?.name}-salary-slip`;
     const directory = RNFS.DownloadDirectoryPath;
 
     try {
@@ -486,8 +623,7 @@ const SalarySlip = () => {
 
       // Notify the media scanner about the new file
       await RNFetchBlob.fs.scanFile([{ path: newPath, mime: 'application/pdf' }]);
-
-      Alert.alert('PDF Generated', `File saved to: ${newPath}`);
+      console.log('PDF Generated', `File saved to: ${newPath}`);
     } catch (error) {
       Alert.alert("Error", "Failed to generate PDF");
     };
@@ -501,11 +637,19 @@ const SalarySlip = () => {
         <Text style={styles.headerTitle}>Salary Slip</Text>
       </View>
 
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <TouchableOpacity onPress={generatePDF} style={{ padding: 10, backgroundColor: 'blue', marginBottom: 10 }}>
-          <Text style={{ color: 'white' }}>Generate</Text>
-        </TouchableOpacity>
-      </View>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {salary?.map((item, index) => (
+          <View key={index} style={styles.container}>
+            <Text style={styles.monthText}>{getMonthName(item?.month)}</Text>
+            <Text style={styles.yearText}>{item?.year}</Text>
+            <TouchableOpacity
+              onPress={() => generatePDF(item?.month, item?.year, item?.transactionId, item?.amountPaid)}
+              style={styles.button}>
+              <Text style={styles.buttonText}>Download pdf</Text>
+            </TouchableOpacity>
+          </View>
+        ))}
+      </ScrollView>
     </>
   );
 };
@@ -513,17 +657,51 @@ const SalarySlip = () => {
 const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
     padding: 12,
     backgroundColor: "#fff",
     zIndex: 1000,
   },
   headerTitle: {
+    flex: 1,
+    textAlign: "center",
     fontSize: 16,
     fontWeight: "400",
     color: "#000",
-  }
+  },
+  scrollContainer: {
+    padding: 20,
+    paddingVertical: 5,
+  },
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#fff",
+    padding: 15,
+    marginVertical: 10,
+    borderRadius: 10,
+  },
+  monthText: {
+    fontSize: 15,
+    color: "#555",
+  },
+  yearText: {
+    fontSize: 15,
+    color: "#555",
+  },
+  button: {
+    backgroundColor: "#ffb300",
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "400",
+    fontSize: 14,
+  },
 });
 
 export default SalarySlip;
