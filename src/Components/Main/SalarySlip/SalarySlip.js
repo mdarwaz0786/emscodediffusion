@@ -6,7 +6,11 @@ import {
   Alert,
   TouchableOpacity,
   ScrollView,
+  Platform,
+  Linking,
 } from "react-native";
+import FileViewer from 'react-native-file-viewer';
+import Share from "react-native-share";
 import Icon from "react-native-vector-icons/Feather";
 import RNHTMLtoPDF from "react-native-html-to-pdf";
 import RNFS from 'react-native-fs';
@@ -19,24 +23,23 @@ import axios from "axios";
 import numberToWord from "../../../Helper/numberToWord.js";
 import getMonthName from "../../../Helper/getMonthName.js"
 import formatDate from "../../../Helper/formatDate.js";
+import Toast from "react-native-toast-message";
 
 const SalarySlip = () => {
   const { validToken, team } = useAuth();
-  const [month, setMonth] = useState("");
-  const [year, setYear] = useState("");
-  const [transactionId, setTransactionId] = useState("");
-  const [amountPaid, setAmountPaid] = useState("");
   const [office, setOffice] = useState([]);
   const [salary, setSalary] = useState([]);
-  const [attendanceData, setAttendanceData] = useState([]);
   const [employee, setEmployee] = useState("");
-  const [monthlyStatic, setMonthlyStatic] = useState("");
+  const [employeeId, setEmployeeId] = useState(team?._id);
 
   useEffect(() => {
-    fetchOfficeLocation();
-    fetchSalary();
-    fetchEmployee();
-  }, []);
+    if (team && validToken) {
+      fetchOfficeLocation();
+      fetchSalary();
+      fetchEmployee();
+      setEmployeeId(team?._id);
+    };
+  }, [team, validToken]);
 
   const generatePDF = async (m, y, t, a) => {
     const hasPermission = await requestStoragePermission();
@@ -46,15 +49,16 @@ const SalarySlip = () => {
       return;
     };
 
-    setMonth(m);
-    setYear(y);
-    setTransactionId(t);
-    setAmountPaid(a);
+    try {
+      const [monthlyStaticData, attendanceData] = await Promise.all([
+        fetchMonthlyStatistic(m, y),
+        fetchAttendance(m, y),
+      ]);
 
-    if (month && year && transactionId && amountPaid) {
-      await fetchAttendance();
-      await fetchMonthlyStatistic();
-      await generatePDFAfterFetching();
+      await generatePDFAfterFetching(m, y, t, a, monthlyStaticData, attendanceData);
+    } catch (error) {
+      console.log("Error while generating PDF:", error.message);
+      Alert.alert("Error", "Failed to generate PDF.");
     };
   };
 
@@ -79,7 +83,7 @@ const SalarySlip = () => {
 
   const fetchEmployee = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/v1/team/single-team/${team?._id}`, {
+      const response = await axios.get(`${API_BASE_URL}/api/v1/team/single-team/${employeeId}`, {
         headers: {
           Authorization: validToken,
         },
@@ -97,7 +101,7 @@ const SalarySlip = () => {
       const response = await axios.get(
         `${API_BASE_URL}/api/v1/salary/all-salary`,
         {
-          params: { employeeId: team?._id },
+          params: { employeeId },
           headers: {
             Authorization: validToken,
           },
@@ -112,18 +116,12 @@ const SalarySlip = () => {
     };
   };
 
-  const fetchMonthlyStatistic = async () => {
+  const fetchMonthlyStatistic = async (month, year) => {
     try {
       const params = {};
 
-      if (month && year) {
-        const formattedMonth = month.toString().padStart(2, "0");
-        params.month = `${year}-${formattedMonth}`;
-      };
-
-      if (team?._id) {
-        params.employeeId = team?._id;
-      };
+      if (month && year) params.month = `${year}-${month}`;
+      if (employeeId) params.employeeId = employeeId;
 
       const response = await axios.get(`${API_BASE_URL}/api/v1/attendance/monthly-statistic`, {
         params,
@@ -132,15 +130,14 @@ const SalarySlip = () => {
         },
       });
 
-      if (response?.data?.success) {
-        setMonthlyStatic(response?.data?.attendance);
-      };
+      return response?.data?.success ? response?.data?.attendance : null;
     } catch (error) {
       console.log("Error while fetching monthly statistic:", error.message);
+      return null;
     };
   };
 
-  const fetchAttendance = async () => {
+  const fetchAttendance = async (month, year) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/api/v1/attendance/all-attendance`, {
         headers: {
@@ -149,19 +146,60 @@ const SalarySlip = () => {
         params: {
           year,
           month,
-          employeeId: team?._id,
+          employeeId,
         },
       });
 
-      if (response?.data?.success) {
-        setAttendanceData(response?.data?.attendance);
-      };
+      return response?.data?.success ? response?.data?.attendance : [];
     } catch (error) {
       console.log(error.message);
+      return [];
     };
   };
 
-  const generateCalendarHTML = () => {
+  const openPDF = async (filePath) => {
+    try {
+      // Check if file exists
+      const fileExists = await RNFS.exists(filePath);
+
+      if (!fileExists) {
+        Alert.alert("Error", "Pdf not generated");
+        return;
+      };
+
+      // Try opening with FileViewer
+      await FileViewer.open(filePath, { type: "application/pdf" });
+    } catch (error) {
+      console.log("Error while opening PDF:", error.message);
+
+      // If no PDF viewer is installed, show Open With dialog
+      if (Platform.OS === "android") {
+        try {
+          const shareOptions = {
+            title: "Open PDF",
+            url: `file://${filePath}`,
+            type: "application/pdf",
+          };
+          await Share.open(shareOptions);
+        } catch (shareError) {
+          Alert.alert(
+            "No PDF Viewer Found",
+            "Please install a PDF viewer to open this file.",
+            [
+              { text: "Cancel", style: "cancel" },
+              { text: "Install", onPress: () => Linking.openURL("market://details?id=com.adobe.reader") },
+            ]
+          );
+        };
+      };
+    };
+  };
+
+  const generateCalendarHTML = async (month, year, attendanceData) => {
+    if (month === "" || year === "" || attendanceData == []) {
+      return;
+    };
+
     const monthIndex = parseInt(month, 10) - 1;
     const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
     const firstDay = new Date(year, monthIndex, 1).getDay();
@@ -205,7 +243,7 @@ const SalarySlip = () => {
           calendarHTML += `
           <td style="border: 1px solid #ddd; padding: 8px; text-align: center; background: #fff;">
             <div>${day}</div>
-            <div style="color: ${color}; font-weight: bold;">${status}</div>
+            <div style="color: ${color};">${status}</div>
           </td>
         `;
           day++;
@@ -219,7 +257,10 @@ const SalarySlip = () => {
     return calendarHTML;
   };
 
-  const html = `
+  const generatePDFAfterFetching = async (month, year, transactionId, amountPaid, monthlyStatic, attendanceData) => {
+    const attendanceHTML = await generateCalendarHTML(month, year, attendanceData);
+
+    const html = await `
 <!DOCTYPE html>
 <html lang="en">
 
@@ -420,11 +461,10 @@ const SalarySlip = () => {
       border: 1px solid #ddd;
       padding: 10px;
       text-align: center;
-      background: "#ddd";
     }
 
     .calendar-table th {
-      background: "#ddd";
+      background: #ddd;
     }
   </style>
 </head>
@@ -554,8 +594,8 @@ const SalarySlip = () => {
           <hr />
         </div>
 
-        <!-- Dynamic Calendar -->
-        ${generateCalendarHTML()}
+        <!-- Attendance table with summary -->
+        ${attendanceHTML}
 
         <h6 class="attendance-summary-title">Attendance Summary ${getMonthName(month)} ${year}</h6>
         <div class="attendance-summary">
@@ -595,7 +635,6 @@ const SalarySlip = () => {
 
 </html>`;
 
-  const generatePDFAfterFetching = async () => {
     const fileNameBase = `${getMonthName(month)}-${year}-${employee?.name}-salary-slip`;
     const directory = RNFS.DownloadDirectoryPath;
 
@@ -623,7 +662,8 @@ const SalarySlip = () => {
 
       // Notify the media scanner about the new file
       await RNFetchBlob.fs.scanFile([{ path: newPath, mime: 'application/pdf' }]);
-      console.log('PDF Generated', `File saved to: ${newPath}`);
+      Toast.show({ type: "success", text1: "File Downloaded", text2: `File saved to: ${newPath}` });
+      openPDF(newPath);
     } catch (error) {
       Alert.alert("Error", "Failed to generate PDF");
     };
@@ -631,7 +671,6 @@ const SalarySlip = () => {
 
   return (
     <>
-      {/* Header */}
       <View style={styles.header}>
         <Icon name="arrow-left" size={20} color="#000" onPress={() => navigation.goBack()} />
         <Text style={styles.headerTitle}>Salary Slip</Text>
@@ -645,7 +684,7 @@ const SalarySlip = () => {
             <TouchableOpacity
               onPress={() => generatePDF(item?.month, item?.year, item?.transactionId, item?.amountPaid)}
               style={styles.button}>
-              <Text style={styles.buttonText}>Download pdf</Text>
+              <Text style={styles.buttonText}>Download Slip</Text>
             </TouchableOpacity>
           </View>
         ))}
@@ -679,21 +718,21 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     backgroundColor: "#fff",
     padding: 15,
-    marginVertical: 10,
+    marginVertical: 5,
     borderRadius: 10,
   },
   monthText: {
-    fontSize: 15,
+    fontSize: 14,
     color: "#555",
   },
   yearText: {
-    fontSize: 15,
+    fontSize: 14,
     color: "#555",
   },
   button: {
     backgroundColor: "#ffb300",
     paddingVertical: 8,
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
     borderRadius: 8,
     alignItems: "center",
   },
