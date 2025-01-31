@@ -25,7 +25,7 @@ const Login = () => {
           employeeId: transformedEmployeeId,
           password,
           fcmToken,
-        }
+        },
       );
       if (response?.data?.success) {
         storeToken(response?.data?.token);
@@ -36,24 +36,12 @@ const Login = () => {
         Toast.show({ type: "error", text1: "Login failed. Please try again." });
       };
     } catch (error) {
-      if (!error?.response) {
-        Toast.show({
-          type: "error",
-          text1: error.message,
-        });
-      } else {
-        const errorMessage = error?.response?.data?.message || "An unexpected error occurred. Please try again.";
-        Toast.show({
-          type: "error",
-          text1: errorMessage,
-        });
-      };
+      const errorMessage = error?.response?.data?.message || "An unexpected error occurred. Please try again.";
+      Toast.show({ type: "error", text1: errorMessage });
     } finally {
       setLoading(false);
     };
   };
-
-  console.log(API_BASE_URL)
 
   return (
     <View style={styles.container}>
