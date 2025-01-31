@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   historySection: {
-    marginBottom: 25,
+    marginBottom: 4,
   },
   sectionTitle: {
     fontSize: 15,

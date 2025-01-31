@@ -7,6 +7,8 @@ import TodayWorkSummaryScreen from '../../../Screens/Notifications/TodayWorkSumm
 import UpcomingHolidaysScreen from '../../../Screens/Notifications/UpcomingHolidaysScreen.js';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ApprovalRequestScreen from '../../../Screens/Notifications/ApprovalRequestScreen.js';
+import NotificationScreen from '../../../Screens/Notifications/NotificationScreen.js';
+import { useAuth } from '../../../Context/auth.context.js';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -23,6 +25,7 @@ const NotificationHeader = () => {
 };
 
 const NotificationTopTab = () => {
+  const { team } = useAuth();
   return (
     <Suspense
       fallback={
@@ -63,20 +66,31 @@ const NotificationTopTab = () => {
             },
           }}
         >
+          {
+            team?.role?.name?.toLowerCase() === "admin" && (
+              <>
+                <Tab.Screen
+                  name="TodayAttendance"
+                  component={TodayAttendanceScreen}
+                  options={{ tabBarLabel: 'Attendance', }}
+                />
+                <Tab.Screen
+                  name="TodayWorkSummary"
+                  component={TodayWorkSummaryScreen}
+                  options={{ tabBarLabel: 'Work Summary' }}
+                />
+                <Tab.Screen
+                  name="ApprovalRequest"
+                  component={ApprovalRequestScreen}
+                  options={{ tabBarLabel: 'Approval' }}
+                />
+              </>
+            )
+          }
           <Tab.Screen
-            name="TodayAttendance"
-            component={TodayAttendanceScreen}
-            options={{ tabBarLabel: 'Attendance', }}
-          />
-          <Tab.Screen
-            name="TodayWorkSummary"
-            component={TodayWorkSummaryScreen}
-            options={{ tabBarLabel: 'Work Summary' }}
-          />
-          <Tab.Screen
-            name="ApprovalRequest"
-            component={ApprovalRequestScreen}
-            options={{ tabBarLabel: 'Approval' }}
+            name="Notification"
+            component={NotificationScreen}
+            options={{ tabBarLabel: 'Message' }}
           />
           <Tab.Screen
             name="UpcomingHolidays"

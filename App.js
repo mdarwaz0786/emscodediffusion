@@ -26,7 +26,6 @@ const App = () => {
 
     const unsubscribe = messaging().onMessage(async (remoteMessage) => {
       const { notification } = remoteMessage;
-
       Alert.alert(
         notification?.title || "New Notification",
         notification?.body || "You have a new message!"
