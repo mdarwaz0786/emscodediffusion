@@ -80,7 +80,7 @@ const Holiday = ({ navigation }) => {
   return (
     <>
       <View style={styles.header}>
-        <Icon name="arrow-left" size={20} color="#000" onPress={() => navigation.goBack()} />
+        <Icon style={styles.backIcon} name="arrow-left" size={20} color="#000" onPress={() => navigation.goBack()} />
         <Text style={styles.headerTitle}>Holiday</Text>
         {
           (team?.role?.name.toLowerCase() === "admin") && (
@@ -122,12 +122,17 @@ const styles = StyleSheet.create({
     padding: 12,
     backgroundColor: "#fff",
   },
+  backIcon: {
+    flex: 1,
+  },
   headerTitle: {
+    flex: 1,
     fontSize: 16,
     fontWeight: "400",
     color: "#000",
   },
   buttonAdd: {
+    flex: 1,
     backgroundColor: "#ffb300",
     paddingVertical: 4,
     paddingHorizontal: 8,
