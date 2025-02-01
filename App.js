@@ -7,8 +7,7 @@ import { useNetwork } from "./src/Context/network.context.js";
 import NoInternet from "./src/Components/Common/NoInternet.js";
 import { requestUserPermission } from "./src/Helper/notificationService.js";
 import messaging from "@react-native-firebase/messaging";
-import notifee from "@notifee/react-native";
-import { Alert } from "react-native";
+import notifee, { AndroidImportance } from "@notifee/react-native";
 
 const App = () => {
   const { isLoading } = useAuth();
@@ -17,41 +16,71 @@ const App = () => {
   useEffect(() => {
     if (!isLoading) {
       SplashScreen.hide();
-    };
+    }
   }, [isLoading]);
 
+  // Request notification permissions
   useEffect(() => {
-    requestUserPermission();
+    const requestPermissions = async () => {
+      await requestUserPermission();
+    };
+    requestPermissions();
+  }, []);
+
+  // Create notification channel
+  useEffect(() => {
+    const createNotificationChannel = async () => {
+      await notifee.createChannel({
+        id: 'default',
+        name: 'Default Channel',
+        sound: 'default',
+        vibration: true,
+        importance: AndroidImportance.HIGH,
+      });
+    };
     createNotificationChannel();
+  }, []);
 
+  // Handle foreground notifications
+  useEffect(() => {
     const unsubscribe = messaging().onMessage(async (remoteMessage) => {
-      const { notification } = remoteMessage;
-      Alert.alert(
-        notification?.title || "New Notification",
-        notification?.body || "You have a new message!"
-      );
+      if (remoteMessage?.notification) {
+        const { notification } = remoteMessage;
+        await notifee.displayNotification({
+          title: notification.title || "New Notification",
+          body: notification.body || "You have a new message!",
+          android: {
+            channelId: 'default',
+            importance: AndroidImportance.HIGH,
+            sound: 'default',
+          },
+        });
+      };
     });
-
     return () => unsubscribe();
   }, []);
 
-  const createNotificationChannel = async () => {
-    await notifee.createChannel({
-      id: 'default',
-      name: 'Default Channel',
-      sound: 'default',
-      vibration: true,
-      importance: AndroidPriority.HIGH,
+  // Handle background notifications
+  useEffect(() => {
+    messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+      if (remoteMessage?.notification) {
+        const { notification } = remoteMessage;
+        await notifee.displayNotification({
+          title: notification.title || "New Notification",
+          body: notification.body || "You have a new message!",
+          android: {
+            channelId: 'default',
+            importance: AndroidImportance.HIGH,
+            sound: 'default',
+          },
+        });
+      };
     });
-  };
+  }, []);
 
   return (
     <NavigationContainer>
-      {isNetworkOkay ? (
-        <DrawerNavigator />
-      ) : (
-        <NoInternet />
-      )}
+      {isNetworkOkay ? <DrawerNavigator /> : <NoInternet />}
     </NavigationContainer>
   );
 };
