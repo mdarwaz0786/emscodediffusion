@@ -60,12 +60,12 @@ const Attendance = ({ route }) => {
 
       if (response?.data?.success) {
         setEmployee(response?.data?.team);
-      }
+      };
     } catch (error) {
       console.log(error.message);
     } finally {
       setRefreshing(false);
-    }
+    };
   };
 
   // Fetch Attendance of selected month, year and employee
@@ -78,15 +78,15 @@ const Attendance = ({ route }) => {
       if (month) {
         const formattedMonth = month.toString().padStart(2, "0");
         params.month = formattedMonth;
-      }
+      };
 
       if (employeeId) {
         params.employeeId = employeeId;
-      }
+      };
 
       if (year) {
         params.year = year;
-      }
+      };
 
       params.sort = "Descending";
 
@@ -104,7 +104,7 @@ const Attendance = ({ route }) => {
         setAttendance(response?.data?.attendance);
       } else {
         setAttendance([]);
-      }
+      };
     } catch (error) {
       console.log(
         "Error while fetching attendance:",
@@ -113,7 +113,7 @@ const Attendance = ({ route }) => {
     } finally {
       setLoading(false);
       setRefreshing(false);
-    }
+    };
   };
 
   // Get selected month and year statistic for employee
@@ -124,11 +124,11 @@ const Attendance = ({ route }) => {
       if (month) {
         const formattedMonth = month.toString().padStart(2, "0");
         params.month = `${year}-${formattedMonth}`;
-      }
+      };
 
       if (employeeId) {
         params.employeeId = employeeId;
-      }
+      };
 
       const response = await axios.get(
         `${API_BASE_URL}/api/v1/attendance/monthly-statistic`,
@@ -142,19 +142,19 @@ const Attendance = ({ route }) => {
 
       if (response?.data?.success) {
         setAttendanceSummary(response?.data?.attendance);
-      }
+      };
     } catch (error) {
       console.log("Error while fetching monthly statistic:", error?.response?.data?.message);
     } finally {
       setRefreshing(false);
-    }
+    };
   };
 
   useEffect(() => {
     if (employeeId && month && year && validToken) {
       fetchAttendance();
       fetchMonthlyStatistic();
-    }
+    };
   }, [employeeId, month, year, validToken, refreshKey]);
 
   // Function to reset filters

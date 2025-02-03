@@ -6,9 +6,12 @@ import { useAuth } from '../../../Context/auth.context.js';
 import axios from 'axios';
 import { API_BASE_URL } from "@env";
 import formatDate from '../../../Helper/formatDate.js';
+import { useRefresh } from '../../../Context/refresh.context.js';
+import { ActivityIndicator } from 'react-native-paper';
 
 const LeaveBalanceScreen = () => {
   const { validToken, team } = useAuth();
+  const { refreshKey, refreshPage } = useRefresh();
   const [showAllAlloted, setShowAllAlloted] = useState(false);
   const [showAllUsed, setShowAllUsed] = useState(false);
   const [showAllLeaves, setShowAllLeaves] = useState(false);
@@ -16,6 +19,8 @@ const LeaveBalanceScreen = () => {
   const [leaves, setLeaves] = useState([]);
   const [employeeId, setEmployeeId] = useState(team?._id);
   const navigation = useNavigation();
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (team) {
@@ -25,6 +30,8 @@ const LeaveBalanceScreen = () => {
 
   const fetchSingleEmployee = async (employeeId) => {
     try {
+      setLoading(true);
+
       const response = await axios.get(
         `${API_BASE_URL}/api/v1/team/single-team/${employeeId}`,
         {
@@ -36,14 +43,19 @@ const LeaveBalanceScreen = () => {
 
       if (response?.data?.success) {
         setEmployee(response?.data?.team);
-      }
+      };
     } catch (error) {
-      console.log(error.message);
+      console.log("Error:", error.message);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     };
   };
 
   const fetchApprovedLeaves = async () => {
     try {
+      setLoading(true);
+
       const response = await axios.get(
         `${API_BASE_URL}/api/v1/leaveApproval/all-leaveApproval`,
         {
@@ -51,14 +63,18 @@ const LeaveBalanceScreen = () => {
           headers: {
             Authorization: validToken,
           },
-        },
+        }
       );
 
       if (response?.data?.success) {
-        setLeaves(response?.data?.data);
-      }
+        const approvedLeaves = response?.data?.data?.filter((leave) => leave?.leaveStatus === "Approved");
+        setLeaves(approvedLeaves);
+      };
     } catch (error) {
-      console.log(error.message);
+      console.log("Error:", error.message);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     };
   };
 
@@ -67,42 +83,49 @@ const LeaveBalanceScreen = () => {
       fetchApprovedLeaves();
       fetchSingleEmployee(employeeId);
     };
-  }, [validToken, employeeId]);
+  }, [validToken, employeeId, refreshKey]);
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    refreshPage();
+  };
 
   const renderHeader = () => (
-    <View style={styles.card}>
+    <>
       <Text style={styles.cardTitle}>Leave Balance Overview</Text>
-      <View style={styles.balanceInfo}>
-        <View style={styles.balanceRow}>
-          <Icon name="check-circle" size={20} color="#4caf50" />
-          <Text style={styles.balanceText}>Total Granted Leaves: {employee?.allotedLeaveBalance}</Text>
-        </View>
-        <View style={styles.balanceRow}>
-          <Icon name="today" size={20} color="#2196f3" />
-          <Text style={styles.balanceText}>Available Leave Balance: {employee?.currentLeaveBalance}</Text>
-        </View>
-        <View style={styles.balanceRow}>
-          <Icon name="event-available" size={20} color="#f44336" />
-          <Text style={styles.balanceText}>Total Leaves Taken: {employee?.usedLeaveBalance}</Text>
+      <View style={styles.card}>
+        <View style={styles.balanceInfo}>
+          <View style={styles.balanceRow}>
+            <Icon name="check-circle" size={18} color="#4caf50" />
+            <Text style={styles.balanceText}>Total Granted Leaves: {employee?.allotedLeaveBalance}</Text>
+          </View>
+          <View style={styles.balanceRow}>
+            <Icon name="today" size={18} color="#2196f3" />
+            <Text style={styles.balanceText}>Available Leave Balance: {employee?.currentLeaveBalance}</Text>
+          </View>
+          <View style={styles.balanceRow}>
+            <Icon name="event-available" size={18} color="#f44336" />
+            <Text style={styles.balanceText}>Total Leaves Taken: {employee?.usedLeaveBalance}</Text>
+          </View>
         </View>
       </View>
-    </View>
+    </>
   );
 
   const renderHistoryItem = ({ item }) => (
     <View style={styles.historyItem}>
       <View style={styles.historyRow}>
-        <Icon name="date-range" size={20} color="#4caf50" />
+        <Icon name="date-range" size={18} color="#4caf50" />
         <Text style={styles.historyText}>Date: {item.date}</Text>
       </View>
       {item.alloted ? (
         <View style={styles.historyRow}>
-          <Icon name="check-circle" size={20} color="#2196f3" />
+          <Icon name="check-circle" size={18} color="#2196f3" />
           <Text style={styles.historyText}>Alloted: {item?.alloted}</Text>
         </View>
       ) : (
         <View style={styles.historyRow}>
-          <Icon name="event-note" size={20} color="#f44336" />
+          <Icon name="event-note" size={18} color="#f44336" />
           <Text style={styles.historyText}>Reason: {item?.reason}</Text>
         </View>
       )}
@@ -124,13 +147,13 @@ const LeaveBalanceScreen = () => {
       {employee?.leaveBalanceUsedHistory?.length > 2 && !showAllUsed && (
         <TouchableOpacity style={styles.moreButton} onPress={() => setShowAllUsed(true)}>
           <Text style={styles.moreText}>More</Text>
-          <Icon name="expand-more" size={20} color="#2196f3" />
+          <Icon name="expand-more" size={18} color="#2196f3" />
         </TouchableOpacity>
       )}
       {showAllUsed && (
         <TouchableOpacity style={styles.moreButton} onPress={() => setShowAllUsed(false)}>
           <Text style={styles.moreText}>Less</Text>
-          <Icon name="expand-less" size={20} color="#2196f3" />
+          <Icon name="expand-less" size={18} color="#2196f3" />
         </TouchableOpacity>
       )}
     </View>
@@ -151,13 +174,13 @@ const LeaveBalanceScreen = () => {
       {employee?.leaveBalanceAllotedHistory?.length > 2 && !showAllAlloted && (
         <TouchableOpacity style={styles.moreButton} onPress={() => setShowAllAlloted(true)}>
           <Text style={styles.moreText}>More</Text>
-          <Icon name="expand-more" size={20} color="#2196f3" />
+          <Icon name="expand-more" size={18} color="#2196f3" />
         </TouchableOpacity>
       )}
       {showAllAlloted && (
         <TouchableOpacity style={styles.moreButton} onPress={() => setShowAllAlloted(false)}>
           <Text style={styles.moreText}>Less</Text>
-          <Icon name="expand-less" size={20} color="#2196f3" />
+          <Icon name="expand-less" size={18} color="#2196f3" />
         </TouchableOpacity>
       )}
     </View>
@@ -173,26 +196,26 @@ const LeaveBalanceScreen = () => {
         renderItem={({ item }) => (
           <View style={styles.historyItem}>
             <View style={styles.historyRow}>
-              <Icon name="event" size={20} color="#4caf50" />
+              <Icon name="event" size={18} color="#4caf50" />
               <Text style={styles.historyText}>
                 From {formatDate(item?.startDate)} to {formatDate(item?.endDate)}
               </Text>
             </View>
             <View style={styles.historyRow}>
-              <Icon name="person" size={20} color="#2196f3" />
+              <Icon name="person" size={18} color="#2196f3" />
               <Text style={styles.historyText}>
                 Approved By: {item?.leaveApprovedBy?.name || "N/A"}
               </Text>
             </View>
             <View style={styles.historyRow}>
-              <Icon name="info" size={20} color={item?.leaveStatus === "Approved" ? "#4caf50" : "#f44336"} />
+              <Icon name="info" size={18} color={item?.leaveStatus === "Approved" ? "#4caf50" : "#f44336"} />
               <Text style={styles.historyText}>
                 Status: {item?.leaveStatus}
               </Text>
             </View>
             {item?.reason && (
               <View style={styles.historyRow}>
-                <Icon name="comment" size={20} color="#757575" />
+                <Icon name="comment" size={18} color="#757575" />
                 <Text style={styles.historyText}>Reason: {item?.reason}</Text>
               </View>
             )}
@@ -203,13 +226,13 @@ const LeaveBalanceScreen = () => {
       {leaves?.length > 2 && !showAllLeaves && (
         <TouchableOpacity style={styles.moreButton} onPress={() => setShowAllLeaves(true)}>
           <Text style={styles.moreText}>More</Text>
-          <Icon name="expand-more" size={20} color="#2196f3" />
+          <Icon name="expand-more" size={18} color="#2196f3" />
         </TouchableOpacity>
       )}
       {showAllLeaves && (
         <TouchableOpacity style={styles.moreButton} onPress={() => setShowAllLeaves(false)}>
           <Text style={styles.moreText}>Less</Text>
-          <Icon name="expand-less" size={20} color="#2196f3" />
+          <Icon name="expand-less" size={18} color="#2196f3" />
         </TouchableOpacity>
       )}
     </View>
@@ -240,19 +263,33 @@ const LeaveBalanceScreen = () => {
   return (
     <>
       <View style={styles.header}>
-        <Icon name="arrow-back" size={20} color="#000" onPress={() => navigation.goBack()} />
+        <Icon name="arrow-back" size={18} color="#000" onPress={() => navigation.goBack()} />
         <Text style={styles.headerTitle}>Leave balance</Text>
-        <TouchableOpacity style={styles.buttonAdd} onPress={() => navigation.navigate("ApplyLeaveRequest")}>
-          <Text style={styles.buttonAddText}>Apply Leave</Text>
+        <TouchableOpacity style={styles.buttonApply} onPress={() => navigation.navigate("ApplyLeaveRequest")}>
+          <Text style={styles.buttonApplyText}>Apply Leave</Text>
         </TouchableOpacity>
       </View>
 
-      <FlatList
-        data={data}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.key}
-        contentContainerStyle={styles.container}
-      />
+      {loading ? (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="small" color="#ffb300" />
+        </View>
+      ) : data?.length === 0 ? (
+        <Text style={{ textAlign: "center", color: "#777" }}>
+          No data.
+        </Text>
+      ) : (
+        <FlatList
+          data={data}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.key}
+          contentContainerStyle={styles.container}
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+        />
+      )
+      }
     </>
   );
 };
@@ -270,14 +307,14 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     color: "#000",
   },
-  buttonAdd: {
+  buttonApply: {
     backgroundColor: "#ffb300",
-    paddingVertical: 4,
-    paddingHorizontal: 8,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
     borderRadius: 5,
     alignItems: "center",
   },
-  buttonAddText: {
+  buttonApplyText: {
     color: "#fff",
     fontSize: 13,
     fontWeight: "500",
@@ -288,14 +325,17 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: '#fff',
-    padding: 15,
+    paddingHorizontal: 12,
+    paddingBottom: 10,
     borderRadius: 12,
-    marginBottom: 25,
+    marginBottom: 15,
   },
   cardTitle: {
     fontSize: 15,
-    fontWeight: '500',
+    fontWeight: '400',
     color: '#333',
+    marginBottom: 7,
+    textAlign: "center",
   },
   balanceInfo: {
     marginTop: 10,
@@ -303,21 +343,22 @@ const styles = StyleSheet.create({
   balanceRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 5,
+    marginBottom: 5,
   },
   balanceText: {
-    fontSize: 15,
-    marginLeft: 10,
+    fontSize: 14,
+    marginLeft: 5,
     color: '#555',
   },
   historySection: {
-    marginBottom: 4,
+    marginBottom: 5,
   },
   sectionTitle: {
     fontSize: 15,
     fontWeight: '400',
-    marginBottom: 10,
+    marginBottom: 8,
     color: '#333',
+    textAlign: "center",
   },
   historyItem: {
     backgroundColor: '#fff',
@@ -332,8 +373,8 @@ const styles = StyleSheet.create({
   },
   historyText: {
     fontSize: 14,
-    color: '#666',
-    marginLeft: 10,
+    color: '#555',
+    marginLeft: 5,
   },
   moreButton: {
     flexDirection: 'row',
