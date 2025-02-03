@@ -2,7 +2,7 @@
 const getAttendanceData = (team) => {
   if (!team || !team?._id) {
     return { time: null, date: null, employeeId: null };
-  }
+  };
 
   const today = new Date();
   const date = today.toISOString().split("T")[0];
