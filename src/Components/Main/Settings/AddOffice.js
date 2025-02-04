@@ -17,6 +17,7 @@ import { useAuth } from "../../../Context/auth.context.js";
 import getUserLocation from "../Home/utils/getUerLocation.js";
 
 const AddOffice = ({ navigation }) => {
+  const [uniqueCode, setUniqueCode] = useState("");
   const [name, setName] = useState("");
   const [logo, setLogo] = useState(null);
   const [email, setEmail] = useState("");
@@ -35,13 +36,13 @@ const AddOffice = ({ navigation }) => {
     if (!position) {
       Toast.show({ type: "error", text1: "Please enable location" });
       return;
-    }
+    };
 
     const { latitude, longitude } = position;
 
     setLatitude(String(latitude));
     setLongitude(String(longitude));
-  }
+  };
 
   useEffect(() => {
     fetchLatLong();
@@ -53,20 +54,21 @@ const AddOffice = ({ navigation }) => {
         mediaType: "photo",
         quality: 1,
       },
-      response => {
+      (response) => {
         if (response.didCancel) {
-          Toast.show({ type: "info", text1: "Image selection canceled" });
+          Toast.show({ type: "info", text1: "Image selection cancelled" });
         } else if (response.errorCode) {
           Toast.show({ type: "error", text1: "Image selection error" });
         } else {
           setLogo(response.assets[0]);
-        }
+        };
       },
     );
   };
 
   const handleSubmit = async () => {
     if (
+      !uniqueCode ||
       !name ||
       !email ||
       !contact ||
@@ -77,9 +79,10 @@ const AddOffice = ({ navigation }) => {
     ) {
       Toast.show({ type: "error", text1: "Please fill in all required fields" });
       return;
-    }
+    };
 
     const formData = new FormData();
+    formData.append("uniqueCode", uniqueCode);
     formData.append("name", name);
     formData.append("email", email);
     formData.append("contact", contact);
@@ -123,14 +126,11 @@ const AddOffice = ({ navigation }) => {
         setAddressLine3("");
         Toast.show({ type: "success", text1: "Submitted successfully" });
         navigation.goBack();
-      }
+      };
     } catch (error) {
       console.log("Error:", error.message);
-      Toast.show({
-        type: "error",
-        text1: error.response?.data?.message || "An error occurred",
-      });
-    }
+      Toast.show({ type: "error", text1: error.response?.data?.message || "An error occurred" });
+    };
   };
 
   return (
@@ -151,6 +151,17 @@ const AddOffice = ({ navigation }) => {
 
       <ScrollView>
         <View style={styles.container}>
+          <View style={{ marginBottom: 0 }}>
+            <Text style={{ marginBottom: 5, color: "#555" }}>
+              Unique Code <Text style={{ color: "red" }}>*</Text>
+            </Text>
+            <TextInput
+              value={uniqueCode}
+              onChangeText={setUniqueCode}
+              style={styles.input}
+            />
+          </View>
+
           <View style={{ marginBottom: 0 }}>
             <Text style={{ marginBottom: 5, color: "#555" }}>
               Company Name <Text style={{ color: "red" }}>*</Text>
@@ -219,7 +230,7 @@ const AddOffice = ({ navigation }) => {
 
           <View style={{ marginBottom: 0 }}>
             <Text style={{ marginBottom: 5, color: "#555" }}>
-              Attendance Radius (in meters)<Text style={{ color: "red" }}>*</Text>
+              Attendance Radius (in meters) <Text style={{ color: "red" }}>*</Text>
             </Text>
             <TextInput
               value={attendanceRadius}

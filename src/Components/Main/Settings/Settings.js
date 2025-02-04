@@ -44,19 +44,19 @@ const Settings = ({ navigation }) => {
 
       if (response?.data?.success) {
         setOffice(response?.data?.officeLocation);
-      }
+      };
     } catch (error) {
-      console.log("Error while fetching office location:", error.message);
+      console.log("Error while fetching all office location:", error.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
-    }
+    };
   };
 
   useEffect(() => {
     if (validToken) {
       fetchOfficeLocation();
-    }
+    };
   }, [validToken, refreshKey]);
 
   const handleDelete = async () => {
@@ -74,7 +74,7 @@ const Settings = ({ navigation }) => {
         if (response?.data?.success) {
           fetchOfficeLocation();
           Toast.show({ type: "success", text1: "Deleted successfully" });
-        }
+        };
       } catch (error) {
         console.log("Error while deleting office location:", error.message);
       } finally {
@@ -82,10 +82,10 @@ const Settings = ({ navigation }) => {
         setPopupVisible(null);
         setOfficeToDelete(null);
         setConfirmationText("");
-      }
+      };
     } else {
       alert("Please type 'yes' to confirm deletion.");
-    }
+    };
   };
 
   const handleRefresh = () => {
@@ -110,6 +110,7 @@ const Settings = ({ navigation }) => {
           <Icon name="more-vertical" size={20} color="#333" />
         </TouchableOpacity>
       </View>
+      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Unique Code: </Text>{item?.uniqueCode}</Text>
       <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Company Name: </Text>{item?.name}</Text>
       <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Email: </Text>{item?.email}</Text>
       <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Contact: </Text>{item?.contact}</Text>
@@ -243,7 +244,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 12,
     backgroundColor: "#fff",
-
     zIndex: 1000,
   },
   headerTitle: {
@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   logo: {
-    width: 170,
+    width: 130,
     height: 50,
     resizeMode: "contain",
   },

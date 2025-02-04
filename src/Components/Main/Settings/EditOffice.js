@@ -21,6 +21,7 @@ import getUserLocation from "../Home/utils/getUerLocation.js";
 
 const EditOffice = ({ navigation, route }) => {
   const id = route?.params?.id;
+  const [uniqueCode, setUniqueCode] = useState("");
   const [name, setName] = useState("");
   const [logo, setLogo] = useState(null);
   const [email, setEmail] = useState("");
@@ -42,7 +43,7 @@ const EditOffice = ({ navigation, route }) => {
     if (!position) {
       Toast.show({ type: "error", text1: "Please enable location" });
       return;
-    }
+    };
 
     const { latitude, longitude } = position;
 
@@ -56,14 +57,14 @@ const EditOffice = ({ navigation, route }) => {
         mediaType: "photo",
         quality: 1,
       },
-      response => {
+      (response) => {
         if (response.didCancel) {
           Toast.show({ type: "info", text1: "Image selection canceled" });
         } else if (response.errorCode) {
           Toast.show({ type: "error", text1: "Image selection error" });
         } else {
           setLogo(response.assets[0]);
-        }
+        };
       },
     );
   };
@@ -82,6 +83,7 @@ const EditOffice = ({ navigation, route }) => {
 
       if (response?.data?.success) {
         const office = response?.data?.officeLocation;
+        setUniqueCode(office?.uniqueCode);
         setName(office?.name);
         setLogo(office?.logo);
         setEmail(office?.email);
@@ -92,23 +94,24 @@ const EditOffice = ({ navigation, route }) => {
         setAddressLine1(office?.addressLine1);
         setAddressLine2(office?.addressLine2);
         setAddressLine3(office?.addressLine3);
-      }
+      };
     } catch (error) {
-      console.log("Error while fetching office location:", error.message);
+      console.log("Error while fetching single office location:", error.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
-    }
+    };
   };
 
   useEffect(() => {
     if (id) {
       fetchOfficeLocation(id);
-    }
+    };
   }, [id, refreshKey]);
 
   const handleUpdate = async id => {
     const formData = new FormData();
+    formData.append("uniqueCode", uniqueCode);
     formData.append("name", name);
     formData.append("email", email);
     formData.append("contact", contact);
@@ -125,7 +128,7 @@ const EditOffice = ({ navigation, route }) => {
         type: logo.type,
         name: logo.fileName,
       });
-    }
+    };
 
     try {
       const response = await axios.put(
@@ -140,6 +143,7 @@ const EditOffice = ({ navigation, route }) => {
       );
 
       if (response?.data?.success) {
+        setUniqueCode("");
         setName("");
         setLogo(null);
         setEmail("");
@@ -152,14 +156,11 @@ const EditOffice = ({ navigation, route }) => {
         setAddressLine3("");
         Toast.show({ type: "success", text1: "Submitted successfully" });
         navigation.goBack();
-      }
+      };
     } catch (error) {
       console.log("Error:", error.message);
-      Toast.show({
-        type: "error",
-        text1: error.response?.data?.message || "An error occurred",
-      });
-    }
+      Toast.show({ type: "error", text1: error?.response?.data?.message || "An error occurred" });
+    };
   };
 
   const handleRefresh = () => {
@@ -198,6 +199,17 @@ const EditOffice = ({ navigation, route }) => {
             }
           >
             <View style={styles.container}>
+              <View style={{ marginBottom: 0 }}>
+                <Text style={{ marginBottom: 5, color: "#555" }}>
+                  Unique Code <Text style={{ color: "red" }}>*</Text>
+                </Text>
+                <TextInput
+                  value={uniqueCode}
+                  onChangeText={setUniqueCode}
+                  style={styles.input}
+                />
+              </View>
+
               <View style={{ marginBottom: 0 }}>
                 <Text style={{ marginBottom: 5, color: "#555" }}>
                   Company Name <Text style={{ color: "red" }}>*</Text>

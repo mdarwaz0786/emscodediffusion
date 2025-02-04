@@ -42,7 +42,7 @@ const Home = () => {
       const today = new Date().toISOString().split("T")[0];
       setCurrentDate(today);
       setCurrentMonth(today.slice(0, 7));
-    }
+    };
   }, [team]);
 
   // Fetch attendance and monthly statistic
@@ -50,7 +50,7 @@ const Home = () => {
     if (employeeId && validToken) {
       await fetchAttendance();
       await fetchMonthlyStatistic();
-    }
+    };
   }, [employeeId, validToken, currentDate, currentMonth]);
 
   useEffect(() => {
@@ -69,13 +69,13 @@ const Home = () => {
 
       if (response?.data?.success) {
         setAttendance(response?.data?.attendance);
-      }
+      };
     } catch (error) {
       console.log("Error while fetching attendance:", error?.response?.data?.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
-    }
+    };
   };
 
   // Fetch monthly statistic
@@ -89,12 +89,12 @@ const Home = () => {
 
       if (response?.data?.success) {
         setMonthlyStatistic(response?.data?.attendance);
-      }
+      };
     } catch (error) {
       console.log("Error while fetching monthly statistic:", error?.response?.data?.message);
     } finally {
       setRefreshing(false);
-    }
+    };
   };
 
   // Handle punch attendance
@@ -105,23 +105,23 @@ const Home = () => {
       if (!position) {
         Toast.show({ type: "error", text1: "Location permission is required to proceed." });
         return;
-      }
+      };
 
       const { latitude, longitude } = position;
 
-      const isWithinOffice = await isWithinOfficeLocation(latitude, longitude, validToken);
+      const isWithinOffice = await isWithinOfficeLocation(latitude, longitude, validToken, team);
 
       if (!isWithinOffice) {
         Toast.show({ type: "error", text1: "Attendance can only be marked in office." });
         return;
-      }
+      };
 
       const { time, date, employeeId } = getAttendanceData(team);
 
       if (!time || !date || !employeeId) {
         Toast.show({ type: "error", text1: "Please try agian" });
         return;
-      }
+      };
 
       const requestData = actionType === "punchIn"
         ? { employee: employeeId, attendanceDate: date, punchInTime: time }
@@ -143,7 +143,7 @@ const Home = () => {
     } catch (error) {
       console.log(error.message);
       Toast.show({ type: "error", text1: error.message || "Try again" });
-    }
+    };
   }, [validToken, team]);
 
   // Process attendance API request
@@ -161,11 +161,11 @@ const Home = () => {
       if (response?.data?.success) {
         refreshPage();
         Toast.show({ type: "success", text1: successMessage });
-      }
+      };
     } catch (error) {
       console.log(error.message);
       Toast.show({ type: "error", text1: error?.response?.data?.message || "Please try again" });
-    }
+    };
   };
 
   // Navigate to my attendance screen
