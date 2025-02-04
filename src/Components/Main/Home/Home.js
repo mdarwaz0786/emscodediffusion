@@ -187,11 +187,13 @@ const Home = () => {
   // Statistic data
   const statistics = useMemo(() => [
     { label: " Month", value: formatDate(monthlyStatistic?.month) || "-", icon: "📅" },
-    { label: "Total Days", value: monthlyStatistic?.totalDaysInMonth || 0, icon: "📆" },
-    { label: "Working Days", value: monthlyStatistic?.companyWorkingDays || 0, icon: "💼" },
+    { label: "Total Days in This Month", value: monthlyStatistic?.totalDaysInMonth || 0, icon: "📆" },
+    { label: "Company's Working Days", value: monthlyStatistic?.companyWorkingDays || 0, icon: "💼" },
     { label: "Holidays", value: monthlyStatistic?.totalHolidays || 0, icon: "🎉" },
     { label: "Sundays", value: monthlyStatistic?.totalSundays || 0, icon: "☀️" },
     { label: "Present Days", value: monthlyStatistic?.employeePresentDays || 0, icon: "✅" },
+    { label: "Half Days", value: monthlyStatistic?.employeeHalfDays || 0, icon: "🌓" },
+    { label: "Comp Off Days", value: monthlyStatistic?.employeeCompOffDays || 0, icon: "🏖️" },
     { label: "Absent Days", value: monthlyStatistic?.employeeAbsentDays || 0, icon: "❌" },
     { label: "Leave Days", value: monthlyStatistic?.employeeLeaveDays || 0, icon: "🏖️" },
     { label: "Late In Days", value: monthlyStatistic?.employeeLateInDays || 0, icon: "⏰" },
