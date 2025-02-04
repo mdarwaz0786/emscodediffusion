@@ -8,6 +8,7 @@ import {
   ScrollView,
   Platform,
   Linking,
+  RefreshControl,
 } from "react-native";
 import FileViewer from 'react-native-file-viewer';
 import Share from "react-native-share";
@@ -24,9 +25,14 @@ import numberToWord from "../../../Helper/numberToWord.js";
 import getMonthName from "../../../Helper/getMonthName.js"
 import formatDate from "../../../Helper/formatDate.js";
 import Toast from "react-native-toast-message";
+import { useRefresh } from "../../../Context/refresh.context.js";
+import { ActivityIndicator } from "react-native-paper";
 
 const SalarySlip = () => {
   const { validToken, team } = useAuth();
+  const { refreshKey, refreshPage } = useRefresh();
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [office, setOffice] = useState([]);
   const [salary, setSalary] = useState([]);
   const [employee, setEmployee] = useState("");
@@ -39,7 +45,7 @@ const SalarySlip = () => {
       fetchEmployee();
       setEmployeeId(team?._id);
     };
-  }, [team, validToken]);
+  }, [team, validToken, refreshKey]);
 
   const generatePDF = async (m, y, t, a) => {
     const hasPermission = await requestStoragePermission();
@@ -98,6 +104,8 @@ const SalarySlip = () => {
 
   const fetchSalary = async () => {
     try {
+      setLoading(true);
+
       const response = await axios.get(
         `${API_BASE_URL}/api/v1/salary/all-salary`,
         {
@@ -113,6 +121,9 @@ const SalarySlip = () => {
       };
     } catch (error) {
       console.log("Error while fetching salary:", error.message);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     };
   };
 
@@ -520,7 +531,7 @@ const SalarySlip = () => {
           </div>
         </div>
 
-        <h6 class="payment-title">Payment & Salary  ${getMonthName(month)} ${year}</h6>
+        <h6 class="payment-title">Payment & Salary ${getMonthName(month)} ${year}</h6>
         <table class="salary-table">
           <thead>
             <tr>
@@ -531,13 +542,13 @@ const SalarySlip = () => {
           <tbody>
             <tr>
               <td>Salary</td>
-              <td>${amountPaid}</td>
+              <td>₹${amountPaid}</td>
             </tr>
           </tbody>
           <tfoot>
             <tr>
               <th>Total Earnings</th>
-              <th>${amountPaid}</th>
+              <th>₹${amountPaid}</th>
             </tr>
           </tfoot>
         </table>
@@ -545,7 +556,7 @@ const SalarySlip = () => {
         <div class="net-pay">
           <div class="row">
             <div class="label">Net Payable (Total Earnings)</div>
-            <div class="value">${amountPaid}</div>
+            <div class="value">₹${amountPaid}</div>
           </div>
           <div class="row">
             <div class="label">Amount in Words</div>
@@ -669,6 +680,11 @@ const SalarySlip = () => {
     };
   };
 
+  const handleRefresh = () => {
+    setRefreshing(true);
+    refreshPage();
+  };
+
   return (
     <>
       <View style={styles.header}>
@@ -676,18 +692,38 @@ const SalarySlip = () => {
         <Text style={styles.headerTitle}>Salary Slip</Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {salary?.map((item, index) => (
-          <View key={index} style={styles.container}>
-            <Text style={styles.monthText}>{getMonthName(item?.month)}</Text>
-            <Text style={styles.yearText}>{item?.year}</Text>
-            <TouchableOpacity
-              onPress={() => generatePDF(item?.month, item?.year, item?.transactionId, item?.amountPaid)}
-              style={styles.button}>
-              <Text style={styles.buttonText}>Download Slip</Text>
-            </TouchableOpacity>
-          </View>
-        ))}
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+          />
+        }
+      >
+        {
+          loading ? (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+              <ActivityIndicator size="small" color="#ffb300" />
+            </View>
+          ) : salary?.length === 0 ? (
+            <Text style={{ flex: 1, textAlign: "center", color: "#777" }}>
+              No salary slip found.
+            </Text>
+          ) : (
+            salary?.map((item, index) => (
+              <View key={index} style={styles.container}>
+                <Text style={styles.monthText}>{getMonthName(item?.month)}</Text>
+                <Text style={styles.yearText}>{item?.year}</Text>
+                <TouchableOpacity
+                  onPress={() => generatePDF(item?.month, item?.year, item?.transactionId, item?.amountPaid)}
+                  style={styles.button}>
+                  <Text style={styles.buttonText}>Download</Text>
+                </TouchableOpacity>
+              </View>
+            ))
+          )
+        }
       </ScrollView>
     </>
   );
@@ -709,8 +745,8 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   scrollContainer: {
-    padding: 20,
-    paddingVertical: 5,
+    padding: 10,
+    paddingVertical: 10,
   },
   container: {
     flexDirection: "row",
@@ -718,7 +754,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     backgroundColor: "#fff",
     padding: 15,
-    marginVertical: 5,
+    marginVertical: 8,
     borderRadius: 10,
   },
   monthText: {
@@ -731,8 +767,8 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#ffb300",
-    paddingVertical: 8,
-    paddingHorizontal: 15,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
     borderRadius: 8,
     alignItems: "center",
   },

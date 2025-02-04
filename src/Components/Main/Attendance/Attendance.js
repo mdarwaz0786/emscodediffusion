@@ -302,11 +302,15 @@ const Attendance = ({ route }) => {
                         ? styles.absent
                         : item?.status === "Holiday"
                           ? styles.holiday
-                          : item?.status === "Sunday"
+                          : item?.status === "Sunday" || item?.status === "Saturday"
                             ? styles.sunday
                             : item?.status === "On Leave"
                               ? styles.onLeave
-                              : styles.default,
+                              : item?.status === "Comp Off"
+                                ? styles.compOff
+                                : item?.status === "Half Day"
+                                  ? styles.halfDay
+                                  : styles.default,
                   ]}>{item?.status}</Text>
                 </View>
               </View>
@@ -520,6 +524,14 @@ const styles = StyleSheet.create({
   },
   default: {
     color: "black",
+    fontSize: 14,
+  },
+  compOff: {
+    color: "orange",
+    fontSize: 14,
+  },
+  halfDay: {
+    color: "#00ced1",
     fontSize: 14,
   },
   onTime: {

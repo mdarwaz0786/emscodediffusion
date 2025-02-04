@@ -36,7 +36,6 @@ const TodayWorkSummary = () => {
     if (validToken) {
       fetchTodayWorkSummary();
     };
-    fetchTodayWorkSummary();
   }, [validToken, refreshKey]);
 
   const handleRefresh = () => {
