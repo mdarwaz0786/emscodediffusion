@@ -16,8 +16,8 @@ import { API_BASE_URL } from "@env";
 
 const ApplyLeaveRequest = ({ navigation }) => {
   const [reason, setReason] = useState();
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [isStartDatePickerVisible, setIsStartDatePickerVisible] = useState(false);
   const [isEndDatePickerVisible, setIsEndDatePickerVisible] = useState(false);
   const { validToken, team } = useAuth();
@@ -99,11 +99,11 @@ const ApplyLeaveRequest = ({ navigation }) => {
           style={[styles.input, styles.dateInput]}
           onPress={showStartDatePicker}
         >
-          <Text style={{ color: "#777" }}>{startDate.toISOString().split("T")[0]}</Text>
+          <Text style={{ color: "#777" }}>{startDate ? startDate.toISOString().split("T")[0] : "Select start date"}</Text>
         </TouchableOpacity>
         {isStartDatePickerVisible && (
           <DateTimePicker
-            value={startDate}
+            value={startDate || new Date()}
             mode="date"
             display="default"
             onChange={onStartDateChange}
@@ -118,11 +118,11 @@ const ApplyLeaveRequest = ({ navigation }) => {
           style={[styles.input, styles.dateInput]}
           onPress={showEndDatePicker}
         >
-          <Text style={{ color: "#777" }}>{endDate.toISOString().split("T")[0]}</Text>
+          <Text style={{ color: "#777" }}>{endDate ? endDate.toISOString().split("T")[0] : "Select end date"}</Text>
         </TouchableOpacity>
         {isEndDatePickerVisible && (
           <DateTimePicker
-            value={endDate}
+            value={endDate || new Date()}
             mode="date"
             display="default"
             onChange={onEndDateChange}
@@ -189,20 +189,23 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   input: {
-    height: 50,
+    paddingVertical: 5,
     paddingLeft: 15,
-    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 5,
+    marginBottom: 10,
     backgroundColor: "#fff",
     color: "#777",
-    justifyContent: "center"
-  },
-  textArea: {
-    height: 150,
-    textAlignVertical: "top",
   },
   dateInput: {
     paddingVertical: 10,
     paddingLeft: 15,
+    color: "#777",
+  },
+  textArea: {
+    height: 150,
+    textAlignVertical: "top",
   },
   submitButton: {
     backgroundColor: "#ffb300",
