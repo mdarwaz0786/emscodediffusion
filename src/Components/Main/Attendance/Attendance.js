@@ -388,6 +388,12 @@ const Attendance = ({ route }) => {
                 {attendanceSummary?.companyWorkingDays}
               </Text>
               <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
+                Total Half Days: {attendanceSummary?.employeeHalfDays}
+              </Text>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
+                Total Comp Off Days: {attendanceSummary?.employeeCompOffDays}
+              </Text>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
                 Total Absent Days: {attendanceSummary?.employeeAbsentDays}
               </Text>
               <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
