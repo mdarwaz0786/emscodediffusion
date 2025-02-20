@@ -132,33 +132,6 @@ const LeaveBalanceScreen = () => {
     </View>
   );
 
-  const renderUsedLeaves = () => (
-    <View style={styles.historySection}>
-      {
-        employee?.leaveBalanceUsedHistory?.length > 0 && (
-          <Text style={styles.sectionTitle}>Leaves Utilized</Text>
-        )
-      }
-      <FlatList
-        data={showAllUsed ? employee?.leaveBalanceUsedHistory : employee?.leaveBalanceUsedHistory?.slice(0, 2)}
-        renderItem={renderHistoryItem}
-        keyExtractor={(item, index) => index.toString()}
-      />
-      {employee?.leaveBalanceUsedHistory?.length > 2 && !showAllUsed && (
-        <TouchableOpacity style={styles.moreButton} onPress={() => setShowAllUsed(true)}>
-          <Text style={styles.moreText}>More</Text>
-          <Icon name="expand-more" size={18} color="#2196f3" />
-        </TouchableOpacity>
-      )}
-      {showAllUsed && (
-        <TouchableOpacity style={styles.moreButton} onPress={() => setShowAllUsed(false)}>
-          <Text style={styles.moreText}>Less</Text>
-          <Icon name="expand-less" size={18} color="#2196f3" />
-        </TouchableOpacity>
-      )}
-    </View>
-  );
-
   const renderAllotedLeaves = () => (
     <View style={styles.historySection}>
       {
@@ -240,7 +213,6 @@ const LeaveBalanceScreen = () => {
 
   const data = [
     { key: 'header' },
-    { key: 'usedLeaves' },
     { key: 'allotedLeaves' },
     { key: 'approvedLeaves' },
   ];
@@ -249,8 +221,6 @@ const LeaveBalanceScreen = () => {
     switch (item.key) {
       case 'header':
         return renderHeader();
-      case 'usedLeaves':
-        return renderUsedLeaves();
       case 'allotedLeaves':
         return renderAllotedLeaves();
       case 'approvedLeaves':
@@ -288,8 +258,7 @@ const LeaveBalanceScreen = () => {
           refreshing={refreshing}
           onRefresh={handleRefresh}
         />
-      )
-      }
+      )}
     </>
   );
 };
