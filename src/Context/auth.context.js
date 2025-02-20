@@ -17,31 +17,39 @@ export const AuthProvider = ({ children }) => {
   const storeToken = async (serverToken) => {
     try {
       await AsyncStorage.setItem("token", serverToken);
-      const response = await axios.get(`${API_BASE_URL}/api/v1/team/loggedin-team`, {
-        headers: { Authorization: `Bearer ${serverToken}` }
-      });
+      const userType = await AsyncStorage.getItem("userType");
+      let response;
+
+      if (userType === "Client") {
+        response = await axios.get(`${API_BASE_URL}/api/v1/customer/loggedin-customer`, {
+          headers: { Authorization: `Bearer ${serverToken}` }
+        });
+      } else if (userType === "Employee") {
+        response = await axios.get(`${API_BASE_URL}/api/v1/team/loggedin-team`, {
+          headers: { Authorization: `Bearer ${serverToken}` }
+        });
+      };
 
       if (response?.data?.success) {
         const newTeam = response?.data?.team;
         setTeam(newTeam);
-        await AsyncStorage.setItem("team", JSON.stringify(newTeam));
         setToken(serverToken);
-      }
+        await AsyncStorage.setItem("team", JSON.stringify(newTeam));
+      };
     } catch (error) {
-      console.log("Error while storing token and fetching employee details:", error?.response?.data?.message);
       Toast.show({ type: "error", text1: "Login failed. Please try again." });
-    }
+    };
   };
 
   const logOutTeam = async () => {
     try {
-      await AsyncStorage.removeItem("token");
       setToken(null);
       setTeam(null);
+      await AsyncStorage.removeItem("token");
       Toast.show({ type: "success", text1: "Logout successful" });
     } catch (error) {
-      console.log("Error while logout:", error.message);
-    }
+      Toast.show({ type: "error", text1: "Logout failed. Please try again." });
+    };
   };
 
   const initializeAuth = async () => {
@@ -53,34 +61,42 @@ export const AuthProvider = ({ children }) => {
         setToken(storedToken[1]);
         if (cachedTeam[1]) {
           setTeam(JSON.parse(cachedTeam[1]));
-        }
+        };
         refreshTeamData(storedToken[1]);
       } else {
         Toast.show({ type: "info", text1: "Please login to continue." });
-      }
+      };
     } catch (error) {
-      console.log("Error during auth initialization:", error.message);
-      Toast.show({ type: "error", text1: "Session expired, login again to continue." });
       await logOutTeam();
+      Toast.show({ type: "error", text1: "Session expired, login again to continue." });
     } finally {
       setIsLoading(false);
-    }
+    };
   };
 
   const refreshTeamData = async (token) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/v1/team/loggedin-team`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const userType = await AsyncStorage.getItem("userType");
+      let response;
+
+      if (userType === "Client") {
+        response = await axios.get(`${API_BASE_URL}/api/v1/customer/loggedin-customer`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      } else if (userType === "Employee") {
+        response = await axios.get(`${API_BASE_URL}/api/v1/team/loggedin-team`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      };
 
       if (response?.data?.success) {
         const newTeam = response?.data?.team;
         setTeam(newTeam);
         await AsyncStorage.setItem("team", JSON.stringify(newTeam));
-      }
+      };
     } catch (error) {
-      console.log("Error while refreshing team data:", error?.response?.data?.message);
-    }
+      console.log("Error while user refreshing data:", error?.response?.data?.message);
+    };
   };
 
   useEffect(() => {
@@ -104,4 +120,6 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  return useContext(AuthContext);
+};

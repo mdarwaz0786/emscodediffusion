@@ -1,50 +1,75 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, Image, StyleSheet, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  Image,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import axios from "axios";
 import Toast from "react-native-toast-message";
 import { useAuth } from "../../../Context/auth.context.js";
 import { API_BASE_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ScrollView } from "react-native-gesture-handler";
 
 const Login = () => {
-  const [employeeId, setEmployeeId] = useState("");
+  const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isClientLogin, setIsClientLogin] = useState(false);
   const { storeToken } = useAuth();
 
-  // Ensure the employeeId starts with "EmpID" and the rest remains unchanged
-  const transformedEmployeeId = `EmpID${employeeId.substring(5)}`;
+  const fetchUserType = async () => {
+    const userType = await AsyncStorage.getItem("userType");
+    if (userType === "Client") {
+      setIsClientLogin(true);
+    } else if (userType === "Employee") {
+      setIsClientLogin(false);
+    };
+  };
+
+  useEffect(() => {
+    fetchUserType();
+  }, []);
 
   const handleLogin = async () => {
     setLoading(true);
     try {
-      let fcmToken = await AsyncStorage.getItem("fcmToken");
-      const response = await axios.post(
-        `${API_BASE_URL}/api/v1/team/login-team`,
-        {
-          employeeId: transformedEmployeeId,
-          password,
-          fcmToken,
-        },
-      );
+      const endpoint = isClientLogin
+        ? `${API_BASE_URL}/api/v1/customer/login-customer`
+        : `${API_BASE_URL}/api/v1/team/login-team`;
+
+      const loginField = isClientLogin ? "mobile" : "employeeId";
+      const fcmToken = await AsyncStorage.getItem("fcmToken");
+
+      const response = await axios.post(endpoint, {
+        [loginField]: loginId,
+        password,
+        fcmToken,
+      });
+
       if (response?.data?.success) {
-        storeToken(response?.data?.token);
-        setEmployeeId("");
+        setLoginId("");
         setPassword("");
-        Toast.show({ type: "success", text1: response?.data?.message || "Login successful" });
+        await AsyncStorage.setItem("userType", isClientLogin ? "Client" : "Employee");
+        storeToken(response?.data?.token);
+        Toast.show({ type: "success", text1: "Login Successful" });
       } else {
         Toast.show({ type: "error", text1: "Login failed. Please try again." });
       };
     } catch (error) {
-      const errorMessage = error?.response?.data?.message || "An unexpected error occurred. Please try again.";
-      Toast.show({ type: "error", text1: errorMessage });
+      Toast.show({ type: "error", text1: error?.response?.data?.message || "An unexpected error occurred." });
     } finally {
       setLoading(false);
     };
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.logoContainer}>
         <Image
           source={require("../../../Assets/logo.png")}
@@ -52,15 +77,23 @@ const Login = () => {
         />
       </View>
       <Text style={styles.heading}>Login</Text>
+      <Text style={styles.subheading}>
+        {isClientLogin
+          ? "Login using your mobile number and password."
+          : "Login using your employee ID and password."}
+      </Text>
 
       <View style={styles.inputContainer}>
         <Text style={styles.label}>
-          Employee ID <Text style={styles.required}>*</Text>
+          {isClientLogin
+            ? "Mobile Number"
+            : "Employee ID"}
+          <Text style={styles.required}>*</Text>
         </Text>
         <TextInput
           style={styles.input}
-          value={employeeId}
-          onChangeText={setEmployeeId}
+          value={loginId}
+          onChangeText={setLoginId}
           autoComplete="off"
         />
       </View>
@@ -83,7 +116,18 @@ const Login = () => {
       ) : (
         <Button title="Login" onPress={handleLogin} color="#ffb300" />
       )}
-    </View>
+
+      <TouchableOpacity
+        style={styles.switchButton}
+        onPress={() => setIsClientLogin(!isClientLogin)}
+      >
+        <Text style={styles.switchText}>
+          {isClientLogin
+            ? "Login as Employee"
+            : "Login as Client"}
+        </Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 };
 
@@ -94,18 +138,18 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 30,
   },
   logo: {
     width: "40%",
     resizeMode: "contain",
   },
   heading: {
-    fontSize: 20,
-    fontWeight: "400",
+    fontSize: 22,
+    fontWeight: "500",
     textAlign: "center",
-    marginBottom: 10,
-    color: "#000",
+    marginBottom: 5,
+    color: "#333",
   },
   subheading: {
     fontSize: 14,
@@ -119,7 +163,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     marginBottom: 3,
-    color: "#555",
+    color: "#333",
   },
   required: {
     color: "red",
@@ -131,9 +175,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 5,
     backgroundColor: "#fff",
-    color: "#777",
+    color: "#555",
     fontSize: 13,
     paddingLeft: 15,
+  },
+  switchButton: {
+    marginVertical: 30,
+    alignItems: "center",
+  },
+  switchText: {
+    color: "#ffb300",
+    fontWeight: "600",
+    fontSize: 14,
+    textDecorationLine: "underline"
   },
 });
 

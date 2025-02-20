@@ -2,19 +2,20 @@ import React, { useEffect } from "react";
 import { View, ActivityIndicator, StyleSheet } from "react-native";
 import { useAuth } from "../../../Context/auth.context.js";
 
-const Logout = props => {
+const Logout = (props) => {
   const { logOutTeam } = useAuth();
 
+  const performLogout = () => {
+    setTimeout(async () => {
+      await logOutTeam();
+      props.navigation.reset({
+        index: 0,
+        routes: [{ name: "Login" }],
+      });
+    }, 1000);
+  };
+
   useEffect(() => {
-    const performLogout = () => {
-      setTimeout(async () => {
-        await logOutTeam();
-        props.navigation.reset({
-          index: 0,
-          routes: [{ name: "Login" }],
-        });
-      }, 1000);
-    };
     performLogout();
   }, [logOutTeam]);
 
