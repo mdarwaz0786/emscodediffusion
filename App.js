@@ -16,7 +16,7 @@ const App = () => {
   useEffect(() => {
     if (!isLoading) {
       SplashScreen.hide();
-    }
+    };
   }, [isLoading]);
 
   // Request notification permissions

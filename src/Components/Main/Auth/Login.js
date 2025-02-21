@@ -27,7 +27,7 @@ const Login = () => {
     const userType = await AsyncStorage.getItem("userType");
     if (userType === "Client") {
       setIsClientLogin(true);
-    } else if (userType === "Employee") {
+    } else {
       setIsClientLogin(false);
     };
   };
