@@ -116,8 +116,8 @@ const SingleProject = ({ route }) => {
             <View>
               <Text style={styles.projectName}>{projectDetails?.projectName}</Text>
               <View style={styles.badgeContainer}>
-                {renderBadge(`Status: ${projectDetails?.projectStatus?.status}`, "#4CAF50")}
-                {renderBadge(`Priority: ${projectDetails?.projectPriority?.name}`, "#FF5722")}
+                {renderBadge(`Status: ${projectDetails?.projectStatus?.status}`, "#4CAF19")}
+                {renderBadge(`Priority: ${projectDetails?.projectPriority?.name}`, "#ffb300")}
               </View>
             </View>
           </View>
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   header: {
-    backgroundColor: "#007bff",
+    backgroundColor: "#009bff",
     padding: 20,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   },
   detailLabel: {
     fontSize: 14,
-    color: "#333",
+    color: "#000",
     marginBottom: 4,
   },
   detailValue: {

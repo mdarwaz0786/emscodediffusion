@@ -88,7 +88,7 @@ const Login = () => {
           {isClientLogin
             ? "Mobile Number"
             : "Employee ID"}
-          <Text style={styles.required}>*</Text>
+          <Text style={styles.required}> *</Text>
         </Text>
         <TextInput
           style={styles.input}

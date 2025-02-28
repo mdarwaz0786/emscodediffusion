@@ -8,20 +8,20 @@ import { useRefresh } from "../../../Context/refresh.context";
 import { ActivityIndicator } from "react-native-paper";
 import Icon from "react-native-vector-icons/Feather";
 
-const Project = () => {
+const Ticket = () => {
   const { validToken } = useAuth();
   const { refreshKey, refreshPage } = useRefresh();
   const navigation = useNavigation();
-  const [project, setProject] = useState([]);
+  const [ticket, setTicket] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const fetchProject = async () => {
+  const fetchTicket = async () => {
     try {
       setLoading(true);
 
       const response = await axios.get(
-        `${API_BASE_URL}/api/v1/project/all-project`,
+        `${API_BASE_URL}/api/v1/ticket/all-ticket`,
         {
           headers: {
             Authorization: validToken,
@@ -30,7 +30,7 @@ const Project = () => {
       );
 
       if (response?.data?.success) {
-        setProject(response?.data?.project);
+        setTicket(response?.data?.tickets);
       };
     } catch (error) {
       console.log("Error:", error.message);
@@ -42,7 +42,7 @@ const Project = () => {
 
   useEffect(() => {
     if (validToken) {
-      fetchProject();
+      fetchTicket();
     };
   }, [refreshKey, validToken]);
 
@@ -54,19 +54,19 @@ const Project = () => {
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.card}
-      onPress={() => navigation.navigate("ProjectDetail", { id: item?._id })}
+      onPress={() => navigation.navigate("TicketDetail", { id: item?._id })}
     >
       <View style={styles.cardHeader}>
         <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{item?.projectName[0]}</Text>
+          <Text style={styles.avatarText}>{item?.title[0]}</Text>
         </View>
         <View>
-          <Text style={styles.projectTitle}>{item?.projectName}</Text>
-          <Text style={styles.projectSubtitle}>{item?.customer?.name}</Text>
+          <Text style={styles.title}>{item?.title}</Text>
+          <Text style={styles.subtitle}>{item?.createdBy?.name}</Text>
         </View>
       </View>
-      <Text style={styles.bottomText}>Project Status: {item?.projectStatus?.status}</Text>
-      <Text style={styles.bottomText}>Project Deadline: {item?.projectDeadline}</Text>
+      <Text style={styles.bottomText}>Project: {item?.project?.projectName}</Text>
+      <Text style={styles.bottomText}>Created At: {new Date(item?.createdAt)?.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}</Text>
     </TouchableOpacity>
   );
 
@@ -79,7 +79,7 @@ const Project = () => {
           color="#000"
           onPress={() => navigation.goBack()}
         />
-        <Text style={styles.headerTitle}>Project</Text>
+        <Text style={styles.headerTitle}>Ticket</Text>
       </View>
 
       <View style={styles.container}>
@@ -88,13 +88,13 @@ const Project = () => {
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <ActivityIndicator size="small" color="#ffb300" />
           </View>
-        ) : project?.length === 0 ? (
+        ) : ticket?.length === 0 ? (
           <Text style={{ textAlign: "center", color: "#777" }}>
-            No project.
+            No ticket.
           </Text>
         ) : (
           <FlatList
-            data={project}
+            data={ticket}
             renderItem={renderItem}
             keyExtractor={(item) => item?._id}
             contentContainerStyle={{ paddingBottom: 16 }}
@@ -153,12 +153,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "400",
   },
-  projectTitle: {
+  title: {
     fontSize: 14,
     fontWeight: "500",
     color: "#555"
   },
-  projectSubtitle: {
+  subtitle: {
     fontSize: 14,
     color: "#666",
   },
@@ -169,4 +169,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Project;
+export default Ticket;
