@@ -89,7 +89,7 @@ const Ticket = () => {
             <ActivityIndicator size="small" color="#ffb300" />
           </View>
         ) : ticket?.length === 0 ? (
-          <Text style={{ textAlign: "center", color: "#777" }}>
+          <Text style={{ textAlign: "center", color: "#555" }}>
             No ticket.
           </Text>
         ) : (

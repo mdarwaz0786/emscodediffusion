@@ -4,6 +4,7 @@ import { ActivityIndicator, View } from "react-native";
 
 // Lazy load the screens
 const TicketScreen = lazy(() => import("../../../Screens/Ticket/TicketScreen.js"));
+const TicketDetailScreen = lazy(() => import("../../../Screens/Ticket/TicketDetailScreen.js"));
 const AddTicketScreen = lazy(() => import("../../../Screens/Ticket/AddTicketScreen.js"));
 
 // Create a Stack Navigator
@@ -21,6 +22,7 @@ const TicketStack = () => {
         initialRouteName="Ticket"
         screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Ticket" component={TicketScreen} />
+        <Stack.Screen name="TicketDetail" component={TicketDetailScreen} />
         <Stack.Screen name="AddTicket" component={AddTicketScreen} />
       </Stack.Navigator>
     </Suspense>
