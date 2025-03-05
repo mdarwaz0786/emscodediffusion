@@ -98,7 +98,7 @@ const TicketDetail = ({ route }) => {
           color="#000"
           onPress={() => navigation.goBack()}
         />
-        <Text style={styles.headerTitle}>Ticket</Text>
+        <Text style={styles.headerTitle}>Ticket Detail</Text>
       </View>
 
       {

@@ -73,13 +73,11 @@ const Ticket = () => {
   return (
     <>
       <View style={styles.header}>
-        <Icon
-          name="arrow-left"
-          size={20}
-          color="#000"
-          onPress={() => navigation.goBack()}
-        />
+        <Icon style={styles.backIcon} name="arrow-left" size={20} color="#000" onPress={() => navigation.goBack()} />
         <Text style={styles.headerTitle}>Ticket</Text>
+        <TouchableOpacity style={styles.buttonAdd} onPress={() => navigation.navigate("AddTicket")}>
+          <Text style={styles.buttonAddText}>Raise New Ticket</Text>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.container}>
@@ -110,17 +108,32 @@ const Ticket = () => {
 const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
     padding: 12,
     backgroundColor: "#fff",
-    zIndex: 1000,
+  },
+  backIcon: {
+    flex: 1,
   },
   headerTitle: {
     flex: 1,
-    textAlign: "center",
     fontSize: 16,
     fontWeight: "400",
     color: "#000",
+  },
+  buttonAdd: {
+    flex: 1,
+    backgroundColor: "#ffb300",
+    paddingVertical: 4,
+    paddingHorizontal: 5,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  buttonAddText: {
+    color: "#fff",
+    fontSize: 13,
+    fontWeight: "500",
   },
   container: {
     flex: 1,
