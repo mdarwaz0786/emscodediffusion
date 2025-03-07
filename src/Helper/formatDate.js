@@ -1,6 +1,6 @@
 // Function to convert date from "YYYY-MM-DD" to "DD MMM YYYY"
 const formatDate = (dateString) => {
-  if (!dateString) return ""; // Return empty if date is not provided
+  if (!dateString) return "";
 
   const months = [
     "January", "February", "March", "April", "May", "June",
@@ -9,7 +9,7 @@ const formatDate = (dateString) => {
 
   const [year, month, day] = dateString.split("-").map(Number);
 
-  const monthName = months[month - 1]; // Month is zero-indexed
+  const monthName = months[month - 1];
   return `${day || ""} ${monthName || ""} ${year || ""}`;
 };
 

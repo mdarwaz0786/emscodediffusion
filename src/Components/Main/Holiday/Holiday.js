@@ -39,7 +39,7 @@ const Holiday = ({ navigation }) => {
   useEffect(() => {
     if (validToken) {
       fetchAllHoliday();
-    }
+    };
   }, [validToken, refreshKey]);
 
   const handleRefresh = () => {
@@ -56,8 +56,8 @@ const Holiday = ({ navigation }) => {
           navigation.navigate('EditHoliday', { id: item?._id })
         }>
         <View style={styles.cardHeader}>
-          <Calender name="calendar" size={20} color="#ffb300" style={styles.icon} />
-          <Text style={[styles.cardTitle, { marginRight: 10 }]}>{formatDate(item?.date)}</Text>
+          <Calender name="calendar" size={18} color="#ffb300" style={styles.icon} />
+          <Text style={[styles.cardTitle, { marginRight: 20 }]}>{formatDate(item?.date)}</Text>
           <Text style={styles.cardTitle}>{item?.reason}</Text>
         </View>
       </TouchableOpacity>
@@ -85,7 +85,7 @@ const Holiday = ({ navigation }) => {
         {
           (team?.role?.name.toLowerCase() === "admin") && (
             <TouchableOpacity style={styles.buttonAdd} onPress={() => navigation.navigate("AddHoliday")}>
-              <Text style={styles.buttonAddText}>Add Holiday</Text>
+              <Text style={styles.buttonAddText}>Add New Holiday</Text>
             </TouchableOpacity>
           )
         }
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 8,
     backgroundColor: "#fff",
-    padding: 15,
+    padding: 10,
     marginBottom: 16,
   },
   cardHeader: {
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   icon: {
-    marginRight: 8,
+    marginRight: 5,
   },
   cardTitle: {
     fontSize: 14,

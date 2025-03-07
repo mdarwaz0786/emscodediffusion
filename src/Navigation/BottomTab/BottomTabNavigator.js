@@ -10,6 +10,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const NotificationTobTab = lazy(() => import("../TopTab/NotificationTopTab/NotificationTopTab.js"),);
 const CustomDrawerNavigator = lazy(() => import("../Drawer/CustomDrawerNavigator.js"));
 const ProfileScreen = lazy(() => import("../../Screens/Profile/ProfileScreen.js"));
+const ClientProfileScreen = lazy(() => import("../../Screens/ClientProfile/ClientProfileScreen.js"));
 
 const Tab = createBottomTabNavigator();
 
@@ -78,12 +79,17 @@ const BottomTabNavigator = () => {
         })}>
         {
           (userType === "Client") ? (
-            <Tab.Screen name="Home" component={ClientHomeScreen} />
+            <>
+              <Tab.Screen name="Home" component={ClientHomeScreen} />
+              <Tab.Screen name="Profile" component={ClientProfileScreen} />
+            </>
           ) : (
-            <Tab.Screen name="Home" component={HomeScreen} />
+            <>
+              <Tab.Screen name="Home" component={HomeScreen} />
+              <Tab.Screen name="Profile" component={ProfileScreen} />
+            </>
           )
         }
-        <Tab.Screen name="Profile" component={ProfileScreen} />
         <Tab.Screen name="Notifications" component={NotificationTobTab} />
         <Tab.Screen name="Menu" component={CustomDrawerNavigator} />
       </Tab.Navigator>

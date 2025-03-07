@@ -28,7 +28,7 @@ import Toast from "react-native-toast-message";
 import { useRefresh } from "../../../Context/refresh.context.js";
 import { ActivityIndicator } from "react-native-paper";
 
-const SalarySlip = () => {
+const SalarySlip = ({ navigation }) => {
   const { validToken, team } = useAuth();
   const { refreshKey, refreshPage } = useRefresh();
   const [loading, setLoading] = useState(true);

@@ -4,7 +4,10 @@ const months = [
 ];
 
 function getMonthName(monthNumber) {
-  if (monthNumber === "") return;
+  if (monthNumber === "") {
+    return;
+  };
+
   const index = parseInt(monthNumber, 10) - 1;
   return months[index] || "Invalid Month";
 };

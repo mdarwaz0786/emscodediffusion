@@ -13,7 +13,6 @@ const LeaveBalanceScreen = () => {
   const { validToken, team } = useAuth();
   const { refreshKey, refreshPage } = useRefresh();
   const [showAllAlloted, setShowAllAlloted] = useState(false);
-  const [showAllUsed, setShowAllUsed] = useState(false);
   const [showAllLeaves, setShowAllLeaves] = useState(false);
   const [employee, setEmployee] = useState("");
   const [leaves, setLeaves] = useState([]);

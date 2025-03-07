@@ -9,7 +9,7 @@ const getUserLocation = async () => {
   if (!hasPermission) {
     Toast.show({ type: "error", text1: "Location permission is required to proceed." });
     return null;
-  }
+  };
 
   return new Promise((resolve, reject) => {
     Geolocation.getCurrentPosition(

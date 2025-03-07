@@ -28,6 +28,15 @@ const AddOffice = ({ navigation }) => {
   const [addressLine1, setAddressLine1] = useState("");
   const [addressLine2, setAddressLine2] = useState("");
   const [addressLine3, setAddressLine3] = useState("");
+  const [websiteLink, setWebsiteLink] = useState("");
+  const [noReplyEmail, setNoReplyEmail] = useState("");
+  const [noReplyEmailAppPassword, setNoReplyEmailAppPassword] = useState("");
+  const [GSTNumber, setGSTNumber] = useState("");
+  const [accountName, setAccountName] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+  const [accountType, setAccountType] = useState("");
+  const [bankName, setBankName] = useState("");
+  const [IFSCCode, setIFSCCode] = useState("");
   const { validToken } = useAuth();
 
   async function fetchLatLong() {
@@ -75,9 +84,20 @@ const AddOffice = ({ navigation }) => {
       !latitude ||
       !longitude ||
       !attendanceRadius ||
-      !addressLine1
+      !addressLine1 ||
+      !addressLine2 ||
+      !addressLine3 ||
+      !GSTNumber ||
+      !noReplyEmail ||
+      !noReplyEmailAppPassword ||
+      !accountName ||
+      !accountNumber ||
+      !accountType ||
+      !bankName ||
+      !IFSCCode ||
+      !websiteLink
     ) {
-      Toast.show({ type: "error", text1: "Please fill in all required fields" });
+      Toast.show({ type: "error", text1: "All fields are required." });
       return;
     };
 
@@ -92,6 +112,16 @@ const AddOffice = ({ navigation }) => {
     formData.append("addressLine1", addressLine1);
     formData.append("addressLine2", addressLine2);
     formData.append("addressLine3", addressLine3);
+    formData.append("GSTNumber", GSTNumber);
+    formData.append("noReplyEmail", noReplyEmail);
+    formData.append("noReplyEmailAppPassword", noReplyEmailAppPassword);
+    formData.append("bankName", bankName);
+    formData.append("IFSCCode", IFSCCode);
+    formData.append("accountName", accountName);
+    formData.append("accountNumber", accountNumber);
+    formData.append("accountType", accountType);
+    formData.append("websiteLink", websiteLink);
+
     // Append logo
     if (logo && logo.uri) {
       formData.append("logo", {
@@ -124,6 +154,14 @@ const AddOffice = ({ navigation }) => {
         setAddressLine1("");
         setAddressLine2("");
         setAddressLine3("");
+        setNoReplyEmail("");
+        setNoReplyEmailAppPassword("");
+        setGSTNumber("");
+        setAccountName("");
+        setAccountNumber("");
+        setAccountType("");
+        setBankName("");
+        setIFSCCode("");
         Toast.show({ type: "success", text1: "Submitted successfully" });
         navigation.goBack();
       };
@@ -186,7 +224,7 @@ const AddOffice = ({ navigation }) => {
 
           <View style={{ marginBottom: 0 }}>
             <Text style={{ marginBottom: 5, color: "#555" }}>
-              Email Id <Text style={{ color: "red" }}>*</Text>
+              Email ID <Text style={{ color: "red" }}>*</Text>
             </Text>
             <TextInput
               value={email}
@@ -205,6 +243,8 @@ const AddOffice = ({ navigation }) => {
               style={styles.input}
             />
           </View>
+
+          <Text style={{ textAlign: "center", marginVertical: 15, color: "#000", fontWeight: "500" }}>Location Detail</Text>
 
           <View style={{ marginBottom: 0 }}>
             <Text style={{ marginBottom: 5, color: "#555" }}>
@@ -251,7 +291,8 @@ const AddOffice = ({ navigation }) => {
           </View>
 
           <View style={{ marginBottom: 0 }}>
-            <Text style={{ marginBottom: 5, color: "#555" }}>Address Line 2</Text>
+            <Text style={{ marginBottom: 5, color: "#555" }}>
+              Address Line 2 <Text style={{ color: "red" }}>*</Text></Text>
             <TextInput
               value={addressLine2}
               onChangeText={setAddressLine2}
@@ -260,7 +301,8 @@ const AddOffice = ({ navigation }) => {
           </View>
 
           <View style={{ marginBottom: 0 }}>
-            <Text style={{ marginBottom: 5, color: "#555" }}>Address Line 3</Text>
+            <Text style={{ marginBottom: 5, color: "#555" }}>
+              Address Line 3 <Text style={{ color: "red" }}>*</Text></Text>
             <TextInput
               value={addressLine3}
               onChangeText={setAddressLine3}

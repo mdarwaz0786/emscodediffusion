@@ -9,42 +9,33 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { useAuth } from "../../Context/auth.context.js";
 import Toast from "react-native-toast-message";
 import { API_BASE_URL } from "@env";
-import formatTimeToHoursMinutes from "../../Helper/formatTimeToHoursMinutes.js";
-import formatDate from "../../Helper/formatDate.js";
 import axios from "axios";
 import updateLocalStorageFields from "./utils/updateLocalStorageFields.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const ProfileScreen = () => {
+const ClientProfileScreen = () => {
   const { team, setTeam, validToken } = useAuth();
   const id = team?._id;
   const [name, setName] = useState(team?.name);
   const [email, setEmail] = useState(team?.email);
   const [mobile, setMobile] = useState(team?.mobile);
-  const [dob, setDob] = useState(team?.dob);
-  const [joining, setJoining] = useState(team?.joining);
-  const [isDobPickerVisible, setIsDobPickerVisible] = useState(false);
+  const [GSTNumber, setGSTNumber] = useState(team?.GSTNumber);
+  const [state, setState] = useState(team?.state);
+  const [address, setAddress] = useState(team?.address);
+  const [companyName, setCompanyName] = useState(team?.companyName);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const toggleModal = () => setIsModalVisible(!isModalVisible);
 
-  const showDobPicker = () => setIsDobPickerVisible(true);
-
-  const onDobChange = (event, selectedDate) => {
-    setIsDobPickerVisible(false);
-    if (event.type === "set" && selectedDate) setDob(selectedDate.toISOString().split("T")[0]);
-  };
-
   const fetchTeamData = async (id) => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${API_BASE_URL}/api/v1/team/loggedin-team`,
+        `${API_BASE_URL}/api/v1/customer/loggedin-customer`,
         { headers: { Authorization: validToken } },
       );
 
@@ -56,7 +47,7 @@ const ProfileScreen = () => {
         );
       };
     } catch (error) {
-      console.log("Error while fetching employee profile:", error?.response?.data?.message);
+      console.log("Error while fetching client data:", error?.response?.data?.message);
     } finally {
       setLoading(false);
     };
@@ -65,8 +56,8 @@ const ProfileScreen = () => {
   const handleUpdate = async (id) => {
     try {
       const response = await axios.put(
-        `${API_BASE_URL}/api/v1/team/update-team/${id}`,
-        { name, email, mobile, dob, joining },
+        `${API_BASE_URL}/api/v1/customer/update-customer/${id}`,
+        { name, email, mobile, GSTNumber, state, address, companyName },
         {
           headers: {
             Authorization: validToken,
@@ -80,13 +71,15 @@ const ProfileScreen = () => {
           name: name,
           email: email,
           mobile: mobile,
-          dob: dob,
+          GSTNumber: GSTNumber,
+          companyName: companyName,
+          state: state,
+          address: address,
         });
         fetchTeamData();
         Toast.show({ type: "success", text1: "Profile updated successfully" });
       };
     } catch (error) {
-      console.log("Error while updating profile:", error?.response?.data?.message);
       Toast.show({ type: "error", text1: "Error while updating profile" });
     };
   };
@@ -110,25 +103,17 @@ const ProfileScreen = () => {
               </View>
               <View style={styles.textContainer}>
                 <Text style={styles.name}>{team?.name}</Text>
-                <Text style={styles.designation}>
-                  {team?.designation?.name}
-                </Text>
+                <Text style={styles.designation}>{team?.role?.name}</Text>
               </View>
             </View>
 
             <View style={styles.infoCard}>
-              <DetailRow label="Employee ID" value={team?.employeeId} />
               <DetailRow label="Email" value={team?.email} />
               <DetailRow label="Mobile" value={team?.mobile} />
-              <DetailRow label="Joining Date" value={formatDate(team?.joining)} />
-              <DetailRow label="Date of Birth" value={formatDate(team?.dob)} />
-              <DetailRow label="Monthly Salary" value={`₹${team?.monthlySalary}`} />
-              <DetailRow label="Working Hours/Day" value={formatTimeToHoursMinutes(team?.workingHoursPerDay)} />
-              <DetailRow label="Department" value={team?.department?.name} />
-              <DetailRow label="Office" value={team?.office?.name} />
-              <DetailRow label="Active" value={team?.isActive ? "Yes" : "No"} />
-              <DetailRow label="Role" value={team?.role?.name} />
-              <DetailRow label="Reporting To" value={team?.reportingTo?.map((t) => t?.name).join(", ")} />
+              <DetailRow label="GST Number" value={team?.GSTNumber} />
+              <DetailRow label="Company Name" value={team?.companyName} />
+              <DetailRow label="State" value={team?.state} />
+              <DetailRow label="Address" value={team?.address} />
             </View>
 
             <TouchableOpacity style={styles.editButton} onPress={toggleModal}>
@@ -166,21 +151,33 @@ const ProfileScreen = () => {
                     onChangeText={setMobile}
                   />
 
-                  <Text style={styles.label}>Date of Birth:</Text>
-                  <TouchableOpacity
-                    style={[styles.input, styles.dateInput]}
-                    onPress={showDobPicker}
-                  >
-                    <Text style={{ color: "#777" }}>{dob}</Text>
-                  </TouchableOpacity>
-                  {isDobPickerVisible && (
-                    <DateTimePicker
-                      value={dob ? new Date(dob) : new Date()}
-                      mode="date"
-                      display="default"
-                      onChange={onDobChange}
-                    />
-                  )}
+                  <Text style={styles.label}>GST Number:</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={GSTNumber}
+                    onChangeText={setGSTNumber}
+                  />
+
+                  <Text style={styles.label}>Company Name:</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={companyName}
+                    onChangeText={setCompanyName}
+                  />
+
+                  <Text style={styles.label}>State:</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={state}
+                    onChangeText={setState}
+                  />
+
+                  <Text style={styles.label}>Address:</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={address}
+                    onChangeText={setAddress}
+                  />
 
                   <View style={styles.buttonGroup}>
                     <TouchableOpacity
@@ -351,4 +348,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProfileScreen;
+export default ClientProfileScreen;

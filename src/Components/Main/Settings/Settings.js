@@ -112,18 +112,26 @@ const Settings = ({ navigation }) => {
       </View>
       <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Unique Code: </Text>{item?.uniqueCode}</Text>
       <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Company Name: </Text>{item?.name}</Text>
-      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Email: </Text>{item?.email}</Text>
-      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Contact: </Text>{item?.contact}</Text>
+      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>GST Number: </Text>{item?.GSTNumber}</Text>
+      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Website Link: </Text>{item?.websiteLink}</Text>
+      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Email ID: </Text>{item?.email}</Text>
+      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Contact Number: </Text>{item?.contact}</Text>
+      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>No Reply Email: </Text>{item?.noReplyEmail}</Text>
+      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>No Reply Email App Password: </Text>{item?.noReplyEmailAppPassword}</Text>
+      <Text style={{ textAlign: "center", marginVertical: 15, color: "#000", fontWeight: "500" }}>Bank Detail</Text>
+      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Account Number: </Text>{item?.accountNumber}</Text>
+      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>IFSC Code: </Text>{item?.IFSCCode}</Text>
+      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Account Name: </Text>{item?.accountName}</Text>
+      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Account Type: </Text>{item?.accountType}</Text>
+      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Bank Name: </Text>{item?.bankName}</Text>
+      <Text style={{ textAlign: "center", marginVertical: 15, color: "#000", fontWeight: "500" }}>Location Detail</Text>
       <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Latitude: </Text>{item?.latitude}</Text>
       <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Longitude: </Text>{item?.longitude}</Text>
       <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Attendance Raduis: </Text>{item?.attendanceRadius} meters</Text>
-      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Address: </Text>{item?.addressLine1}</Text>
-      {item?.addressLine2 && (
-        <Text style={styles.cardDetail}> {item?.addressLine2}</Text>
-      )}
-      {item?.addressLine3 && (
-        <Text style={styles.cardDetail}> {item?.addressLine3}</Text>
-      )}
+      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Address Line 1: </Text>{item?.addressLine1}</Text>
+      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Address Line 2: </Text>{item?.addressLine2}</Text>
+      <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Address Line 3: </Text>{item?.addressLine3}</Text>
+
       {/* Popup for Edit/Delete */}
       {popupVisible === item?._id && (
         <View style={styles.popup}>
@@ -299,11 +307,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 10,
+    marginTop: 10,
   },
   logo: {
-    width: 130,
-    height: 50,
-    resizeMode: "contain",
+    width: 100,
+    height: 30,
+    resizeMode: "stretch",
   },
   cardDetail: {
     fontSize: 14,

@@ -39,9 +39,16 @@ const Home = () => {
   useEffect(() => {
     if (team) {
       setEmployeeId(team?._id);
-      const today = new Date().toISOString().split("T")[0];
-      setCurrentDate(today);
-      setCurrentMonth(today.slice(0, 7));
+
+      const istDate = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Kolkata",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(new Date());
+
+      setCurrentDate(istDate);
+      setCurrentMonth(istDate.slice(0, 7));
     };
   }, [team]);
 
@@ -71,7 +78,7 @@ const Home = () => {
         setAttendance(response?.data?.attendance);
       };
     } catch (error) {
-      console.log("Error while fetching attendance:", error?.response?.data?.message);
+      console.log("Error:", error?.response?.data?.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -91,7 +98,7 @@ const Home = () => {
         setMonthlyStatistic(response?.data?.attendance);
       };
     } catch (error) {
-      console.log("Error while fetching monthly statistic:", error?.response?.data?.message);
+      console.log("Error:", error?.response?.data?.message);
     } finally {
       setRefreshing(false);
     };
@@ -109,7 +116,7 @@ const Home = () => {
 
       const { latitude, longitude } = position;
 
-      const isWithinOffice = await isWithinOfficeLocation(latitude, longitude, validToken, team);
+      const isWithinOffice = await isWithinOfficeLocation(latitude, longitude, validToken);
 
       if (!isWithinOffice) {
         Toast.show({ type: "error", text1: "Attendance can only be marked in office." });
@@ -141,7 +148,6 @@ const Home = () => {
 
       await processAttendance(apiMethod, apiEndpoint, requestData, successMessage, validToken);
     } catch (error) {
-      console.log(error.message);
       Toast.show({ type: "error", text1: error.message || "Try again" });
     };
   }, [validToken, team]);
@@ -163,7 +169,6 @@ const Home = () => {
         Toast.show({ type: "success", text1: successMessage });
       };
     } catch (error) {
-      console.log(error.message);
       Toast.show({ type: "error", text1: error?.response?.data?.message || "Please try again" });
     };
   };
@@ -184,7 +189,7 @@ const Home = () => {
     refreshPage();
   };
 
-  // Statistic data
+  // Monthly Statistic data
   const statistics = useMemo(() => [
     { label: " Month", value: formatDate(monthlyStatistic?.month) || "-", icon: "📅" },
     { label: "Total Days in This Month", value: monthlyStatistic?.totalDaysInMonth || 0, icon: "📆" },
@@ -260,7 +265,7 @@ const Home = () => {
           <Text style={styles.greetingText}>
             {getGreeting()}, {team?.name?.split(" ", 1)[0]}!
           </Text>
-          <Text style={styles.dateText}>{new Date().toDateString()}</Text>
+          <Text style={styles.dateText}>{(new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000)).toDateString()}</Text>
         </View>
 
         {/* Today's Activity */}
@@ -306,7 +311,7 @@ const Home = () => {
             Total Hours Worked:{" "}
             {formatTimeToHoursMinutes(attendance[0]?.hoursWorked) || "0"}
           </Text>
-          <Text style={{ color: "#777" }}>Break Time: 45 minutes</Text>
+          <Text style={{ color: "#777" }}>Break Time: 01:45 PM To 02:30 PM</Text>
         </View>
 
         {/* Monthly Statistics */}

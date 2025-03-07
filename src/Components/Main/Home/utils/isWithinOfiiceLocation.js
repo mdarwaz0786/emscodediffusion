@@ -24,15 +24,9 @@ const getDistance = (lat1, lon1, lat2, lon2) => {
 };
 
 // Fetch office latitude and longitude and check proximity
-const isWithinOfficeLocation = async (userLatitude, userLongitude, validToken, team) => {
-  const officeId = team?.office?._id;
-
-  if (!officeId) {
-    return false;
-  };
-
+const isWithinOfficeLocation = async (userLatitude, userLongitude, validToken) => {
   try {
-    const { data } = await axios.get(`${API_BASE_URL}/api/v1/officeLocation/single-officeLocation/${officeId}`, {
+    const { data } = await axios.get(`${API_BASE_URL}/api/v1/officeLocation/all-officeLocation`, {
       headers: { Authorization: validToken },
     });
 
@@ -40,17 +34,14 @@ const isWithinOfficeLocation = async (userLatitude, userLongitude, validToken, t
       throw new Error("Failed to fetch office location.");
     };
 
-    const { latitude, longitude, attendanceRadius } = data?.officeLocation;
+    const validLocations = data?.officeLocation?.filter(({ latitude, longitude }) =>
+      latitude && longitude && !isNaN(latitude) && !isNaN(longitude)
+    );
 
-    if (!latitude || !longitude || !attendanceRadius) {
-      throw new Error("Invalid office location data.");
-    };
-
-    const distance = getDistance(userLatitude, userLongitude, parseFloat(latitude), parseFloat(longitude));
-
-    return distance <= parseFloat(attendanceRadius);
+    return validLocations?.some(({ latitude, longitude, attendanceRadius }) =>
+      getDistance(userLatitude, userLongitude, parseFloat(latitude), parseFloat(longitude)) <= parseFloat(attendanceRadius)
+    );
   } catch (error) {
-    console.log("Error while fetching office location:", error.message);
     return false;
   };
 };
