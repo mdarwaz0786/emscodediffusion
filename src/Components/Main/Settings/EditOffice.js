@@ -32,6 +32,15 @@ const EditOffice = ({ navigation, route }) => {
   const [addressLine1, setAddressLine1] = useState("");
   const [addressLine2, setAddressLine2] = useState("");
   const [addressLine3, setAddressLine3] = useState("");
+  const [websiteLink, setWebsiteLink] = useState("");
+  const [noReplyEmail, setNoReplyEmail] = useState("");
+  const [noReplyEmailAppPassword, setNoReplyEmailAppPassword] = useState("");
+  const [GSTNumber, setGSTNumber] = useState("");
+  const [accountName, setAccountName] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+  const [accountType, setAccountType] = useState("");
+  const [bankName, setBankName] = useState("");
+  const [IFSCCode, setIFSCCode] = useState("");
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { validToken } = useAuth();
@@ -59,7 +68,7 @@ const EditOffice = ({ navigation, route }) => {
       },
       (response) => {
         if (response.didCancel) {
-          Toast.show({ type: "info", text1: "Image selection canceled" });
+          Toast.show({ type: "info", text1: "Image selection cancelled" });
         } else if (response.errorCode) {
           Toast.show({ type: "error", text1: "Image selection error" });
         } else {
@@ -94,9 +103,18 @@ const EditOffice = ({ navigation, route }) => {
         setAddressLine1(office?.addressLine1);
         setAddressLine2(office?.addressLine2);
         setAddressLine3(office?.addressLine3);
+        setWebsiteLink(office?.websiteLink);
+        setNoReplyEmail(office?.noReplyEmail);
+        setNoReplyEmailAppPassword(office?.noReplyEmailAppPassword);
+        setGSTNumber(office?.GSTNumber);
+        setAccountName(office?.accountName);
+        setAccountNumber(office?.accountNumber);
+        setAccountType(office?.accountType);
+        setBankName(office?.bankName);
+        setIFSCCode(office?.IFSCCode);
       };
     } catch (error) {
-      console.log("Error while fetching single office location:", error.message);
+      console.log("Error:", error.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -109,7 +127,7 @@ const EditOffice = ({ navigation, route }) => {
     };
   }, [id, refreshKey]);
 
-  const handleUpdate = async id => {
+  const handleUpdate = async (id) => {
     const formData = new FormData();
     formData.append("uniqueCode", uniqueCode);
     formData.append("name", name);
@@ -121,6 +139,16 @@ const EditOffice = ({ navigation, route }) => {
     formData.append("addressLine1", addressLine1);
     formData.append("addressLine2", addressLine2);
     formData.append("addressLine3", addressLine3);
+    formData.append("GSTNumber", GSTNumber);
+    formData.append("noReplyEmail", noReplyEmail);
+    formData.append("noReplyEmailAppPassword", noReplyEmailAppPassword);
+    formData.append("bankName", bankName);
+    formData.append("IFSCCode", IFSCCode);
+    formData.append("accountName", accountName);
+    formData.append("accountNumber", accountNumber);
+    formData.append("accountType", accountType);
+    formData.append("websiteLink", websiteLink);
+
     // Append logo only if a new one is uploaded
     if (logo && logo.uri) {
       formData.append("logo", {
@@ -154,6 +182,14 @@ const EditOffice = ({ navigation, route }) => {
         setAddressLine1("");
         setAddressLine2("");
         setAddressLine3("");
+        setNoReplyEmail("");
+        setNoReplyEmailAppPassword("");
+        setGSTNumber("");
+        setAccountName("");
+        setAccountNumber("");
+        setAccountType("");
+        setBankName("");
+        setIFSCCode("");
         Toast.show({ type: "success", text1: "Submitted successfully" });
         navigation.goBack();
       };
@@ -221,8 +257,31 @@ const EditOffice = ({ navigation, route }) => {
                 />
               </View>
 
+
               <View style={{ marginBottom: 0 }}>
-                <Text style={{ marginBottom: 5, color: "#555" }}>Upload Logo</Text>
+                <Text style={{ marginBottom: 5, color: "#555" }}>
+                  Website Link <Text style={{ color: "red" }}>*</Text>
+                </Text>
+                <TextInput
+                  value={websiteLink}
+                  onChangeText={setWebsiteLink}
+                  style={styles.input}
+                />
+              </View>
+
+              <View style={{ marginBottom: 0 }}>
+                <Text style={{ marginBottom: 5, color: "#555" }}>
+                  GST Number <Text style={{ color: "red" }}>*</Text>
+                </Text>
+                <TextInput
+                  value={GSTNumber}
+                  onChangeText={setGSTNumber}
+                  style={styles.input}
+                />
+              </View>
+
+              <View style={{ marginBottom: 0 }}>
+                <Text style={{ marginBottom: 5, color: "#555" }}>Upload Logo <Text style={{ color: "red" }}>*</Text></Text>
                 <TouchableOpacity onPress={selectLogo} style={styles.logoButton}>
                   <Text style={styles.logoButtonText}></Text>
                 </TouchableOpacity>
@@ -256,6 +315,98 @@ const EditOffice = ({ navigation, route }) => {
                   style={styles.input}
                 />
               </View>
+
+              <View style={{ marginBottom: 0 }}>
+                <Text style={{ marginBottom: 5, color: "#555" }}>
+                  No Reply Email <Text style={{ color: "red" }}>*</Text>
+                </Text>
+                <TextInput
+                  value={noReplyEmail}
+                  onChangeText={setNoReplyEmail}
+                  style={styles.input}
+                />
+              </View>
+
+              <View style={{ marginBottom: 0 }}>
+                <Text style={{ marginBottom: 5, color: "#555" }}>
+                  No Reply Email App Password <Text style={{ color: "red" }}>*</Text>
+                </Text>
+                <TextInput
+                  value={noReplyEmailAppPassword}
+                  onChangeText={setNoReplyEmailAppPassword}
+                  style={styles.input}
+                />
+              </View>
+
+              <Text style={{ textAlign: "center", marginTop: 20, marginBottom: 5, color: "#333", fontWeight: "500" }}>Bank Detail</Text>
+
+              <View style={{ marginBottom: 0 }}>
+                <Text style={{ marginBottom: 5, color: "#555" }}>
+                  Account Number <Text style={{ color: "red" }}>*</Text>
+                </Text>
+                <TextInput
+                  value={accountNumber}
+                  onChangeText={setAccountNumber}
+                  style={styles.input}
+                />
+              </View>
+
+              <View style={{ marginBottom: 0 }}>
+                <Text style={{ marginBottom: 5, color: "#555" }}>
+                  IFSC Code <Text style={{ color: "red" }}>*</Text>
+                </Text>
+                <TextInput
+                  value={IFSCCode}
+                  onChangeText={setIFSCCode}
+                  style={styles.input}
+                />
+              </View>
+
+              <View style={{ marginBottom: 0 }}>
+                <Text style={{ marginBottom: 5, color: "#555" }}>
+                  Account Name <Text style={{ color: "red" }}>*</Text>
+                </Text>
+                <TextInput
+                  value={accountName}
+                  onChangeText={setAccountName}
+                  style={styles.input}
+                />
+              </View>
+
+              <View style={{ marginBottom: 0 }}>
+                <Text style={{ marginBottom: 5, color: "#555" }}>
+                  Account Number <Text style={{ color: "red" }}>*</Text>
+                </Text>
+                <TextInput
+                  value={accountNumber}
+                  onChangeText={setAccountNumber}
+                  style={styles.input}
+                />
+              </View>
+
+              <View style={{ marginBottom: 0 }}>
+                <Text style={{ marginBottom: 5, color: "#555" }}>
+                  Account Type <Text style={{ color: "red" }}>*</Text>
+                </Text>
+                <TextInput
+                  value={accountType}
+                  onChangeText={setAccountType}
+                  style={styles.input}
+                />
+              </View>
+
+              <View style={{ marginBottom: 0 }}>
+                <Text style={{ marginBottom: 5, color: "#555" }}>
+                  Bank Name <Text style={{ color: "red" }}>*</Text>
+                </Text>
+                <TextInput
+                  value={bankName}
+                  onChangeText={setBankName}
+                  style={styles.input}
+                />
+              </View>
+
+              <Text style={{ textAlign: "center", marginTop: 20, marginBottom: 5, color: "#333", fontWeight: "500" }}>Location Detail</Text>
 
               <View style={{ marginBottom: 0 }}>
                 <Text style={{ marginBottom: 5, color: "#555" }}>

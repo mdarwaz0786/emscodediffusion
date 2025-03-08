@@ -18,6 +18,8 @@ const ApplyMissedPunchOut = lazy(() => import("../../Components/Main/ApplyMissed
 const ApplyLatePunchIn = lazy(() => import("../../Components/Main/ApplyLatePunchIn/ApplyLatePunchIn.js"));
 const ApplyCompOff = lazy(() => import("../../Components/Main/ApplyCompOff/ApplyCompOff.js"));
 const ProjectStack = lazy(() => import("../Stack/ProjectStack/ProjectStack.js"));
+const TaxInvoice = lazy(() => import("../../Components/Main/TaxInvoice/TaxInvoice.js"));
+const ProformaInvoice = lazy(() => import("../../Components/Main/ProformaInvoive/ProformaInvoice.js"));
 const TicketStack = lazy(() => import("../Stack/TicketStack/TicketStack.js"));
 const ContactUsScreen = lazy(() => import("../../Screens/ContactUs/ContactUsScreen.js"));
 const AboutUsScreen = lazy(() => import("../../Screens/AboutUs/AboutUsScreen.js"));
@@ -58,6 +60,8 @@ const DrawerNavigator = () => {
             <Drawer.Screen name="ApplyLatePunchIn" component={ApplyLatePunchIn} />
             <Drawer.Screen name="ApplyCompOff" component={ApplyCompOff} />
             <Drawer.Screen name="ProjectStack" component={ProjectStack} />
+            <Drawer.Screen name="TaxInvoice" component={TaxInvoice} />
+            <Drawer.Screen name="ProformaInvoice" component={ProformaInvoice} />
             <Drawer.Screen name="TicketStack" component={TicketStack} />
             <Drawer.Screen name="About" component={AboutUsScreen} />
             <Drawer.Screen name="Contact" component={ContactUsScreen} />

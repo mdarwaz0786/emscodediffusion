@@ -46,7 +46,7 @@ const Settings = ({ navigation }) => {
         setOffice(response?.data?.officeLocation);
       };
     } catch (error) {
-      console.log("Error while fetching all office location:", error.message);
+      console.log("Error:", error.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -76,7 +76,7 @@ const Settings = ({ navigation }) => {
           Toast.show({ type: "success", text1: "Deleted successfully" });
         };
       } catch (error) {
-        console.log("Error while deleting office location:", error.message);
+        console.log("Error:", error.message);
       } finally {
         setConfirmationVisible(false);
         setPopupVisible(null);
@@ -84,7 +84,7 @@ const Settings = ({ navigation }) => {
         setConfirmationText("");
       };
     } else {
-      alert("Please type 'yes' to confirm deletion.");
+      alert('Please type "yes" to confirm deletion.');
     };
   };
 
@@ -93,7 +93,7 @@ const Settings = ({ navigation }) => {
     refreshPage();
   };
 
-  const renderOfficeCard = item => (
+  const renderOfficeCard = (item) => (
     <View style={styles.card} key={item?._id}>
       <View style={styles.cardHeader}>
         {item?.logo ? (
@@ -118,13 +118,13 @@ const Settings = ({ navigation }) => {
       <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Contact Number: </Text>{item?.contact}</Text>
       <Text style={styles.cardDetail}><Text style={styles.cardLabel}>No Reply Email: </Text>{item?.noReplyEmail}</Text>
       <Text style={styles.cardDetail}><Text style={styles.cardLabel}>No Reply Email App Password: </Text>{item?.noReplyEmailAppPassword}</Text>
-      <Text style={{ textAlign: "center", marginVertical: 15, color: "#000", fontWeight: "500" }}>Bank Detail</Text>
+      <Text style={{ textAlign: "center", marginTop: 20, marginBottom: 5, color: "#333", fontWeight: "500" }}>Bank Detail</Text>
       <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Account Number: </Text>{item?.accountNumber}</Text>
       <Text style={styles.cardDetail}><Text style={styles.cardLabel}>IFSC Code: </Text>{item?.IFSCCode}</Text>
       <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Account Name: </Text>{item?.accountName}</Text>
       <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Account Type: </Text>{item?.accountType}</Text>
       <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Bank Name: </Text>{item?.bankName}</Text>
-      <Text style={{ textAlign: "center", marginVertical: 15, color: "#000", fontWeight: "500" }}>Location Detail</Text>
+      <Text style={{ textAlign: "center", marginTop: 20, marginBottom: 5, color: "#333", fontWeight: "500" }}>Location Detail</Text>
       <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Latitude: </Text>{item?.latitude}</Text>
       <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Longitude: </Text>{item?.longitude}</Text>
       <Text style={styles.cardDetail}><Text style={styles.cardLabel}>Attendance Raduis: </Text>{item?.attendanceRadius} meters</Text>

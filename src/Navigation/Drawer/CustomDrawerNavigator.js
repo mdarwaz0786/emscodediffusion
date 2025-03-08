@@ -81,9 +81,15 @@ const CustomDrawerNavigator = () => {
       show: true,
     },
     {
-      label: "Invoice",
+      label: "Tax Invoice",
       icon: "file-tray-outline",
-      route: "InvoiceStack",
+      route: "TaxInvoice",
+      show: true,
+    },
+    {
+      label: "Proforma Invoice",
+      icon: "document-text-outline",
+      route: "ProformaInvoice",
       show: true,
     },
     {

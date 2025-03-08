@@ -67,7 +67,7 @@ const NotificationTopTab = () => {
           }}
         >
           {
-            team?.role?.name?.toLowerCase() === "admin" && (
+            (team?.role?.name?.toLowerCase() === "admin" || team?.role?.name?.toLowerCase() === "hr") && (
               <>
                 <Tab.Screen
                   name="TodayAttendance"

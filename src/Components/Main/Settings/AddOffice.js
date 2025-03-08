@@ -212,7 +212,29 @@ const AddOffice = ({ navigation }) => {
           </View>
 
           <View style={{ marginBottom: 0 }}>
-            <Text style={{ marginBottom: 5, color: "#555" }}>Upload Logo</Text>
+            <Text style={{ marginBottom: 5, color: "#555" }}>
+              Website Link <Text style={{ color: "red" }}>*</Text>
+            </Text>
+            <TextInput
+              value={websiteLink}
+              onChangeText={setWebsiteLink}
+              style={styles.input}
+            />
+          </View>
+
+          <View style={{ marginBottom: 0 }}>
+            <Text style={{ marginBottom: 5, color: "#555" }}>
+              GST Number <Text style={{ color: "red" }}>*</Text>
+            </Text>
+            <TextInput
+              value={GSTNumber}
+              onChangeText={setGSTNumber}
+              style={styles.input}
+            />
+          </View>
+
+          <View style={{ marginBottom: 0 }}>
+            <Text style={{ marginBottom: 5, color: "#555" }}>Upload Logo <Text style={{ color: "red" }}>*</Text></Text>
             <TouchableOpacity onPress={selectLogo} style={styles.logoButton}>
               <Text style={styles.logoButtonText}></Text>
             </TouchableOpacity>
@@ -244,7 +266,97 @@ const AddOffice = ({ navigation }) => {
             />
           </View>
 
-          <Text style={{ textAlign: "center", marginVertical: 15, color: "#000", fontWeight: "500" }}>Location Detail</Text>
+          <View style={{ marginBottom: 0 }}>
+            <Text style={{ marginBottom: 5, color: "#555" }}>
+              No Reply Email <Text style={{ color: "red" }}>*</Text>
+            </Text>
+            <TextInput
+              value={noReplyEmail}
+              onChangeText={setNoReplyEmail}
+              style={styles.input}
+            />
+          </View>
+
+          <View style={{ marginBottom: 0 }}>
+            <Text style={{ marginBottom: 5, color: "#555" }}>
+              No Reply Email App Password <Text style={{ color: "red" }}>*</Text>
+            </Text>
+            <TextInput
+              value={noReplyEmailAppPassword}
+              onChangeText={setNoReplyEmailAppPassword}
+              style={styles.input}
+            />
+          </View>
+
+          <Text style={{ textAlign: "center", marginTop: 20, marginBottom: 5, color: "#333", fontWeight: "500" }}>Bank Detail</Text>
+
+          <View style={{ marginBottom: 0 }}>
+            <Text style={{ marginBottom: 5, color: "#555" }}>
+              Account Number <Text style={{ color: "red" }}>*</Text>
+            </Text>
+            <TextInput
+              value={accountNumber}
+              onChangeText={setAccountNumber}
+              style={styles.input}
+            />
+          </View>
+
+          <View style={{ marginBottom: 0 }}>
+            <Text style={{ marginBottom: 5, color: "#555" }}>
+              IFSC Code <Text style={{ color: "red" }}>*</Text>
+            </Text>
+            <TextInput
+              value={IFSCCode}
+              onChangeText={setIFSCCode}
+              style={styles.input}
+            />
+          </View>
+
+          <View style={{ marginBottom: 0 }}>
+            <Text style={{ marginBottom: 5, color: "#555" }}>
+              Account Name <Text style={{ color: "red" }}>*</Text>
+            </Text>
+            <TextInput
+              value={accountName}
+              onChangeText={setAccountName}
+              style={styles.input}
+            />
+          </View>
+
+          <View style={{ marginBottom: 0 }}>
+            <Text style={{ marginBottom: 5, color: "#555" }}>
+              Account Number <Text style={{ color: "red" }}>*</Text>
+            </Text>
+            <TextInput
+              value={accountNumber}
+              onChangeText={setAccountNumber}
+              style={styles.input}
+            />
+          </View>
+
+          <View style={{ marginBottom: 0 }}>
+            <Text style={{ marginBottom: 5, color: "#555" }}>
+              Account Type <Text style={{ color: "red" }}>*</Text>
+            </Text>
+            <TextInput
+              value={accountType}
+              onChangeText={setAccountType}
+              style={styles.input}
+            />
+          </View>
+
+          <View style={{ marginBottom: 0 }}>
+            <Text style={{ marginBottom: 5, color: "#555" }}>
+              Bank Name <Text style={{ color: "red" }}>*</Text>
+            </Text>
+            <TextInput
+              value={bankName}
+              onChangeText={setBankName}
+              style={styles.input}
+            />
+          </View>
+
+          <Text style={{ textAlign: "center", marginTop: 20, marginBottom: 5, color: "#333", fontWeight: "500" }}>Location Detail</Text>
 
           <View style={{ marginBottom: 0 }}>
             <Text style={{ marginBottom: 5, color: "#555" }}>

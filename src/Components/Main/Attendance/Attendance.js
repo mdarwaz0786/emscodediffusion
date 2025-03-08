@@ -43,7 +43,7 @@ const Attendance = ({ route }) => {
       setYear(currentYear);
       setEmployeeId(id);
       fetchSingleEmployee(id);
-    }
+    };
   }, [id]);
 
   // Fetch single employee
@@ -62,56 +62,8 @@ const Attendance = ({ route }) => {
         setEmployee(response?.data?.team);
       };
     } catch (error) {
-      console.log(error.message);
+      console.log("Error:", error.message);
     } finally {
-      setRefreshing(false);
-    };
-  };
-
-  // Fetch Attendance of selected month, year and employee
-  const fetchAttendance = async () => {
-    try {
-      setLoading(true);
-
-      const params = {};
-
-      if (month) {
-        const formattedMonth = month.toString().padStart(2, "0");
-        params.month = formattedMonth;
-      };
-
-      if (employeeId) {
-        params.employeeId = employeeId;
-      };
-
-      if (year) {
-        params.year = year;
-      };
-
-      params.sort = "Descending";
-
-      const response = await axios.get(
-        `${API_BASE_URL}/api/v1/attendance/all-attendance`,
-        {
-          params,
-          headers: {
-            Authorization: validToken,
-          },
-        },
-      );
-
-      if (response?.data?.success) {
-        setAttendance(response?.data?.attendance);
-      } else {
-        setAttendance([]);
-      };
-    } catch (error) {
-      console.log(
-        "Error while fetching attendance:",
-        error?.response?.data?.message,
-      );
-    } finally {
-      setLoading(false);
       setRefreshing(false);
     };
   };
@@ -131,7 +83,7 @@ const Attendance = ({ route }) => {
       };
 
       const response = await axios.get(
-        `${API_BASE_URL}/api/v1/attendance/monthly-statistic`,
+        `${API_BASE_URL}/api/v1/newAttendance/monthly-newStatistic`,
         {
           params,
           headers: {
@@ -141,18 +93,19 @@ const Attendance = ({ route }) => {
       );
 
       if (response?.data?.success) {
-        setAttendanceSummary(response?.data?.attendance);
+        setAttendanceSummary(response?.data?.monthlyStatics);
+        setAttendance(response?.data?.calendarData);
       };
     } catch (error) {
-      console.log("Error while fetching monthly statistic:", error?.response?.data?.message);
+      console.log("Error:", error?.response?.data?.message);
     } finally {
       setRefreshing(false);
+      setLoading(false);
     };
   };
 
   useEffect(() => {
     if (employeeId && month && year && validToken) {
-      fetchAttendance();
       fetchMonthlyStatistic();
     };
   }, [employeeId, month, year, validToken, refreshKey]);
@@ -287,8 +240,8 @@ const Attendance = ({ route }) => {
             Attendance not found.
           </Text>
         ) : (
-          attendance?.map(item => (
-            <View key={item?._id} style={styles.attendanceCard}>
+          attendance?.map((item, index) => (
+            <View key={index} style={styles.attendanceCard}>
               <Text style={styles.attendanceDate}>
                 Date: {formatDate(item?.attendanceDate)}
               </Text>
@@ -378,10 +331,22 @@ const Attendance = ({ route }) => {
           {attendanceSummary ? (
             <>
               <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
-                Total Sundays: {attendanceSummary?.totalSundays}
+                Month: {formatDate(attendanceSummary?.month)}
+              </Text>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
+                Total Days in This Month: {attendanceSummary?.totalDaysInMonth} Days
+              </Text>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
+                Company's Working Days: {attendanceSummary?.companyWorkingDays}
+              </Text>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
+                Company's Working Hours: {attendanceSummary?.companyWorkingHours}
               </Text>
               <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
                 Total Holidays: {attendanceSummary?.totalHolidays}
+              </Text>
+              <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
+                Total Sundays: {attendanceSummary?.totalSundays}
               </Text>
               <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
                 Total Present Days: {attendanceSummary?.employeePresentDays}/
@@ -413,12 +378,6 @@ const Attendance = ({ route }) => {
               <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
                 Average Punch Out Time:{" "}
                 {formatTimeWithAmPm(attendanceSummary?.averagePunchOutTime)}
-              </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
-                Company's Working Hours: {attendanceSummary?.companyWorkingHours}
-              </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
-                Company's Working Days: {attendanceSummary?.companyWorkingDays}
               </Text>
             </>
           ) : (

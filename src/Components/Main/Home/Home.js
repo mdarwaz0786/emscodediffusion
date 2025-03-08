@@ -69,7 +69,7 @@ const Home = () => {
     try {
       setLoading(true);
       const params = { date: currentDate, employeeId };
-      const response = await axios.get(`${API_BASE_URL}/api/v1/attendance/all-attendance`, {
+      const response = await axios.get(`${API_BASE_URL}/api/v1/newAttendance/all-newAttendance`, {
         params,
         headers: { Authorization: validToken },
       });
@@ -89,13 +89,13 @@ const Home = () => {
   const fetchMonthlyStatistic = async () => {
     try {
       const params = { month: currentMonth, employeeId };
-      const response = await axios.get(`${API_BASE_URL}/api/v1/attendance/monthly-statistic`, {
+      const response = await axios.get(`${API_BASE_URL}/api/v1/newAttendance/monthly-newStatistic`, {
         params,
         headers: { Authorization: validToken },
       });
 
       if (response?.data?.success) {
-        setMonthlyStatistic(response?.data?.attendance);
+        setMonthlyStatistic(response?.data?.monthlyStatics);
       };
     } catch (error) {
       console.log("Error:", error?.response?.data?.message);
@@ -139,8 +139,8 @@ const Home = () => {
         : "put";
 
       const apiEndpoint = actionType === "punchIn"
-        ? "create-attendance"
-        : "update-attendance";
+        ? "create-newAttendance"
+        : "update-newAttendance";
 
       const successMessage = actionType === "punchIn"
         ? "Punch in successful"
@@ -157,7 +157,7 @@ const Home = () => {
     try {
       const axiosConfig = {
         method,
-        url: `${API_BASE_URL}/api/v1/attendance/${endpoint}`,
+        url: `${API_BASE_URL}/api/v1/newAttendance/${endpoint}`,
         data,
         headers: { Authorization: validToken },
       };
@@ -194,6 +194,7 @@ const Home = () => {
     { label: " Month", value: formatDate(monthlyStatistic?.month) || "-", icon: "📅" },
     { label: "Total Days in This Month", value: monthlyStatistic?.totalDaysInMonth || 0, icon: "📆" },
     { label: "Company's Working Days", value: monthlyStatistic?.companyWorkingDays || 0, icon: "💼" },
+    { label: "Company's Working Hours", value: formatTimeToHoursMinutes(monthlyStatistic?.companyWorkingHours) || "00:00", icon: "🏢" },
     { label: "Holidays", value: monthlyStatistic?.totalHolidays || 0, icon: "🎉" },
     { label: "Sundays", value: monthlyStatistic?.totalSundays || 0, icon: "☀️" },
     { label: "Present Days", value: monthlyStatistic?.employeePresentDays || 0, icon: "✅" },
@@ -205,7 +206,6 @@ const Home = () => {
     { label: "Total Hours Worked", value: `${formatTimeToHoursMinutes(monthlyStatistic?.employeeWorkingHours) || "00:00"} / ${formatTimeToHoursMinutes(monthlyStatistic?.employeeRequiredWorkingHours) || "00:00"}`, icon: "🕒" },
     { label: "Avgerage Punch In Time", value: formatTimeWithAmPm(monthlyStatistic?.averagePunchInTime) || "-", icon: "🔔" },
     { label: "Avgerage Punch Out Time", value: formatTimeWithAmPm(monthlyStatistic?.averagePunchOutTime) || "-", icon: "🔕" },
-    { label: "Company's Working Hours", value: formatTimeToHoursMinutes(monthlyStatistic?.companyWorkingHours) || "00:00", icon: "🏢" },
   ], [monthlyStatistic]);
 
   return (

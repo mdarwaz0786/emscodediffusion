@@ -63,7 +63,6 @@ const SalarySlip = ({ navigation }) => {
 
       await generatePDFAfterFetching(m, y, t, a, monthlyStaticData, attendanceData);
     } catch (error) {
-      console.log("Error while generating PDF:", error.message);
       Alert.alert("Error", "Failed to generate PDF.");
     };
   };
@@ -83,7 +82,7 @@ const SalarySlip = ({ navigation }) => {
         setOffice(response?.data?.officeLocation);
       };
     } catch (error) {
-      console.log("Error while fetching office location:", error.message);
+      console.log("Error:", error.message);
     };
   };
 
@@ -98,7 +97,7 @@ const SalarySlip = ({ navigation }) => {
         setEmployee(response?.data?.team);
       };
     } catch (error) {
-      console.log("Error while fetching employee:", error.message);
+      console.log("Error:", error.message);
     };
   };
 
@@ -120,7 +119,7 @@ const SalarySlip = ({ navigation }) => {
         setSalary(response?.data?.data);
       };
     } catch (error) {
-      console.log("Error while fetching salary:", error.message);
+      console.log("Error:", error.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -143,7 +142,6 @@ const SalarySlip = ({ navigation }) => {
 
       return response?.data?.success ? response?.data?.attendance : null;
     } catch (error) {
-      console.log("Error while fetching monthly statistic:", error.message);
       return null;
     };
   };
@@ -163,7 +161,6 @@ const SalarySlip = ({ navigation }) => {
 
       return response?.data?.success ? response?.data?.attendance : [];
     } catch (error) {
-      console.log(error.message);
       return [];
     };
   };
@@ -673,8 +670,10 @@ const SalarySlip = ({ navigation }) => {
 
       // Notify the media scanner about the new file
       await RNFetchBlob.fs.scanFile([{ path: newPath, mime: 'application/pdf' }]);
-      Toast.show({ type: "success", text1: "File Downloaded", text2: `File saved to: ${newPath}` });
-      openPDF(newPath);
+      Toast.show({ type: "success", text1: "Slip Downloaded", text2: `Slip saved at: ${newPath}` });
+      setTimeout(() => {
+        openPDF(newPath);
+      }, 3000)
     } catch (error) {
       Alert.alert("Error", "Failed to generate PDF");
     };

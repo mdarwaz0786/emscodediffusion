@@ -5,6 +5,7 @@ import { ActivityIndicator, View } from "react-native";
 // Lazy load the screens
 const EmployeeScreen = lazy(() => import("../../../Screens/Employee/EmployeeScreen.js"));
 const SalaryScreen = lazy(() => import("../../../Screens/Salary/SalaryScreen.js"));
+const PaySalaryScreen = lazy(() => import("../../../Screens/Salary/PaySalaryScreen.js"));
 const AttendanceScreen = lazy(() => import("../../../Screens/Attendance/AttendanceScreen.js"));
 
 // Create a Stack Navigator
@@ -24,6 +25,7 @@ const EmployeeStack = () => {
         <Stack.Screen name="Employee" component={EmployeeScreen} />
         <Stack.Screen name="Attendance" component={AttendanceScreen} />
         <Stack.Screen name="Salary" component={SalaryScreen} />
+        <Stack.Screen name="PaySalary" component={PaySalaryScreen} />
       </Stack.Navigator>
     </Suspense>
   );

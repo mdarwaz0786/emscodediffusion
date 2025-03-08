@@ -3,7 +3,6 @@ import { View, Text, ScrollView, ActivityIndicator, Image, StyleSheet } from "re
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Feather";
 import axios from "axios";
-import { Chip } from "react-native-paper";
 import { useAuth } from "../../../Context/auth.context.js";
 import { useRefresh } from "../../../Context/refresh.context.js";
 import { RefreshControl } from "react-native-gesture-handler";
@@ -35,7 +34,7 @@ const getTicketTypeColor = (ticketType) => {
     case "Improvement": return "#28a745";
     case "Task": return "#007bff";
     case "Support": return "#ffc107";
-    case "Incident": return "#6c757d";
+    case "Incident": return "#dc3545";
     default: return "#f8f9fa";
   };
 };
@@ -116,8 +115,6 @@ const TicketDetail = ({ route }) => {
               />
             }>
 
-            <Text style={styles.heading}>🎫 Ticket Details</Text>
-
             <View style={[styles.infoContainer, { flexDirection: "row" }]}>
               <Text style={styles.label}>Ticket ID: </Text>
               <Text style={styles.value}>{ticket?.ticketId}</Text>
@@ -125,23 +122,17 @@ const TicketDetail = ({ route }) => {
 
             <View style={[styles.infoContainer, { flexDirection: "row" }]}>
               <Text style={styles.label}>Ticket Status: </Text>
-              <View style={[styles.statusContainer, { backgroundColor: getStatusColor(ticket?.status) }]}>
-                <Text style={styles.statusText}>{ticket?.status}</Text>
-              </View>
+              <Text style={{ color: getStatusColor(ticket?.status) }}>{ticket?.status}</Text>
             </View>
 
             <View style={[styles.infoContainer, { flexDirection: "row" }]}>
               <Text style={styles.label}>Ticket Priority: </Text>
-              <View style={[styles.statusContainer, { backgroundColor: getPriorityColor(ticket?.priority) }]}>
-                <Text style={styles.statusText}>{ticket?.priority}</Text>
-              </View>
+              <Text style={{ color: getPriorityColor(ticket?.priority) }}>{ticket?.priority}</Text>
             </View>
 
             <View style={[styles.infoContainer, { flexDirection: "row" }]}>
               <Text style={styles.label}>Ticket Type: </Text>
-              <View style={[styles.statusContainer, { backgroundColor: getTicketTypeColor(ticket?.ticketType) }]}>
-                <Text style={styles.statusText}>{ticket?.ticketType}</Text>
-              </View>
+              <Text style={{ color: getTicketTypeColor(ticket?.ticketType) }}>{ticket?.ticketType}</Text>
             </View>
 
             <View style={[styles.infoContainer, { flexDirection: "row" }]}>
@@ -156,19 +147,19 @@ const TicketDetail = ({ route }) => {
 
             <View style={[styles.infoContainer, { flexDirection: "row" }]}>
               <Text style={styles.label}>Title: </Text>
-              <Text style={styles.title}>{ticket?.title}</Text>
+              <Text style={styles.value}>{ticket?.title}</Text>
             </View>
 
             <View style={[styles.infoContainer, { flexDirection: "row" }]}>
               <Text style={styles.label}>Description: </Text>
-              <Text style={styles.description}>{ticket?.description}</Text>
+              <Text style={styles.title}>{ticket?.description}</Text>
             </View>
 
-            <Text style={styles.label}>Assigned To:</Text>
-            <View style={styles.chipContainer}>
+            <View style={[styles.infoContainer, { flexDirection: "row" }]}>
+              <Text style={styles.label}>Assigned To: </Text>
               {ticket?.assignedTo?.length > 0 ? (
                 ticket?.assignedTo?.map((member, index) => (
-                  <Chip key={index} style={styles.chip}>{member?.name}</Chip>
+                  <Text key={index} style={styles.title}>{member?.name}{" "}</Text>
                 ))
               ) : (
                 <Text style={styles.value}>Not Assigned</Text>
@@ -207,59 +198,24 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   container: {
-    padding: 20,
+    padding: 15,
   },
   loaderContainer: {
     flex: 1, justifyContent: "center",
     alignItems: "center",
   },
-  heading: {
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#007bff",
-    marginBottom: 20,
-  },
-  statusContainer: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 5,
-    marginBottom: 5,
-  },
-  statusText: {
-    color: "#fff",
-    fontWeight: "500",
-  },
   infoContainer: {
-    marginBottom: 12,
+    marginBottom: 5,
   },
   label: {
     fontSize: 15,
-    fontWeight: "500",
+    fontWeight: "400",
     color: "#333",
   },
   value: {
     fontSize: 14,
-    fontWeight: "500",
+    fontWeight: "400",
     color: "#555",
-  },
-  title: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#007bff",
-  },
-  description: {
-    fontSize: 14,
-    color: "#6c757d",
-  },
-  chipContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
-    marginVertical: 5,
-  },
-  chip: {
-    margin: 5,
-    backgroundColor: "#555",
   },
   dateText: {
     fontSize: 14,
@@ -268,13 +224,13 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     alignItems: "center",
-    marginTop: 50,
+    marginTop: 20,
   },
   image: {
-    width: 300,
+    width: 330,
     height: 200,
-    resizeMode: "contain",
-    borderRadius: 10,
+    resizeMode: "stretch",
+    marginTop: 10,
   },
 });
 

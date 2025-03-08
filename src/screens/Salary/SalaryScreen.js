@@ -1,7 +1,7 @@
 import React from "react";
 import Salary from "../../Components/Main/Salary/Salary";
 
-const SalaryScreen = props => {
+const SalaryScreen = (props) => {
   return (
     <>
       <Salary {...props} />

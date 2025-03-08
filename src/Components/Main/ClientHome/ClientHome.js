@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     resizeMode: "stretch",
   },
   mainSection: {
-    padding: 20,
+    padding: 15,
     paddingVertical: 10,
   },
   section: {
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: "500",
-    color: "#333",
+    color: "#555",
     marginBottom: 5,
   },
   sectionText: {
