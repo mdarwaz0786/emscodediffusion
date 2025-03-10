@@ -16,6 +16,7 @@ import { useRefresh } from "../../../Context/refresh.context.js";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { API_BASE_URL } from "@env";
+import formatDate from "../../../Helper/formatDate.js";
 
 const SalarySlip = ({ route }) => {
   const id = route?.params?.id;
@@ -23,8 +24,6 @@ const SalarySlip = ({ route }) => {
   const { validToken } = useAuth();
   const { refreshKey, refreshPage } = useRefresh();
   const [employee, setEmployee] = useState("");
-  const [month, setMonth] = useState("");
-  const [year, setYear] = useState("");
   const [salary, setSalary] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -36,13 +35,8 @@ const SalarySlip = ({ route }) => {
     day: "2-digit",
   }).format(new Date());
 
-  useEffect(() => {
-    if (id) {
-      fetchSingleEmployee(id);
-      setYear(istDate.slice(0, 4));
-      setMonth((istDate.slice(6, 7)) - 1);
-    };
-  }, [id]);
+  const [month, setMonth] = useState((istDate.slice(5, 7)) - 1);
+  const [year, setYear] = useState(istDate.slice(0, 4));
 
   const fetchSingleEmployee = async (id) => {
     try {
@@ -100,14 +94,13 @@ const SalarySlip = ({ route }) => {
   useEffect(() => {
     if (id && month && year && validToken) {
       fetchMonthlySalary();
+      fetchSingleEmployee(id);
     };
   }, [id, month, year, validToken, refreshKey]);
 
   const resetFilters = () => {
     setYear(istDate.slice(0, 4));
-    setMonth((istDate.slice(6, 7)) - 1);
-    fetchSingleEmployee(id);
-    fetchMonthlySalary();
+    setMonth((istDate.slice(5, 7)) - 1);
   };
 
   const handleRefresh = () => {
@@ -204,6 +197,8 @@ const SalarySlip = ({ route }) => {
             {employeeSalary?.map((s, i) => (
               <View key={i} style={[styles.container, { marginBottom: 15 }]}>
                 <Text style={{ textAlign: "center", color: "#333", marginBottom: 5 }}>Attendance Summary</Text>
+                <Text style={styles.salaryText}>Month: {formatDate(s?.month)}</Text>
+                <Text style={styles.salaryText}>Total Days in Month: {s?.totalDaysInMonth} Days</Text>
                 <Text style={styles.salaryText}>Total Holidays: {s?.totalHolidays} Days</Text>
                 <Text style={styles.salaryText}>Total Sundays: {s?.totalSundays} Days</Text>
                 <Text style={styles.salaryText}>Total Present Days: {s?.totalPresent} Days</Text>

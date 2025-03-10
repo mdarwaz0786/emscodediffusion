@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   RefreshControl,
+  Platform,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
@@ -26,25 +27,21 @@ const Attendance = ({ route }) => {
   const { refreshKey, refreshPage } = useRefresh();
   const [attendance, setAttendance] = useState([]);
   const [employee, setEmployee] = useState("");
-  const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().getMonth() + 1;
-  const [month, setMonth] = useState(currentMonth);
-  const [year, setYear] = useState(currentYear);
-  const [employeeId, setEmployeeId] = useState(id);
   const [attendanceSummary, setAttendanceSummary] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    if (id) {
-      setMonth(currentMonth);
-      setYear(currentYear);
-      setEmployeeId(id);
-      fetchSingleEmployee(id);
-    };
-  }, [id]);
+  const istDate = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+
+  const [month, setMonth] = useState(istDate.slice(5, 7));
+  const [year, setYear] = useState(istDate.slice(0, 4));
 
   // Fetch single employee
   const fetchSingleEmployee = async (id) => {
@@ -68,9 +65,11 @@ const Attendance = ({ route }) => {
     };
   };
 
-  // Get selected month and year statistic for employee
+  // Fetch attendance and monthly statistic
   const fetchMonthlyStatistic = async () => {
     try {
+      setLoading(true);
+
       const params = {};
 
       if (month) {
@@ -78,8 +77,8 @@ const Attendance = ({ route }) => {
         params.month = `${year}-${formattedMonth}`;
       };
 
-      if (employeeId) {
-        params.employeeId = employeeId;
+      if (id) {
+        params.employeeId = id;
       };
 
       const response = await axios.get(
@@ -105,19 +104,16 @@ const Attendance = ({ route }) => {
   };
 
   useEffect(() => {
-    if (employeeId && month && year && validToken) {
+    if (id && month && year && validToken) {
       fetchMonthlyStatistic();
+      fetchSingleEmployee(id);
     };
-  }, [employeeId, month, year, validToken, refreshKey]);
+  }, [id, month, year, validToken, refreshKey]);
 
   // Function to reset filters
   const resetFilters = () => {
-    setMonth(currentMonth);
-    setYear(currentYear);
-    setEmployeeId(id);
-    fetchSingleEmployee(id);
-    fetchAttendance();
-    fetchMonthlyStatistic();
+    setYear(istDate.slice(0, 4));
+    setMonth(istDate.slice(5, 7));
   };
 
   const monthNames = [
@@ -159,49 +155,47 @@ const Attendance = ({ route }) => {
         }
       >
         {/* Filter Section */}
-        <View style={styles.filterContainer}>
-          <View style={styles.pickerRow}>
-            {/* Year Picker */}
-            <View style={styles.pickerContainer}>
-              <Picker
-                selectedValue={year}
-                onValueChange={itemValue => setYear(itemValue)}
-                style={styles.picker}>
-                {Array.from({ length: currentYear - joiningYear + 1 }, (_, index) => {
-                  const yearOption = currentYear - index;
-                  return (
-                    <Picker.Item
-                      key={yearOption}
-                      label={String(yearOption)}
-                      value={yearOption}
-                      style={styles.pickerItem}
-                    />
-                  );
-                })}
-              </Picker>
-            </View>
-
-            {/* Month Picker */}
-            <View style={styles.pickerContainer}>
-              <Picker
-                selectedValue={month}
-                onValueChange={itemValue => setMonth(itemValue)}
-                style={styles.picker}
-              >
-                {monthNames?.map((month, index) => (
+        <View style={styles.pickerRow}>
+          {/* Year Picker */}
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={year}
+              onValueChange={itemValue => setYear(itemValue)}
+              style={styles.picker}>
+              {Array.from({ length: year - joiningYear + 1 }, (_, index) => {
+                const yearOption = year - index;
+                return (
                   <Picker.Item
-                    key={index}
-                    label={month}
-                    value={index + 1}
+                    key={yearOption}
+                    label={String(yearOption)}
+                    value={yearOption}
                     style={styles.pickerItem}
                   />
-                ))}
-              </Picker>
-            </View>
+                );
+              })}
+            </Picker>
+          </View>
+
+          {/* Month Picker */}
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={(Number(month)).toString()}
+              onValueChange={itemValue => setMonth(itemValue)}
+              style={styles.picker}
+            >
+              {monthNames?.map((month, index) => (
+                <Picker.Item
+                  key={index}
+                  label={month}
+                  value={(index + 1).toString()}
+                  style={styles.pickerItem}
+                />
+              ))}
+            </Picker>
           </View>
         </View>
 
-        {/* Employee */}
+        {/* Employee Name */}
         <View
           style={{
             flexDirection: "row",
@@ -328,7 +322,14 @@ const Attendance = ({ route }) => {
             }}>
             Attendance Summary
           </Text>
-          {attendanceSummary ? (
+          {loading ? (
+            <View
+              style={{ flex: 1, justifyContent: "center", alignItems: "center", marginVertical: 20, }}>
+              <ActivityIndicator size="small" color="#ffb300" />
+            </View>
+          ) : attendanceSummary === "" ? (
+            <Text style={{ fontSize: 14, marginVertical: 20, color: "#555" }}>Attendance summary not found.</Text>
+          ) : (
             <>
               <Text style={{ fontSize: 14, marginBottom: 5, color: "#555" }}>
                 Month: {formatDate(attendanceSummary?.month)}
@@ -380,8 +381,6 @@ const Attendance = ({ route }) => {
                 {formatTimeWithAmPm(attendanceSummary?.averagePunchOutTime)}
               </Text>
             </>
-          ) : (
-            <Text style={{ fontSize: 14, marginBottom: 10, color: "#555" }}>Attendance summary not found.</Text>
           )}
           <Button
             mode="contained"
@@ -425,25 +424,26 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "500",
   },
-  filterContainer: {
-    marginVertical: 10,
-  },
   pickerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    columnGap: 10,
+    marginVertical: 10,
   },
   pickerContainer: {
-    flex: 1,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 5,
+    backgroundColor: "#fff",
+    height: 45,
+    width: 165,
+    justifyContent: Platform.OS === "android" ? "center" : "flex-end",
+    paddingLeft: 8,
   },
   picker: {
-    backgroundColor: "#fff",
-    color: "#333",
+    color: "#555",
   },
   pickerItem: {
     fontSize: 14,
-    color: "#333",
-    backgroundColor: "#fff",
   },
   attendanceCard: {
     backgroundColor: "#fff",

@@ -88,6 +88,7 @@ const Home = () => {
   // Fetch monthly statistic
   const fetchMonthlyStatistic = async () => {
     try {
+      setLoading(true);
       const params = { month: currentMonth, employeeId };
       const response = await axios.get(`${API_BASE_URL}/api/v1/newAttendance/monthly-newStatistic`, {
         params,
@@ -100,6 +101,7 @@ const Home = () => {
     } catch (error) {
       console.log("Error:", error?.response?.data?.message);
     } finally {
+      setLoading(false);
       setRefreshing(false);
     };
   };
@@ -131,8 +133,8 @@ const Home = () => {
       };
 
       const requestData = actionType === "punchIn"
-        ? { employee: employeeId, attendanceDate: date, punchInTime: time }
-        : { employee: employeeId, attendanceDate: date, punchOutTime: time };
+        ? { employee: employeeId, attendanceDate: date, punchInTime: time, punchInLaitude: latitude, punchInLongitude: longitude }
+        : { employee: employeeId, attendanceDate: date, punchOutTime: time, PunchOutLaitude: latitude, PunchOutLongitude: longitude };
 
       const apiMethod = actionType === "punchIn"
         ? "post"
@@ -148,7 +150,7 @@ const Home = () => {
 
       await processAttendance(apiMethod, apiEndpoint, requestData, successMessage, validToken);
     } catch (error) {
-      Toast.show({ type: "error", text1: error.message || "Try again" });
+      Toast.show({ type: "error", text1: error.message || "Please try again" });
     };
   }, [validToken, team]);
 
@@ -178,7 +180,7 @@ const Home = () => {
     navigation.navigate("MyAttendance", { id: employeeId });
   };
 
-  // Navigate to apply leave request screen
+  // Navigate to apply leave screen
   const navigateToApplyLeaveRequest = () => {
     navigation.navigate("ApplyLeaveRequest");
   };

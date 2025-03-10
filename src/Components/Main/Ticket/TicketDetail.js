@@ -166,8 +166,15 @@ const TicketDetail = ({ route }) => {
               )}
             </View>
 
-            <Text style={styles.dateText}>📅 Created At: {new Date(ticket?.createdAt).toLocaleString()}</Text>
-            <Text style={styles.dateText}>📅 Last Updated: {new Date(ticket?.updatedAt).toLocaleString()}</Text>
+            <View style={[styles.infoContainer, { flexDirection: "row" }]}>
+              <Text style={styles.label}>Created At: </Text>
+              <Text style={styles.title}>{(new Date(ticket?.createdAt)).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}</Text>
+            </View>
+
+            <View style={[styles.infoContainer, { flexDirection: "row" }]}>
+              <Text style={styles.label}>Last Updated: </Text>
+              <Text style={styles.title}>{(new Date(ticket?.updatedAt)).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}</Text>
+            </View>
 
             {ticket?.image && (
               <View style={styles.imageContainer}>
@@ -224,7 +231,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     alignItems: "center",
-    marginTop: 20,
+    marginTop: 10,
   },
   image: {
     width: 330,

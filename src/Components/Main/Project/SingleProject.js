@@ -7,6 +7,7 @@ import { useRefresh } from "../../../Context/refresh.context";
 import { ActivityIndicator } from "react-native-paper";
 import Icon from "react-native-vector-icons/Feather";
 import { useNavigation } from "@react-navigation/native";
+import formatDate from "../../../Helper/formatDate.js";
 
 const SingleProject = ({ route }) => {
   const id = route?.params?.id;
@@ -75,18 +76,22 @@ const SingleProject = ({ route }) => {
   const renderDetail = (label, value) => (
     <View style={styles.detailCard}>
       <Text style={styles.detailLabel}>{label}</Text>
-      <Text style={styles.detailValue}>{value}</Text>
-    </View>
-  );
-
-  const renderBadge = (text, bgColor) => (
-    <View style={[styles.badge, { backgroundColor: bgColor }]}>
-      <Text style={styles.badgeText}>{text}</Text>
+      <Text style={styles.detailValue}>{value || "NA"}</Text>
     </View>
   );
 
   return (
     <>
+      <View style={styles.header}>
+        <Icon
+          name="arrow-left"
+          size={20}
+          color="#000"
+          onPress={() => navigation.goBack()}
+        />
+        <Text style={styles.headerTitle}>{projectDetails?.projectName}</Text>
+      </View>
+
       {loading ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -106,28 +111,14 @@ const SingleProject = ({ route }) => {
             />
           }
         >
-          <View style={styles.header}>
-            <Icon
-              name="arrow-left"
-              size={22}
-              color="#fff"
-              onPress={() => navigation.goBack()}
-            />
-            <View>
-              <Text style={styles.projectName}>{projectDetails?.projectName}</Text>
-              <View style={styles.badgeContainer}>
-                {renderBadge(`Status: ${projectDetails?.projectStatus?.status}`, "#4CAF19")}
-                {renderBadge(`Priority: ${projectDetails?.projectPriority?.name}`, "#ffb300")}
-              </View>
-            </View>
-          </View>
-
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Project Overview</Text>
             <View style={styles.grid}>
               {renderDetail("Project ID", projectDetails?.projectId)}
               {renderDetail("Client Name", projectDetails?.customer?.name)}
               {renderDetail("Project Type", projectDetails?.projectType?.name)}
+              {renderDetail("Project Status", projectDetails?.projectStatus?.status)}
+              {renderDetail("Project Priority", projectDetails?.projectPriority?.name)}
               {renderDetail("Project Category", projectDetails?.projectCategory?.name)}
               {renderDetail("Technology Used", projectDetails?.technology?.map((t) => t?.name).join(', '))}
             </View>
@@ -137,10 +128,10 @@ const SingleProject = ({ route }) => {
             <Text style={styles.sectionTitle}>Timeline & Budget</Text>
             <View style={styles.grid}>
               {renderDetail("Total Hours", projectDetails?.totalHour)}
-              {renderDetail("Project Cost", projectDetails?.projectPrice)}
-              {renderDetail("Amount Received", totalReceived || 0)}
-              {renderDetail("Due Amount", parseFloat(projectDetails?.projectPrice) - parseFloat(totalReceived))}
-              {renderDetail("Project Deadline", projectDetails?.projectDeadline)}
+              {renderDetail("Project Cost", (parseFloat(projectDetails?.projectPrice)).toFixed(2))}
+              {renderDetail("Amount Received", (parseFloat(totalReceived)).toFixed(2) || 0)}
+              {renderDetail("Due Amount", (parseFloat(projectDetails?.projectPrice) - parseFloat(totalReceived)).toFixed(2))}
+              {renderDetail("Project Deadline", formatDate(projectDetails?.projectDeadline))}
             </View>
           </View>
 
@@ -158,39 +149,22 @@ const SingleProject = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 12,
+    backgroundColor: "#fff",
+    zIndex: 1000,
+  },
+  headerTitle: {
+    flex: 1,
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "400",
+    color: "#000",
+  },
   container: {
     paddingBottom: 10,
-  },
-  header: {
-    backgroundColor: "#009bff",
-    padding: 20,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-    flexDirection: "row",
-    justifyContent: "space-between"
-  },
-  projectName: {
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#fff",
-    textAlign: "center",
-    marginBottom: 10,
-  },
-  badgeContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    flexWrap: "wrap",
-    gap: 10,
-  },
-  badge: {
-    paddingVertical: 6,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    marginHorizontal: 5,
-  },
-  badgeText: {
-    color: "#fff",
-    fontSize: 14,
   },
   section: {
     marginTop: 10,
@@ -200,8 +174,8 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   sectionTitle: {
-    fontSize: 15,
-    fontWeight: "500",
+    fontSize: 14,
+    fontWeight: "400",
     marginBottom: 12,
     color: "#333",
   },
@@ -220,12 +194,12 @@ const styles = StyleSheet.create({
     borderColor: "#eee",
   },
   detailLabel: {
-    fontSize: 14,
-    color: "#000",
+    fontSize: 13,
+    color: "#333",
     marginBottom: 4,
   },
   detailValue: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#555",
   },
 });

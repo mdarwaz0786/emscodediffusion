@@ -78,7 +78,7 @@ const PaySalary = ({ route, navigation }) => {
             <Text style={{ textAlign: "center", color: "#555" }}>Salary slip is creating and sending to employee, please wait...</Text>
           ) : (
             <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-              <Text style={styles.submitButtonText}>Pay</Text>
+              <Text style={styles.submitButtonText}>Pay Now</Text>
             </TouchableOpacity>
           )
         }

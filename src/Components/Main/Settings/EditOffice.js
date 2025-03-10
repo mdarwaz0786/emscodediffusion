@@ -296,7 +296,7 @@ const EditOffice = ({ navigation, route }) => {
 
               <View style={{ marginBottom: 0 }}>
                 <Text style={{ marginBottom: 5, color: "#555" }}>
-                  Email Id <Text style={{ color: "red" }}>*</Text>
+                  Email ID <Text style={{ color: "red" }}>*</Text>
                 </Text>
                 <TextInput
                   value={email}

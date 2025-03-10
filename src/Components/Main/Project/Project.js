@@ -15,13 +15,23 @@ const Project = () => {
   const [project, setProject] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const limit = 10;
 
-  const fetchProject = async () => {
+  const fetchProject = async (page, isRefreshing = false) => {
     try {
       setLoading(true);
 
+      if (page === 1) {
+        setLoading(true);
+      } else {
+        setLoadingMore(true);
+      };
+
       const response = await axios.get(
-        `${API_BASE_URL}/api/v1/project/all-project`,
+        `${API_BASE_URL}/api/v1/project/all-project?page=${page}&limit=${limit}`,
         {
           headers: {
             Authorization: validToken,
@@ -30,25 +40,39 @@ const Project = () => {
       );
 
       if (response?.data?.success) {
-        setProject(response?.data?.project);
+        const newProjects = response?.data?.project || [];
+        setProject((prev) => (isRefreshing ? newProjects : [...prev, ...newProjects]));
+        setHasMore(newProjects?.length === limit);
       };
     } catch (error) {
       console.log("Error:", error.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
+      setLoadingMore(false);
     };
   };
 
   useEffect(() => {
     if (validToken) {
-      fetchProject();
+      fetchProject(page, true);
     };
   }, [refreshKey, validToken]);
 
   const handleRefresh = () => {
     setRefreshing(true);
     refreshPage();
+    setPage(1);
+    fetchProject(1, true);
+  };
+
+  const handleLoadMore = () => {
+    if (!loadingMore && hasMore) {
+      setLoadingMore(true);
+      const nextPage = page + 1;
+      setPage(nextPage);
+      fetchProject(nextPage);
+    };
   };
 
   const renderItem = ({ item }) => (
@@ -65,8 +89,8 @@ const Project = () => {
           <Text style={styles.projectSubtitle}>{item?.customer?.name}</Text>
         </View>
       </View>
-      <Text style={styles.bottomText}>Project Status: {item?.projectStatus?.status}</Text>
-      <Text style={styles.bottomText}>Project Deadline: {item?.projectDeadline}</Text>
+      <Text style={styles.bottomText}>Project Status: {item?.projectStatus?.status || "NA"}</Text>
+      <Text style={styles.bottomText}>Project Deadline: {item?.projectDeadline || "NA"}</Text>
     </TouchableOpacity>
   );
 
@@ -79,19 +103,16 @@ const Project = () => {
           color="#000"
           onPress={() => navigation.goBack()}
         />
-        <Text style={styles.headerTitle}>Project</Text>
+        <Text style={styles.headerTitle}>Projects</Text>
       </View>
 
       <View style={styles.container}>
-        {loading ? (
-          <View
-            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        {loading && project?.length === 0 ? (
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <ActivityIndicator size="small" color="#ffb300" />
           </View>
         ) : project?.length === 0 ? (
-          <Text style={{ textAlign: "center", color: "#777" }}>
-            No project.
-          </Text>
+          <Text style={{ textAlign: "center", color: "#777" }}>No project.</Text>
         ) : (
           <FlatList
             data={project}
@@ -100,6 +121,15 @@ const Project = () => {
             contentContainerStyle={{ paddingBottom: 16 }}
             refreshing={refreshing}
             onRefresh={handleRefresh}
+            onEndReached={handleLoadMore}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={() =>
+              loadingMore ? (
+                <View style={{ marginVertical: 16, alignItems: "center" }}>
+                  <ActivityIndicator size="small" color="#ffb300" />
+                </View>
+              ) : null
+            }
           />
         )}
       </View>
@@ -124,12 +154,11 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    marginTop: 10,
   },
   card: {
     backgroundColor: "#fff",
-    marginHorizontal: 10,
-    marginBottom: 10,
+    margin: 10,
+    marginBottom: 0,
     borderRadius: 10,
     padding: 10,
     paddingLeft: 15,

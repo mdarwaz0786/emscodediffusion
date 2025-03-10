@@ -115,7 +115,7 @@ const LeaveBalanceScreen = () => {
     <View style={styles.historyItem}>
       <View style={styles.historyRow}>
         <Icon name="date-range" size={18} color="#4caf50" />
-        <Text style={styles.historyText}>Date: {item.date}</Text>
+        <Text style={styles.historyText}>Date: {formatDate(item?.date)}</Text>
       </View>
       {item.alloted ? (
         <View style={styles.historyRow}>
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flexGrow: 1,
-    padding: 20,
+    padding: 10,
   },
   card: {
     backgroundColor: '#fff',
@@ -325,6 +325,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '400',
     marginBottom: 8,
+    marginTop: 10,
     color: '#333',
     textAlign: "center",
   },
