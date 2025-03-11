@@ -178,8 +178,6 @@ const SalarySlip = ({ navigation }) => {
       // Try opening with FileViewer
       await FileViewer.open(filePath, { type: "application/pdf" });
     } catch (error) {
-      console.log("Error while opening PDF:", error.message);
-
       // If no PDF viewer is installed, show Open With dialog
       if (Platform.OS === "android") {
         try {
@@ -268,7 +266,7 @@ const SalarySlip = ({ navigation }) => {
   const generatePDFAfterFetching = async (month, year, transactionId, amountPaid, monthlyStatic, attendanceData) => {
     const attendanceHTML = await generateCalendarHTML(month, year, attendanceData);
 
-    const html = await `
+    const html = `
 <!DOCTYPE html>
 <html lang="en">
 
