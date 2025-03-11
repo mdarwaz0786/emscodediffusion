@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     backgroundColor: "#fff",
     padding: 10,
-    marginVertical: 8,
+    marginVertical: 5,
     borderRadius: 10,
   },
   monthText: {
