@@ -22,7 +22,6 @@ const Project = () => {
 
   const fetchProject = async (page, isRefreshing = false) => {
     try {
-      setLoading(true);
 
       if (page === 1) {
         setLoading(true);

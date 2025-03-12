@@ -5,10 +5,9 @@ import {
   StyleSheet,
   Alert,
   TouchableOpacity,
-  ScrollView,
   Platform,
   Linking,
-  RefreshControl,
+  FlatList,
 } from "react-native";
 import FileViewer from 'react-native-file-viewer';
 import Share from "react-native-share";
@@ -32,13 +31,21 @@ const ProformaInvoice = ({ navigation }) => {
   const [invoice, setInvoice] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [page, setPage] = useState(1);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const limit = 10;
 
-  const fetchInvoice = async () => {
+  const fetchInvoice = async (page, isRefreshing = false) => {
     try {
-      setLoading(true);
+      if (page === 1) {
+        setLoading(true);
+      } else {
+        setLoadingMore(true);
+      };
 
       const response = await axios.get(
-        `${API_BASE_URL}/api/v1/proformaInvoice/all-proformaInvoice`,
+        `${API_BASE_URL}/api/v1/proformaInvoice/all-proformaInvoice?page=${page}&limit=${limit}`,
         {
           headers: {
             Authorization: validToken,
@@ -47,25 +54,40 @@ const ProformaInvoice = ({ navigation }) => {
       );
 
       if (response?.data?.success) {
-        setInvoice(response?.data?.invoice);
+        const newInvoices = response?.data?.invoice || [];
+
+        setInvoice((prev) => (isRefreshing ? newInvoices : [...prev, ...newInvoices]));
+        setHasMore(newInvoices?.length === limit);
       };
     } catch (error) {
       console.log("Error:", error.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
+      setLoadingMore(false);
     };
   };
 
   useEffect(() => {
     if (validToken) {
-      fetchInvoice();
+      fetchInvoice(page, true);
     };
   }, [validToken, refreshKey]);
 
   const handleRefresh = () => {
     setRefreshing(true);
     refreshPage();
+    setPage(1);
+    fetchInvoice(1, true);
+  };
+
+  const handleLoadMore = () => {
+    if (!loadingMore && hasMore) {
+      setLoadingMore(true);
+      const nextPage = page + 1;
+      setPage(nextPage);
+      fetchInvoice(nextPage);
+    };
   };
 
   const openPDF = async (filePath) => {
@@ -360,7 +382,7 @@ const ProformaInvoice = ({ navigation }) => {
 
         // Notify the media scanner about the new file
         await RNFetchBlob.fs.scanFile([{ path: newPath, mime: 'application/pdf' }]);
-        Toast.show({ type: "success", text1: "Invoice Downloaded", text2: `Slip saved at: ${newPath}` });
+        Toast.show({ type: "success", text1: "Invoice Downloaded", text2: `Invoice saved at: ${newPath}` });
 
         setTimeout(() => {
           openPDF(newPath);
@@ -373,6 +395,20 @@ const ProformaInvoice = ({ navigation }) => {
     };
   };
 
+  const renderItem = ({ item }) => (
+    <View style={styles.invoiceItem}>
+      <Text style={styles.invoiceText}>Date: {formatDate(item?.date)}</Text>
+      <Text style={styles.invoiceText}>Invoice ID: {item?.proformaInvoiceId}</Text>
+      <Text style={styles.invoiceText}>Project: {item?.projectName}</Text>
+      <Text style={styles.invoiceText}>Client: {item?.clientName}</Text>
+      <TouchableOpacity
+        onPress={() => generatePDF(item?._id)}
+        style={styles.button}>
+        <Text style={styles.buttonText}>Download</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
     <>
       <View style={styles.header}>
@@ -380,39 +416,28 @@ const ProformaInvoice = ({ navigation }) => {
         <Text style={styles.headerTitle}>Proforma Invoice</Text>
       </View>
 
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        refreshControl={
-          <RefreshControl
+      <View style={styles.container}>
+        {loading && invoice?.length === 0 ? (
+          <ActivityIndicator size="small" color="#ffb300" />
+        ) : (
+          <FlatList
+            data={invoice}
+            keyExtractor={(item) => item?._id}
             refreshing={refreshing}
             onRefresh={handleRefresh}
+            renderItem={renderItem}
+            onEndReached={handleLoadMore}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={() =>
+              loadingMore ? (
+                <View style={{ marginVertical: 16, alignItems: "center" }}>
+                  <ActivityIndicator size="small" color="#ffb300" />
+                </View>
+              ) : null
+            }
           />
-        }
-      >
-        {
-          loading ? (
-            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-              <ActivityIndicator size="small" color="#ffb300" />
-            </View>
-          ) : invoice?.length === 0 ? (
-            <Text style={{ flex: 1, textAlign: "center", color: "#777" }}>
-              Proforma invoice not found.
-            </Text>
-          ) : (
-            invoice?.map((item, index) => (
-              <View key={index} style={styles.container}>
-                <Text style={styles.monthText}>{(new Date(item?.date)).toLocaleDateString("en-IN")}</Text>
-                <Text style={styles.yearText}>{item?.proformaInvoiceId}</Text>
-                <TouchableOpacity
-                  onPress={() => generatePDF(item?._id)}
-                  style={styles.button}>
-                  <Text style={styles.buttonText}>Download</Text>
-                </TouchableOpacity>
-              </View>
-            ))
-          )
-        }
-      </ScrollView>
+        )}
+      </View>
     </>
   );
 };
@@ -432,39 +457,33 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     color: "#000",
   },
-  scrollContainer: {
-    padding: 10,
-    paddingVertical: 10,
-  },
   container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flex: 1,
+  },
+  invoiceItem: {
     backgroundColor: "#fff",
-    padding: 10,
-    marginVertical: 5,
+    margin: 10,
+    marginBottom: 0,
     borderRadius: 10,
+    padding: 10,
+    paddingLeft: 15,
   },
-  monthText: {
-    fontSize: 14,
-    color: "#555",
-  },
-  yearText: {
+  invoiceText: {
     fontSize: 14,
     color: "#555",
   },
   button: {
-    backgroundColor: "#ffb300",
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 8,
+    backgroundColor: "#333",
+    paddingVertical: 8,
+    borderRadius: 10,
     alignItems: "center",
+    marginTop: 10,
   },
   buttonText: {
     color: "#fff",
-    fontWeight: "400",
+    fontWeight: "500",
     fontSize: 14,
   },
 });
 
-export default ProformaInvoice
+export default ProformaInvoice;
