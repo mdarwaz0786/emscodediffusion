@@ -5,12 +5,10 @@ import {
   StyleSheet,
   Alert,
   TouchableOpacity,
-  Platform,
   Linking,
   FlatList,
 } from "react-native";
 import FileViewer from 'react-native-file-viewer';
-import Share from "react-native-share";
 import Icon from "react-native-vector-icons/Feather";
 import RNHTMLtoPDF from "react-native-html-to-pdf";
 import RNFS from 'react-native-fs';
@@ -20,7 +18,6 @@ import getUniqueFileName from "./utils/getUniqueFileName.js";
 import { useAuth } from "../../../Context/auth.context.js";
 import { API_BASE_URL } from "@env";
 import axios from "axios";
-import formatDate from "../../../Helper/formatDate.js";
 import Toast from "react-native-toast-message";
 import { useRefresh } from "../../../Context/refresh.context.js";
 import { ActivityIndicator } from "react-native-paper";
@@ -29,6 +26,8 @@ const ProformaInvoice = ({ navigation }) => {
   const { validToken } = useAuth();
   const { refreshKey, refreshPage } = useRefresh();
   const [invoice, setInvoice] = useState([]);
+  const [downloading, setDownloading] = useState({});
+  const [isDownloading, setIsDownloading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [page, setPage] = useState(1);
@@ -101,25 +100,14 @@ const ProformaInvoice = ({ navigation }) => {
 
       await FileViewer.open(filePath, { type: "application/pdf" });
     } catch (error) {
-      if (Platform.OS === "android") {
-        try {
-          const shareOptions = {
-            title: "Open PDF",
-            url: `file://${filePath}`,
-            type: "application/pdf",
-          };
-          await Share.open(shareOptions);
-        } catch (shareError) {
-          Alert.alert(
-            "No PDF Viewer Found",
-            "Please install a PDF viewer to open this file.",
-            [
-              { text: "Cancel", style: "cancel" },
-              { text: "Install", onPress: () => Linking.openURL("market://details?id=com.adobe.reader") },
-            ]
-          );
-        };
-      };
+      Alert.alert(
+        "No PDF Viewer Found",
+        "Please install a PDF viewer to open this file.",
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Install", onPress: () => Linking.openURL("market://details?id=com.adobe.reader") },
+        ],
+      );
     };
   };
 
@@ -131,6 +119,13 @@ const ProformaInvoice = ({ navigation }) => {
         Alert.alert("Permission Denied", "Cannot save file without storage permission");
         return;
       };
+
+      if (isDownloading) {
+        return;
+      };
+
+      setIsDownloading(true);
+      setDownloading((prev) => ({ ...prev, [id]: true }));
 
       let invoiceData = {};
 
@@ -283,7 +278,7 @@ const ProformaInvoice = ({ navigation }) => {
           <div class="invoice-id">Invoice ID: <strong>${invoiceData?.proformaInvoiceId}</strong></div>
           <div class="invoice-date">
             <strong>Date:</strong>
-            <span>${formatDate(invoiceData?.date)}</span>
+            <span>${new Date(invoiceData?.date)?.toLocaleDateString('en-IN')}</span>
           </div>
         </div>
       </div>
@@ -388,24 +383,38 @@ const ProformaInvoice = ({ navigation }) => {
           openPDF(newPath);
         }, 3000)
       } catch (error) {
-        Alert.alert("Error", "Failed to generate PDF");
+        Alert.alert("Error", "Downloading Failed");
+      } finally {
+        setIsDownloading(false);
+        setDownloading((prev) => ({ ...prev, [id]: false }));
       };
     } catch (error) {
       console.log("Error:", error.message);
+      Alert.alert("Error", "Downloading Failed");
     };
   };
 
   const renderItem = ({ item }) => (
     <View style={styles.invoiceItem}>
-      <Text style={styles.invoiceText}>Date: {formatDate(item?.date)}</Text>
+      <Text style={styles.invoiceText}>Date: {new Date(item?.date)?.toLocaleDateString('en-IN')}</Text>
       <Text style={styles.invoiceText}>Invoice ID: {item?.proformaInvoiceId}</Text>
       <Text style={styles.invoiceText}>Project: {item?.projectName}</Text>
       <Text style={styles.invoiceText}>Client: {item?.clientName}</Text>
-      <TouchableOpacity
-        onPress={() => generatePDF(item?._id)}
-        style={styles.button}>
-        <Text style={styles.buttonText}>Download</Text>
-      </TouchableOpacity>
+      {
+        downloading[item?._id] ? (
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>Downloading...</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            onPress={() => generatePDF(item?._id)}
+            style={[styles.button, { opacity: isDownloading ? 0.6 : 1 }]}
+            disabled={isDownloading}
+          >
+            <Text style={styles.buttonText}>Download</Text>
+          </TouchableOpacity>
+        )
+      }
     </View>
   );
 
@@ -418,7 +427,9 @@ const ProformaInvoice = ({ navigation }) => {
 
       <View style={styles.container}>
         {loading && invoice?.length === 0 ? (
-          <ActivityIndicator size="small" color="#ffb300" />
+          <View style={{ marginVertical: 16, alignItems: "center" }}>
+            <ActivityIndicator size="small" color="#ffb300" />
+          </View>
         ) : (
           <FlatList
             data={invoice}
@@ -473,7 +484,7 @@ const styles = StyleSheet.create({
     color: "#555",
   },
   button: {
-    backgroundColor: "#333",
+    backgroundColor: "#555",
     paddingVertical: 8,
     borderRadius: 10,
     alignItems: "center",

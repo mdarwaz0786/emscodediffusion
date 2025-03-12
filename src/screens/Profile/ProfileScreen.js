@@ -264,6 +264,7 @@ const styles = StyleSheet.create({
   detailRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    flexWrap: "wrap",
     marginBottom: 6,
   },
   detailLabel: {

@@ -13,15 +13,23 @@ const Notification = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { refreshKey, refreshPage } = useRefresh();
+  const [page, setPage] = useState(1);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const limit = 10;
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = async (page, isRefreshing = false) => {
     try {
-      setLoading(true);
+      if (page === 1) {
+        setLoading(true);
+      } else {
+        setLoadingMore(true);
+      };
 
       const response = await axios.get(
         `${API_BASE_URL}/api/v1/notification/notificationByEmployee`,
         {
-          params: { employeeId: team?._id },
+          params: { employeeId: team?._id, page, limit },
           headers: {
             Authorization: validToken,
           },
@@ -29,25 +37,40 @@ const Notification = () => {
       );
 
       if (response?.data?.success) {
-        setNotifications(response?.data?.data);
+        const notificationsData = response?.data?.data || [];
+
+        setNotifications((prev) => (isRefreshing ? notificationsData : [...prev, ...notificationsData]));
+        setHasMore(notificationsData?.length === limit);
       };
     } catch (error) {
       console.log("Error:", error.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
+      setLoadingMore(false);
     };
   };
 
   useEffect(() => {
     if (validToken && team) {
-      fetchNotifications();
+      fetchNotifications(page, true);
     };
   }, [validToken, team, refreshKey]);
 
   const handleRefresh = () => {
     setRefreshing(true);
     refreshPage();
+    setPage(1);
+    fetchNotifications(1, true);
+  };
+
+  const handleLoadMore = () => {
+    if (!loadingMore && hasMore) {
+      setLoadingMore(true);
+      const nextPage = page + 1;
+      setPage(nextPage);
+      fetchNotifications(nextPage);
+    };
   };
 
   const renderNotificationItem = ({ item }) => {
@@ -73,10 +96,19 @@ const Notification = () => {
         <FlatList
           data={notifications}
           renderItem={renderNotificationItem}
-          keyExtractor={(item) => item?._id?.toString()}
+          keyExtractor={(item) => item?._id}
           ListEmptyComponent={<Text style={styles.emptyText}>No notifications available.</Text>}
           refreshing={refreshing}
           onRefresh={handleRefresh}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={() =>
+            loadingMore ? (
+              <View style={{ marginVertical: 16, alignItems: "center" }}>
+                <ActivityIndicator size="small" color="#ffb300" />
+              </View>
+            ) : null
+          }
         />
       )
       }

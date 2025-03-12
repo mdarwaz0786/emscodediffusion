@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useNavigation } from '@react-navigation/native';
@@ -8,7 +8,9 @@ import UpcomingHolidaysScreen from '../../../Screens/Notifications/UpcomingHolid
 import Icon from 'react-native-vector-icons/Ionicons';
 import ApprovalRequestScreen from '../../../Screens/Notifications/ApprovalRequestScreen.js';
 import NotificationScreen from '../../../Screens/Notifications/NotificationScreen.js';
+import ClientNotificationScreen from '../../../Screens/Notifications/ClientNotificationScreen.js';
 import { useAuth } from '../../../Context/auth.context.js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -25,6 +27,32 @@ const NotificationHeader = () => {
 };
 
 const NotificationTopTab = () => {
+  const [userType, setUserType] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchUserType = async () => {
+    try {
+      const type = await AsyncStorage.getItem("userType");
+      setUserType(type);
+    } catch (error) {
+      console.log("Error:", error);
+    } finally {
+      setLoading(false);
+    };
+  };
+
+  useEffect(() => {
+    fetchUserType();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#ffb300" />
+      </View>
+    );
+  };
+
   const { team } = useAuth();
   return (
     <Suspense
@@ -87,11 +115,21 @@ const NotificationTopTab = () => {
               </>
             )
           }
-          <Tab.Screen
-            name="Notification"
-            component={NotificationScreen}
-            options={{ tabBarLabel: 'Message' }}
-          />
+          {
+            (userType === "Client") ? (
+              <Tab.Screen
+                name="Notification"
+                component={ClientNotificationScreen}
+                options={{ tabBarLabel: 'Message' }}
+              />
+            ) : (
+              <Tab.Screen
+                name="Notification"
+                component={NotificationScreen}
+                options={{ tabBarLabel: 'Message' }}
+              />
+            )
+          }
           <Tab.Screen
             name="UpcomingHolidays"
             component={UpcomingHolidaysScreen}

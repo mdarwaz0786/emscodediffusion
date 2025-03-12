@@ -23,7 +23,7 @@ const BottomTabNavigator = () => {
       const type = await AsyncStorage.getItem("userType");
       setUserType(type);
     } catch (error) {
-      console.error("Error fetching userType:", error);
+      console.log("Error:", error.message);
     } finally {
       setLoading(false);
     };

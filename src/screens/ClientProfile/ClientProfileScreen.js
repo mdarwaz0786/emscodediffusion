@@ -23,7 +23,6 @@ const ClientProfileScreen = () => {
   const [email, setEmail] = useState(team?.email);
   const [mobile, setMobile] = useState(team?.mobile);
   const [GSTNumber, setGSTNumber] = useState(team?.GSTNumber);
-  const [state, setState] = useState(team?.state);
   const [address, setAddress] = useState(team?.address);
   const [companyName, setCompanyName] = useState(team?.companyName);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -57,7 +56,7 @@ const ClientProfileScreen = () => {
     try {
       const response = await axios.put(
         `${API_BASE_URL}/api/v1/customer/update-customer/${id}`,
-        { name, email, mobile, GSTNumber, state, address, companyName },
+        { name, email, mobile, GSTNumber, address, companyName },
         {
           headers: {
             Authorization: validToken,
@@ -165,13 +164,6 @@ const ClientProfileScreen = () => {
                     onChangeText={setCompanyName}
                   />
 
-                  <Text style={styles.label}>State:</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={state}
-                    onChangeText={setState}
-                  />
-
                   <Text style={styles.label}>Address:</Text>
                   <TextInput
                     style={styles.input}
@@ -205,7 +197,7 @@ const ClientProfileScreen = () => {
 
 const DetailRow = ({ label, value }) => (
   <View style={styles.detailRow}>
-    <Text style={styles.detailLabel}>{label}:</Text>
+    <Text style={styles.detailLabel}>{label}: </Text>
     <Text style={styles.detailValue}>{value || "NA"}</Text>
   </View>
 );
@@ -261,6 +253,7 @@ const styles = StyleSheet.create({
   detailRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    flexWrap: "wrap",
     marginBottom: 6,
   },
   detailLabel: {

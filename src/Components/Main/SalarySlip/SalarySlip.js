@@ -6,12 +6,10 @@ import {
   Alert,
   TouchableOpacity,
   ScrollView,
-  Platform,
   Linking,
   RefreshControl,
 } from "react-native";
 import FileViewer from 'react-native-file-viewer';
-import Share from "react-native-share";
 import Icon from "react-native-vector-icons/Feather";
 import RNHTMLtoPDF from "react-native-html-to-pdf";
 import RNFS from 'react-native-fs';
@@ -63,7 +61,7 @@ const SalarySlip = ({ navigation }) => {
 
       await generatePDFAfterFetching(m, y, t, a, monthlyStaticData, attendanceData);
     } catch (error) {
-      Alert.alert("Error", "Failed to generate PDF.");
+      Alert.alert("Error", "Failed to download PDF.");
     };
   };
 
@@ -167,7 +165,6 @@ const SalarySlip = ({ navigation }) => {
 
   const openPDF = async (filePath) => {
     try {
-      // Check if file exists
       const fileExists = await RNFS.exists(filePath);
 
       if (!fileExists) {
@@ -175,29 +172,16 @@ const SalarySlip = ({ navigation }) => {
         return;
       };
 
-      // Try opening with FileViewer
       await FileViewer.open(filePath, { type: "application/pdf" });
     } catch (error) {
-      // If no PDF viewer is installed, show Open With dialog
-      if (Platform.OS === "android") {
-        try {
-          const shareOptions = {
-            title: "Open PDF",
-            url: `file://${filePath}`,
-            type: "application/pdf",
-          };
-          await Share.open(shareOptions);
-        } catch (shareError) {
-          Alert.alert(
-            "No PDF Viewer Found",
-            "Please install a PDF viewer to open this file.",
-            [
-              { text: "Cancel", style: "cancel" },
-              { text: "Install", onPress: () => Linking.openURL("market://details?id=com.adobe.reader") },
-            ]
-          );
-        };
-      };
+      Alert.alert(
+        "No PDF Viewer Found",
+        "Please install a PDF viewer to open this file.",
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Install", onPress: () => Linking.openURL("market://details?id=com.adobe.reader") },
+        ],
+      );
     };
   };
 
@@ -669,11 +653,12 @@ const SalarySlip = ({ navigation }) => {
       // Notify the media scanner about the new file
       await RNFetchBlob.fs.scanFile([{ path: newPath, mime: 'application/pdf' }]);
       Toast.show({ type: "success", text1: "Slip Downloaded", text2: `Slip saved at: ${newPath}` });
+
       setTimeout(() => {
         openPDF(newPath);
       }, 3000)
     } catch (error) {
-      Alert.alert("Error", "Failed to generate PDF");
+      Alert.alert("Error", "Download Failed");
     };
   };
 
@@ -743,14 +728,13 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     padding: 10,
-    paddingVertical: 10,
   },
   container: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: "#fff",
-    padding: 15,
+    padding: 10,
     marginVertical: 8,
     borderRadius: 10,
   },

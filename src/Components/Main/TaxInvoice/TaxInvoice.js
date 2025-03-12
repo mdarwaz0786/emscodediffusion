@@ -5,12 +5,10 @@ import {
   StyleSheet,
   Alert,
   TouchableOpacity,
-  Platform,
   Linking,
   FlatList,
 } from "react-native";
 import FileViewer from 'react-native-file-viewer';
-import Share from "react-native-share";
 import Icon from "react-native-vector-icons/Feather";
 import RNHTMLtoPDF from "react-native-html-to-pdf";
 import RNFS from 'react-native-fs';
@@ -29,7 +27,8 @@ const TaxInvoice = ({ navigation }) => {
   const { validToken } = useAuth();
   const { refreshKey, refreshPage } = useRefresh();
   const [invoice, setInvoice] = useState([]);
-  const [downloading, setDownloading] = useState(false);
+  const [downloading, setDownloading] = useState({});
+  const [isDownloading, setIsDownloading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [page, setPage] = useState(1);
@@ -102,25 +101,14 @@ const TaxInvoice = ({ navigation }) => {
 
       await FileViewer.open(filePath, { type: "application/pdf" });
     } catch (error) {
-      if (Platform.OS === "android") {
-        try {
-          const shareOptions = {
-            title: "Open PDF",
-            url: `file://${filePath}`,
-            type: "application/pdf",
-          };
-          await Share.open(shareOptions);
-        } catch (shareError) {
-          Alert.alert(
-            "No PDF Viewer Found",
-            "Please install a PDF viewer to open this file.",
-            [
-              { text: "Cancel", style: "cancel" },
-              { text: "Install", onPress: () => Linking.openURL("market://details?id=com.adobe.reader") },
-            ]
-          );
-        };
-      };
+      Alert.alert(
+        "No PDF Viewer Found",
+        "Please install a PDF viewer to open this file.",
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Install", onPress: () => Linking.openURL("market://details?id=com.adobe.reader") },
+        ]
+      );
     };
   };
 
@@ -133,7 +121,12 @@ const TaxInvoice = ({ navigation }) => {
         return;
       };
 
-      setDownloading(true);
+      if (isDownloading) {
+        return;
+      };
+
+      setIsDownloading(true);
+      setDownloading((prev) => ({ ...prev, [id]: true }));
 
       let invoiceData = {};
 
@@ -391,12 +384,14 @@ const TaxInvoice = ({ navigation }) => {
           openPDF(newPath);
         }, 3000)
       } catch (error) {
-        Alert.alert("Error", "Failed to generate PDF");
+        Alert.alert("Error", "Downloading Failed");
       } finally {
-        setDownloading(false);
+        setIsDownloading(false);
+        setDownloading((prev) => ({ ...prev, [id]: false }));
       };
     } catch (error) {
       console.log("Error:", error.message);
+      Alert.alert("Error", "Downloading Failed");
     };
   };
 
@@ -407,14 +402,16 @@ const TaxInvoice = ({ navigation }) => {
       <Text style={styles.invoiceText}>Project: {item?.proformaInvoiceDetails?.projectName || item?.project?.projectName}</Text>
       <Text style={styles.invoiceText}>Client: {item?.proformaInvoiceDetails?.clientName || item?.project?.customer?.name}</Text>
       {
-        downloading ? (
+        downloading[item?._id] ? (
           <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>Downloading...</Text>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
             onPress={() => generatePDF(item?._id)}
-            style={styles.button}>
+            style={[styles.button, { opacity: isDownloading ? 0.6 : 1 }]}
+            disabled={isDownloading}
+          >
             <Text style={styles.buttonText}>Download</Text>
           </TouchableOpacity>
         )
