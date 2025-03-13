@@ -61,13 +61,13 @@ const Ticket = () => {
           <Text style={styles.avatarText}>{item?.title[0]}</Text>
         </View>
         <View>
-          <Text style={styles.title}>Status: {item?.title}</Text>
+          <Text style={styles.title}>{item?.title}</Text>
           <Text style={styles.subtitle}>{item?.createdBy?.name}</Text>
         </View>
       </View>
       <View>
       </View>
-      <Text style={styles.bottomText}>Ticket Status: {item?.status}</Text>
+      <Text style={styles.bottomText}>Status: {item?.status}</Text>
       <Text style={styles.bottomText}>Project: {item?.project?.projectName}</Text>
       <Text style={styles.bottomText}>Created At: {(new Date(item?.createdAt))?.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}</Text>
       <Text style={styles.bottomText}>Last Updated: {(new Date(item?.updatedAt))?.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}</Text>

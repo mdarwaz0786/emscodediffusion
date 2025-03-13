@@ -34,6 +34,8 @@ const SalarySlip = ({ navigation }) => {
   const [salary, setSalary] = useState([]);
   const [employee, setEmployee] = useState("");
   const [employeeId, setEmployeeId] = useState(team?._id);
+  const [downloading, setDownloading] = useState({});
+  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     if (team && validToken) {
@@ -84,13 +86,20 @@ const SalarySlip = ({ navigation }) => {
     };
   };
 
-  const generatePDF = async (m, y, t, a) => {
+  const generatePDF = async (m, y, t, a, id) => {
     const hasPermission = await requestStoragePermission();
 
     if (!hasPermission) {
       Alert.alert("Permission Denied", "Cannot save file without storage permission");
       return;
     };
+
+    if (isDownloading) {
+      return;
+    };
+
+    setIsDownloading(true);
+    setDownloading((prev) => ({ ...prev, [id]: true }));
 
     try {
       const [monthlyStaticData, salaryData] = await Promise.all([
@@ -101,6 +110,9 @@ const SalarySlip = ({ navigation }) => {
       await generatePDFAfterFetching(m, y, t, a, monthlyStaticData, salaryData);
     } catch (error) {
       Alert.alert("Error", "Failed to download PDF.");
+    } finally {
+      setIsDownloading(false);
+      setDownloading((prev) => ({ ...prev, [id]: false }));
     };
   };
 
@@ -327,14 +339,14 @@ const SalarySlip = ({ navigation }) => {
     }
 
     .label {
-      width: 40%;
+      width: 50%;
       font-size: 15px;
       font-weight: 600;
       color: #222;
     }
 
     .value {
-      width: 60%;
+      width: 50%;
       font-size: 15px;
     }
 
@@ -355,24 +367,24 @@ const SalarySlip = ({ navigation }) => {
     }
 
     .net-pay {
-      margin-top: 40px !important;
-      border: 1px solid #ddd !important;
-      padding: 10px !important;
-      padding-left: 15px !important;
+      margin-top: 40px;
+      border: 1px solid #ddd;
+      padding: 10px;
+      padding-left: 15px;
     }
 
-    .net-pay .row {
-      display: flex !important;
-      justify-content: space-between !important;
-      align-items: center !important;
+    .net-pay .net-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .net-pay .value {
-      font-weight: 600 !important;
+    .net-pay .net-value {
+      font-weight: 600;
     }
 
-    .net-pay .label {
-      font-weight: 600 !important;
+    .net-pay .net-label {
+      font-weight: 600;
     }
 
     .attendance-summary {
@@ -485,7 +497,7 @@ const SalarySlip = ({ navigation }) => {
         </div>
         <div class="row">
           <div class="label">Monthly Gross Salary</div>
-          <div class="value">${employee?.monthlySalary}</div>
+          <div class="value">₹${employee?.monthlySalary}</div>
         </div>
       </div>
     </div>
@@ -517,13 +529,13 @@ const SalarySlip = ({ navigation }) => {
     </table>
 
     <div class="net-pay">
-      <div class="row">
-        <div class="label">Net Payable (Net Salary)</div>
-        <div class="value">₹${amountPaid}</div>
+      <div class="net-row" style="margin-bottom: 10px;">
+        <div class="net-label">Net Payable (Net Salary)</div>
+        <div class="net-value">₹${amountPaid}</div>
       </div>
-      <div class="row">
-        <div class="label">Amount in Words</div>
-        <div class="value">${numberToWord(amountPaid)}</div>
+      <div class="net-row">
+        <div class="net-label">Amount in Words</div>
+        <div class="net-value">${numberToWord(amountPaid)}</div>
       </div>
     </div>
 
@@ -735,18 +747,29 @@ const SalarySlip = ({ navigation }) => {
             </View>
           ) : salary?.length === 0 ? (
             <Text style={{ flex: 1, textAlign: "center", color: "#777" }}>
-              No salary slip found.
+              Salary slip not found.
             </Text>
           ) : (
             salary?.map((item, index) => (
               <View key={index} style={styles.container}>
                 <Text style={styles.monthText}>{getMonthName(item?.month)}</Text>
                 <Text style={styles.yearText}>{item?.year}</Text>
-                <TouchableOpacity
-                  onPress={() => generatePDF(item?.month, item?.year, item?.transactionId, item?.amountPaid)}
-                  style={styles.button}>
-                  <Text style={styles.buttonText}>Download</Text>
-                </TouchableOpacity>
+                {
+                  downloading[item?._id] ? (
+                    <TouchableOpacity
+                      style={styles.button}>
+                      <Text style={styles.buttonText}>Downloading...</Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity
+                      onPress={() => generatePDF(item?.month, item?.year, item?.transactionId, item?.amountPaid, item?._id)}
+                      style={[styles.button, { opacity: isDownloading ? 0.6 : 1 }]}
+                      disabled={isDownloading}
+                    >
+                      <Text style={styles.buttonText}>Download</Text>
+                    </TouchableOpacity>
+                  )
+                }
               </View>
             ))
           )
@@ -779,8 +802,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: "#fff",
-    padding: 10,
-    marginVertical: 8,
+    padding: 8,
+    paddingHorizontal: 10,
+    marginBottom: 10,
     borderRadius: 10,
   },
   monthText: {
@@ -792,7 +816,7 @@ const styles = StyleSheet.create({
     color: "#555",
   },
   button: {
-    backgroundColor: "#ffb300",
+    backgroundColor: "#555",
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 8,

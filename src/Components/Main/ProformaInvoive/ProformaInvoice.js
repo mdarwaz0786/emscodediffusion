@@ -389,7 +389,6 @@ const ProformaInvoice = ({ navigation }) => {
         setDownloading((prev) => ({ ...prev, [id]: false }));
       };
     } catch (error) {
-      console.log("Error:", error.message);
       Alert.alert("Error", "Downloading Failed");
     };
   };
