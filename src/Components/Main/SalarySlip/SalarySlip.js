@@ -33,7 +33,7 @@ const SalarySlip = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
   const [salary, setSalary] = useState([]);
   const [employee, setEmployee] = useState("");
-  const [employeeId, setEmployeeId] = useState("");
+  const [employeeId, setEmployeeId] = useState(team?._id);
 
   useEffect(() => {
     if (team && validToken) {
@@ -100,7 +100,7 @@ const SalarySlip = ({ navigation }) => {
 
       await generatePDFAfterFetching(m, y, t, a, monthlyStaticData, salaryData);
     } catch (error) {
-      Alert.alert("Error", "Failed to download PDFs.");
+      Alert.alert("Error", "Failed to download PDF.");
     };
   };
 
@@ -215,12 +215,17 @@ const SalarySlip = ({ navigation }) => {
           const dateString = `${year}-${month?.padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
           const attendance = attendanceData?.find((entry) => entry?.attendanceDate === dateString);
           const status = attendance?.status || "";
+          const punchInTime = attendance?.punchInTime || "";
+          const punchOutTime = attendance?.punchInTime || "";
+          const hoursWorked = attendance?.hoursWorked || "";
           const color = attendanceColors[status] || attendanceColors.default;
 
           calendarHTML += `
           <td style="border: 1px solid #ddd; padding: 8px; text-align: center; background: #fff;">
             <div>${day}</div>
             <div style="color: ${color};">${status}</div>
+            <div>${punchInTime} - ${punchOutTime}</div>
+            <div>${hoursWorked}</div>
           </td>
         `;
           day++;
@@ -238,7 +243,7 @@ const SalarySlip = ({ navigation }) => {
     const attendanceHTML = await generateCalendarHTML(month, year, monthlyStatic?.calendarData);
 
     const html = `
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -254,7 +259,6 @@ const SalarySlip = ({ navigation }) => {
 
     body {
       font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
     }
 
     .salary-slip {
@@ -337,7 +341,7 @@ const SalarySlip = ({ navigation }) => {
     .salary-table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
+      margin-top: 10px;
     }
 
     .salary-table th,
@@ -351,21 +355,29 @@ const SalarySlip = ({ navigation }) => {
     }
 
     .net-pay {
-      margin-top: 40px;
-      border: 1px solid #ddd;
-      padding: 10px;
-      padding-left: 15px;
+      margin-top: 40px !important;
+      border: 1px solid #ddd !important;
+      padding: 10px !important;
+      padding-left: 15px !important;
+    }
+
+    .net-pay .row {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
     }
 
     .net-pay .value {
-      font-size: 15px;
-      font-weight: 600;
-      color: #222;
+      font-weight: 600 !important;
+    }
+
+    .net-pay .label {
+      font-weight: 600 !important;
     }
 
     .attendance-summary {
       border: 1px solid #ddd;
-      margin-top: 15px;
+      margin-top: 10px;
     }
 
     .attendance-row {
@@ -412,8 +424,8 @@ const SalarySlip = ({ navigation }) => {
 
     .calendar-table {
       width: 100%;
-      border-collapse:collapse;
-      margin-top: 10px;
+      border-collapse: collapse;
+      margin-top: 12px;
     }
 
     .calendar-table th,
@@ -430,53 +442,53 @@ const SalarySlip = ({ navigation }) => {
 </head>
 
 <body>
-      <div class="salary-slip">
-        <img src="${employee?.office?.logo}" class="logo-section" alt="logo" />
-        <div class="company-details">
-          <h4 class="company-name">${employee?.office?.name}</h4>
-          <hr />
-        </div>
+  <div class="salary-slip">
+    <img src="${employee?.office?.logo}" class="logo-section" alt="logo" />
+    <div class="company-details">
+      <h4 class="company-name">${employee?.office?.name}</h4>
+      <hr />
+    </div>
 
-        <h6 class="salary-title">Salary Slip (${getMonthName(month)} ${year})</h6>
-        <div class="salary-details">
-          <div class="left-section">
-            <div class="row" style="margin-top: 8px;">
-              <div class="label">Employee Name</div>
-              <div class="value">${employee?.name}</div>
-            </div>
-            <div class="row">
-              <div class="label">Designation</div>
-              <div class="value">${employee?.designation?.name}</div>
-            </div>
-            <div class="row">
-              <div class="label">Department</div>
-              <div class="value">${employee?.department?.name || "IT"}</div>
-            </div>
-            <div class="row">
-              <div class="label">Date of Joining</div>
-              <div class="value">${formatDate(employee?.joining)}</div>
-            </div>
-            <div class="row">
-              <div class="label">Mobile Number</div>
-              <div class="value">${employee?.mobile}</div>
-            </div>
-          </div>
-
-          <div class="right-section">
-            <div class="row" style="margin-top: 8px;">
-              <div class="label">Transaction ID</div>
-              <div class="value">${transactionId}</div>
-            </div>
-            <div class="row">
-              <div class="label">Employee ID</div>
-              <div class="value">${employee?.employeeId}</div>
-            </div>
-            <div class="row">
-              <div class="label">Monthly Gross</div>
-              <div class="value">${employee?.monthlySalary}</div>
-            </div>
-          </div>
+    <h6 class="salary-title">Salary Slip (${getMonthName(month)} ${year})</h6>
+    <div class="salary-details">
+      <div class="left-section">
+        <div class="row" style="margin-top: 8px;">
+          <div class="label">Employee Name</div>
+          <div class="value">${employee?.name}</div>
         </div>
+        <div class="row">
+          <div class="label">Designation</div>
+          <div class="value">${employee?.designation?.name}</div>
+        </div>
+        <div class="row">
+          <div class="label">Department</div>
+          <div class="value">${employee?.department?.name || "IT"}</div>
+        </div>
+        <div class="row">
+          <div class="label">Date of Joining</div>
+          <div class="value">${formatDate(employee?.joining)}</div>
+        </div>
+        <div class="row">
+          <div class="label">Mobile Number</div>
+          <div class="value">${employee?.mobile}</div>
+        </div>
+      </div>
+
+      <div class="right-section">
+        <div class="row" style="margin-top: 8px;">
+          <div class="label">Transaction ID</div>
+          <div class="value">${transactionId}</div>
+        </div>
+        <div class="row">
+          <div class="label">Employee ID</div>
+          <div class="value">${employee?.employeeId}</div>
+        </div>
+        <div class="row">
+          <div class="label">Monthly Gross Salary</div>
+          <div class="value">${employee?.monthlySalary}</div>
+        </div>
+      </div>
+    </div>
 
     <h6 class="payment-title">Payment & Salary (${getMonthName(month)} ${year})</h6>
     <table class="salary-table">
@@ -504,17 +516,16 @@ const SalarySlip = ({ navigation }) => {
       </tfoot>
     </table>
 
-        <div class="net-pay">
-          <div class="row">
-            <div class="label">Net Payable (Net Salary)</div>
-            <div class="value">₹${amountPaid}</div>
-          </div>
-          <div class="row">
-            <div class="label">Amount in Words</div>
-            <div class="value">${numberToWord(amountPaid)}</div>
-          </div>
-        </div>
-        
+    <div class="net-pay">
+      <div class="row">
+        <div class="label">Net Payable (Net Salary)</div>
+        <div class="value">₹${amountPaid}</div>
+      </div>
+      <div class="row">
+        <div class="label">Amount in Words</div>
+        <div class="value">${numberToWord(amountPaid)}</div>
+      </div>
+    </div>
 
     <h6 class="attendance-summary-title">Salary Deduction Calculation (${getMonthName(month)} ${year})</h6>
 
@@ -534,102 +545,128 @@ const SalarySlip = ({ navigation }) => {
         </div>
         <div class="attendance-column">
           <div class="attendance-title">Deduction Days</div>
-          <div class="attendance-data">${salaryData[0]?.employeeHoursShortfall} / ${salaryData[0]?.workingHoursPerDay} = ${salaryData[0]?.deductionDays}</div>
+          <div class="attendance-data">${salaryData[0]?.employeeHoursShortfall} / ${salaryData[0]?.workingHoursPerDay} =
+            ${salaryData[0]?.deductionDays}</div>
         </div>
         <div class="attendance-column">
           <div class="attendance-title">Amount Deducted</div>
-          <div class="attendance-data">${salaryData[0]?.deductionDays} × ₹${salaryData[0]?.dailySalary} = ${salaryData[0]?.totalDeduction}</div>
+          <div class="attendance-data">${salaryData[0]?.deductionDays} × ₹${salaryData[0]?.dailySalary} =
+            ${salaryData[0]?.totalDeduction}</div>
         </div>
       </div>
     </div>
 
-        <h6 class="attendance-summary-title">Attendance Summary (${getMonthName(month)} ${year})</h6>
+    <h6 class="attendance-summary-title">Attendance Summary (${getMonthName(month)} ${year})</h6>
 
-        <div class="attendance-summary">
-          <div class="attendance-row">
-            <div class="attendance-column">
-              <div class="attendance-title">Present</div>
-              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeePresentDays}</div>
-            </div>
-            <div class="attendance-column">
-              <div class="attendance-title">Half Day</div>
-              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeeHalfDays}</div>
-            </div>
-            <div class="attendance-column">
-              <div class="attendance-title">Absent</div>
-              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeeAbsentDays}</div>
-            </div>
-            <div class="attendance-column">
-              <div class="attendance-title">Leave</div>
-              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeeLeaveDays}</div>
-            </div>
-            <div class="attendance-column">
-              <div class="attendance-title">Comp Off</div>
-              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeeCompOffDays}</div>
-            </div>
-            <div class="attendance-column">
-              <div class="attendance-title">Weekly Off</div>
-              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.totalSundays}</div>
-            </div>
-            <div class="attendance-column">
-              <div class="attendance-title">Holiday</div>
-              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.totalHolidays}</div>
-            </div>
-          </div>
+    <div class="attendance-summary">
+      <div class="attendance-row">
+        <div class="attendance-column">
+          <div class="attendance-title">Present</div>
+          <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeePresentDays}</div>
         </div>
-
-        <p class="footer">This is a digitally generated document and does not require a signature or seal.</p>
-
-        <div class="page-break"></div>
-
-        <img src="${employee?.office?.logo}" class="logo-section second-page-logo" alt="logo" />
-
-        <div class="company-details">
-          <h4 class="company-name">${employee?.office?.name}</h4>
-          <hr />
+        <div class="attendance-column">
+          <div class="attendance-title">Half Day</div>
+          <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeeHalfDays}</div>
         </div>
-
-        <!-- Attendance table with summary -->
-        ${attendanceHTML}
-
-        <h6 class="attendance-summary-title">Attendance Summary (${getMonthName(month)} ${year})</h6>
-        
-        <div class="attendance-summary">
-          <div class="attendance-row">
-            <div class="attendance-column">
-              <div class="attendance-title">Present</div>
-              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeePresentDays}</div>
-            </div>
-            <div class="attendance-column">
-              <div class="attendance-title">Absent</div>
-              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeeAbsentDays}</div>
-            </div>
-            <div class="attendance-column">
-              <div class="attendance-title">Half Day</div>
-              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeeHalfDays}</div>
-            </div>
-            <div class="attendance-column">
-              <div class="attendance-title">Leave</div>
-              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeeLeaveDays}</div>
-            </div>
-            <div class="attendance-column">
-              <div class="attendance-title">Comp Off</div>
-              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeeCompOffDays}</div>
-            </div>
-            <div class="attendance-column">
-              <div class="attendance-title">Weekly Off</div>
-              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.totalSundays}</div>
-            </div>
-            <div class="attendance-column">
-              <div class="attendance-title">Holiday</div>
-              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.totalHolidays}</div>
-            </div>
-          </div>
+        <div class="attendance-column">
+          <div class="attendance-title">Absent</div>
+          <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeeAbsentDays}</div>
         </div>
-
-        <p class="footer">This is a digitally generated document and does not require a signature or seal.</p>
+        <div class="attendance-column">
+          <div class="attendance-title">Leave</div>
+          <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeeLeaveDays}</div>
+        </div>
+        <div class="attendance-column">
+          <div class="attendance-title">Comp Off</div>
+          <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeeCompOffDays}</div>
+        </div>
+        <div class="attendance-column">
+          <div class="attendance-title">Weekly Off</div>
+          <div class="attendance-data">${monthlyStatic?.monthlyStatics?.totalSundays}</div>
+        </div>
+        <div class="attendance-column">
+          <div class="attendance-title">Holiday</div>
+          <div class="attendance-data">${monthlyStatic?.monthlyStatics?.totalHolidays}</div>
+        </div>
       </div>
- </body>
+    </div>
+
+    <p class="footer">This is a digitally generated document and does not require a signature or seal.</p>
+
+    <div class="page-break"></div>
+
+    <img src="${employee?.office?.logo}" class="logo-section second-page-logo" alt="logo" />
+
+    <div class="company-details">
+      <h4 class="company-name">${employee?.office?.name}</h4>
+      <hr />
+    </div>
+
+    <!-- Attendance table with summary -->
+    ${attendanceHTML}
+
+    <h6 class="attendance-summary-title">Working Hours Summary (${getMonthName(month)} ${year})</h6>
+
+    <div class="attendance-summary">
+      <div class="attendance-row">
+        <div class="attendance-column">
+          <div class="attendance-title">Total Working Days</div>
+          <div class="attendance-data">${salaryData[0]?.companyWorkingDays} Days</div>
+        </div>
+        <div class="attendance-column">
+          <div class="attendance-title">Required Working Hours</div>
+          <div class="attendance-data">${salaryData[0]?.companyWorkingHours}</div>
+        </div>
+        <div class="attendance-column">
+          <div class="attendance-title">Worked Hours</div>
+          <div class="attendance-data">${salaryData[0]?.employeeHoursWorked}</div>
+        </div>
+        <div class="attendance-column">
+          <div class="attendance-title">Shortfall Hours</div>
+          <div class="attendance-data">${salaryData[0]?.employeeHoursShortfall}</div>
+        </div>
+      </div>
+    </div>
+
+    <h6 class="attendance-summary-title">Attendance Summary (${getMonthName(month)} ${year})</h6>
+
+    <div class="attendance-summary">
+      <div class="attendance-row">
+        <div class="attendance-column">
+          <div class="attendance-title">Present</div>
+          <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeePresentDays}</div>
+        </div>
+        <div class="attendance-column">
+          <div class="attendance-title">Absent</div>
+          <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeeAbsentDays}</div>
+        </div>
+        <div class="attendance-column">
+          <div class="attendance-title">Half Day</div>
+          <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeeHalfDays}</div>
+        </div>
+        <div class="attendance-column">
+          <div class="attendance-title">Leave</div>
+          <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeeLeaveDays}</div>
+        </div>
+        <div class="attendance-column">
+          <div class="attendance-title">Comp Off</div>
+          <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeeCompOffDays}</div>
+        </div>
+        <div class="attendance-column">
+          <div class="attendance-title">Weekly Off</div>
+          <div class="attendance-data">${monthlyStatic?.monthlyStatics?.totalSundays}</div>
+        </div>
+        <div class="attendance-column">
+          <div class="attendance-title">Holiday</div>
+          <div class="attendance-data">${monthlyStatic?.monthlyStatics?.totalHolidays}</div>
+        </div>
+      </div>
+    </div>
+
+    <p class="footer" style="margin-bottom:15px;">This is a digitally generated document and does not require a
+      signature or seal.</p>
+  </div>
+</body>
 
 </html>`;
 
