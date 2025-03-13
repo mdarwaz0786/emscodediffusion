@@ -31,58 +31,17 @@ const SalarySlip = ({ navigation }) => {
   const { refreshKey, refreshPage } = useRefresh();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [office, setOffice] = useState([]);
   const [salary, setSalary] = useState([]);
   const [employee, setEmployee] = useState("");
-  const [employeeId, setEmployeeId] = useState(team?._id);
+  const [employeeId, setEmployeeId] = useState("");
 
   useEffect(() => {
     if (team && validToken) {
-      fetchOfficeLocation();
-      fetchSalary();
-      fetchEmployee();
       setEmployeeId(team?._id);
+      fetchEmployee();
+      fetchSalary();
     };
   }, [team, validToken, refreshKey]);
-
-  const generatePDF = async (m, y, t, a) => {
-    const hasPermission = await requestStoragePermission();
-
-    if (!hasPermission) {
-      Alert.alert("Permission Denied", "Cannot save file without storage permission");
-      return;
-    };
-
-    try {
-      const [monthlyStaticData, attendanceData] = await Promise.all([
-        fetchMonthlyStatistic(m, y),
-        fetchAttendance(m, y),
-      ]);
-
-      await generatePDFAfterFetching(m, y, t, a, monthlyStaticData, attendanceData);
-    } catch (error) {
-      Alert.alert("Error", "Failed to download PDF.");
-    };
-  };
-
-  const fetchOfficeLocation = async () => {
-    try {
-      const response = await axios.get(
-        `${API_BASE_URL}/api/v1/officeLocation/all-officeLocation`,
-        {
-          headers: {
-            Authorization: validToken,
-          },
-        },
-      );
-
-      if (response?.data?.success) {
-        setOffice(response?.data?.officeLocation);
-      };
-    } catch (error) {
-      console.log("Error:", error.message);
-    };
-  };
 
   const fetchEmployee = async () => {
     try {
@@ -91,6 +50,7 @@ const SalarySlip = ({ navigation }) => {
           Authorization: validToken,
         },
       });
+
       if (response?.data?.success) {
         setEmployee(response?.data?.team);
       };
@@ -124,40 +84,67 @@ const SalarySlip = ({ navigation }) => {
     };
   };
 
+  const generatePDF = async (m, y, t, a) => {
+    const hasPermission = await requestStoragePermission();
+
+    if (!hasPermission) {
+      Alert.alert("Permission Denied", "Cannot save file without storage permission");
+      return;
+    };
+
+    try {
+      const [monthlyStaticData, salaryData] = await Promise.all([
+        fetchMonthlyStatistic(m, y),
+        fetchMonthlySalary(m, y),
+      ]);
+
+      await generatePDFAfterFetching(m, y, t, a, monthlyStaticData, salaryData);
+    } catch (error) {
+      Alert.alert("Error", "Failed to download PDFs.");
+    };
+  };
+
   const fetchMonthlyStatistic = async (month, year) => {
     try {
       const params = {};
 
-      if (month && year) params.month = `${year}-${month}`;
-      if (employeeId) params.employeeId = employeeId;
+      if (month && year) {
+        params.month = `${year}-${String(month).padStart(2, '0')}`;
+      };
 
-      const response = await axios.get(`${API_BASE_URL}/api/v1/attendance/monthly-statistic`, {
+      if (employeeId) {
+        params.employeeId = employeeId;
+      };
+
+      const response = await axios.get(`${API_BASE_URL}/api/v1/newAttendance/monthly-newStatistic`, {
         params,
         headers: {
           Authorization: validToken,
         },
       });
 
-      return response?.data?.success ? response?.data?.attendance : null;
+      return response?.data?.success ? response?.data : null;
     } catch (error) {
       return null;
     };
   };
 
-  const fetchAttendance = async (month, year) => {
+  const fetchMonthlySalary = async (month, year) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/v1/attendance/all-attendance`, {
+      const response = await axios.get(`${API_BASE_URL}/api/v1/salary/monthly-salary`, {
         headers: {
           Authorization: validToken,
         },
         params: {
-          year,
-          month,
-          employeeId,
+          month: `${year}-${String(month).padStart(2, '0')}`,
         },
       });
 
-      return response?.data?.success ? response?.data?.attendance : [];
+      if (response?.data?.success) {
+        const data = response?.data?.salaryData;
+        const filteredData = data?.filter((salary) => salary?.employeeId === employeeId);
+        return filteredData;
+      };
     } catch (error) {
       return [];
     };
@@ -205,7 +192,7 @@ const SalarySlip = ({ navigation }) => {
     };
 
     let calendarHTML = `
-    <h6 class="calendar-title">Attendance ${getMonthName(month)} ${year}</h6>
+    <h6 class="calendar-title">Attendance (${getMonthName(month)} ${year})</h6>
     <table class="calendar-table">
       <thead>
         <tr>
@@ -247,8 +234,8 @@ const SalarySlip = ({ navigation }) => {
     return calendarHTML;
   };
 
-  const generatePDFAfterFetching = async (month, year, transactionId, amountPaid, monthlyStatic, attendanceData) => {
-    const attendanceHTML = await generateCalendarHTML(month, year, attendanceData);
+  const generatePDFAfterFetching = async (month, year, transactionId, amountPaid, monthlyStatic, salaryData) => {
+    const attendanceHTML = await generateCalendarHTML(month, year, monthlyStatic?.calendarData);
 
     const html = `
 <!DOCTYPE html>
@@ -270,16 +257,6 @@ const SalarySlip = ({ navigation }) => {
       background-color: #f4f4f4;
     }
 
-    .page-wrapper {
-      margin: 20px;
-    }
-
-    .content {
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 5px;
-    }
-
     .salary-slip {
       padding: 20px;
       background-color: white;
@@ -287,7 +264,7 @@ const SalarySlip = ({ navigation }) => {
 
     .logo-section {
       margin-top: 10px;
-      margin-bottom: 60px;
+      margin-bottom: 30px;
       width: 180px;
       height: 40px;
       object-fit: contain;
@@ -300,19 +277,20 @@ const SalarySlip = ({ navigation }) => {
     .company-name {
       font-weight: 600;
       font-size: 20px;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
 
     .salary-title {
-      margin-top: 50px;
+      margin-top: 30px;
       font-size: 18px;
       font-weight: 600;
       text-align: center;
     }
 
     .payment-title,
+    .calendar-title,
     .attendance-summary-title {
-      margin-top: 50px;
+      margin-top: 30px;
       font-size: 18px;
       font-weight: 600;
     }
@@ -429,15 +407,7 @@ const SalarySlip = ({ navigation }) => {
     }
 
     .second-page-logo {
-      margin-top: 50px;
-    }
-
-    .calendar-title {
-      margin-top: 50px;
-      margin-bottom: 20px;
-      font-size: 16px;
-      font-weight: 500;
-      text-align: center;
+      margin-top: 30px;
     }
 
     .calendar-table {
@@ -460,16 +430,14 @@ const SalarySlip = ({ navigation }) => {
 </head>
 
 <body>
-  <div class="page-wrapper">
-    <div class="content">
       <div class="salary-slip">
-        <img src="${office[0]?.logo}" class="logo-section" alt="logo" />
+        <img src="${employee?.office?.logo}" class="logo-section" alt="logo" />
         <div class="company-details">
-          <h4 class="company-name">${office[0]?.name}</h4>
+          <h4 class="company-name">${employee?.office?.name}</h4>
           <hr />
         </div>
 
-        <h6 class="salary-title">Salary Slip ${getMonthName(month)} ${year}</h6>
+        <h6 class="salary-title">Salary Slip (${getMonthName(month)} ${year})</h6>
         <div class="salary-details">
           <div class="left-section">
             <div class="row" style="margin-top: 8px;">
@@ -489,14 +457,14 @@ const SalarySlip = ({ navigation }) => {
               <div class="value">${formatDate(employee?.joining)}</div>
             </div>
             <div class="row">
-              <div class="label">Phone Number</div>
+              <div class="label">Mobile Number</div>
               <div class="value">${employee?.mobile}</div>
             </div>
           </div>
 
           <div class="right-section">
             <div class="row" style="margin-top: 8px;">
-              <div class="label">Transaction Id</div>
+              <div class="label">Transaction ID</div>
               <div class="value">${transactionId}</div>
             </div>
             <div class="row">
@@ -510,31 +478,35 @@ const SalarySlip = ({ navigation }) => {
           </div>
         </div>
 
-        <h6 class="payment-title">Payment & Salary ${getMonthName(month)} ${year}</h6>
-        <table class="salary-table">
-          <thead>
-            <tr>
-              <th>Earnings</th>
-              <th>Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Salary</td>
-              <td>₹${amountPaid}</td>
-            </tr>
-          </tbody>
-          <tfoot>
-            <tr>
-              <th>Total Earnings</th>
-              <th>₹${amountPaid}</th>
-            </tr>
-          </tfoot>
-        </table>
+    <h6 class="payment-title">Payment & Salary (${getMonthName(month)} ${year})</h6>
+    <table class="salary-table">
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Monthly Gross Salary</td>
+          <td>₹${employee?.monthlySalary}</td>
+        </tr>
+        <tr>
+          <td>Total Deduction (${salaryData[0]?.deductionDays} × ₹${salaryData[0]?.dailySalary})</td>
+          <td>-₹${salaryData[0]?.totalDeduction}</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>Net Salary</th>
+          <th>₹${salaryData[0]?.totalSalary}</th>
+        </tr>
+      </tfoot>
+    </table>
 
         <div class="net-pay">
           <div class="row">
-            <div class="label">Net Payable (Total Earnings)</div>
+            <div class="label">Net Payable (Net Salary)</div>
             <div class="value">₹${amountPaid}</div>
           </div>
           <div class="row">
@@ -542,33 +514,66 @@ const SalarySlip = ({ navigation }) => {
             <div class="value">${numberToWord(amountPaid)}</div>
           </div>
         </div>
+        
 
-        <h6 class="attendance-summary-title">Attendance Summary ${getMonthName(month)} ${year}</h6>
+    <h6 class="attendance-summary-title">Salary Deduction Calculation (${getMonthName(month)} ${year})</h6>
+
+    <div class="attendance-summary">
+      <div class="attendance-row">
+        <div class="attendance-column">
+          <div class="attendance-title">Required Working Hours</div>
+          <div class="attendance-data">${salaryData[0]?.companyWorkingHours}</div>
+        </div>
+        <div class="attendance-column">
+          <div class="attendance-title">Worked Hours</div>
+          <div class="attendance-data">${salaryData[0]?.employeeHoursWorked}</div>
+        </div>
+        <div class="attendance-column">
+          <div class="attendance-title">Shortfall Hours</div>
+          <div class="attendance-data">${salaryData[0]?.employeeHoursShortfall}</div>
+        </div>
+        <div class="attendance-column">
+          <div class="attendance-title">Deduction Days</div>
+          <div class="attendance-data">${salaryData[0]?.employeeHoursShortfall} / ${salaryData[0]?.workingHoursPerDay} = ${salaryData[0]?.deductionDays}</div>
+        </div>
+        <div class="attendance-column">
+          <div class="attendance-title">Amount Deducted</div>
+          <div class="attendance-data">${salaryData[0]?.deductionDays} × ₹${salaryData[0]?.dailySalary} = ${salaryData[0]?.totalDeduction}</div>
+        </div>
+      </div>
+    </div>
+
+        <h6 class="attendance-summary-title">Attendance Summary (${getMonthName(month)} ${year})</h6>
+
         <div class="attendance-summary">
           <div class="attendance-row">
             <div class="attendance-column">
               <div class="attendance-title">Present</div>
-              <div class="attendance-data">${monthlyStatic?.employeePresentDays}</div>
+              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeePresentDays}</div>
+            </div>
+            <div class="attendance-column">
+              <div class="attendance-title">Half Day</div>
+              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeeHalfDays}</div>
             </div>
             <div class="attendance-column">
               <div class="attendance-title">Absent</div>
-              <div class="attendance-data">${monthlyStatic?.employeeAbsentDays}</div>
+              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeeAbsentDays}</div>
             </div>
             <div class="attendance-column">
               <div class="attendance-title">Leave</div>
-              <div class="attendance-data">${monthlyStatic?.employeeLeaveDays}</div>
+              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeeLeaveDays}</div>
             </div>
             <div class="attendance-column">
               <div class="attendance-title">Comp Off</div>
-              <div class="attendance-data">${monthlyStatic?.employeeCompOffDays}</div>
+              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeeCompOffDays}</div>
             </div>
             <div class="attendance-column">
               <div class="attendance-title">Weekly Off</div>
-              <div class="attendance-data">${monthlyStatic?.totalSundays}</div>
+              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.totalSundays}</div>
             </div>
             <div class="attendance-column">
               <div class="attendance-title">Holiday</div>
-              <div class="attendance-data">${monthlyStatic?.totalHolidays}</div>
+              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.totalHolidays}</div>
             </div>
           </div>
         </div>
@@ -577,50 +582,53 @@ const SalarySlip = ({ navigation }) => {
 
         <div class="page-break"></div>
 
-        <img src="${office[0]?.logo}" class="logo-section second-page-logo" alt="logo" />
+        <img src="${employee?.office?.logo}" class="logo-section second-page-logo" alt="logo" />
 
         <div class="company-details">
-          <h4 class="company-name">${office[0]?.name}</h4>
+          <h4 class="company-name">${employee?.office?.name}</h4>
           <hr />
         </div>
 
         <!-- Attendance table with summary -->
         ${attendanceHTML}
 
-        <h6 class="attendance-summary-title">Attendance Summary ${getMonthName(month)} ${year}</h6>
+        <h6 class="attendance-summary-title">Attendance Summary (${getMonthName(month)} ${year})</h6>
+        
         <div class="attendance-summary">
           <div class="attendance-row">
             <div class="attendance-column">
               <div class="attendance-title">Present</div>
-              <div class="attendance-data">${monthlyStatic?.employeePresentDays}</div>
+              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeePresentDays}</div>
             </div>
             <div class="attendance-column">
               <div class="attendance-title">Absent</div>
-              <div class="attendance-data">${monthlyStatic?.employeeAbsentDays}</div>
+              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeeAbsentDays}</div>
+            </div>
+            <div class="attendance-column">
+              <div class="attendance-title">Half Day</div>
+              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeeHalfDays}</div>
             </div>
             <div class="attendance-column">
               <div class="attendance-title">Leave</div>
-              <div class="attendance-data">${monthlyStatic?.employeeLeaveDays}</div>
+              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeeLeaveDays}</div>
             </div>
             <div class="attendance-column">
               <div class="attendance-title">Comp Off</div>
-              <div class="attendance-data">${monthlyStatic?.employeeCompOffDays}</div>
+              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.employeeCompOffDays}</div>
             </div>
             <div class="attendance-column">
               <div class="attendance-title">Weekly Off</div>
-              <div class="attendance-data">${monthlyStatic?.totalSundays}</div>
+              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.totalSundays}</div>
             </div>
             <div class="attendance-column">
               <div class="attendance-title">Holiday</div>
-              <div class="attendance-data">${monthlyStatic?.totalHolidays}</div>
+              <div class="attendance-data">${monthlyStatic?.monthlyStatics?.totalHolidays}</div>
             </div>
           </div>
         </div>
 
         <p class="footer">This is a digitally generated document and does not require a signature or seal.</p>
       </div>
-    </div>
-  </div>
  </body>
 
 </html>`;
