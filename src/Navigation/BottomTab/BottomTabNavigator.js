@@ -2,19 +2,23 @@ import React, { Suspense, lazy, useEffect, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/Ionicons";
 import { ActivityIndicator, View } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAuth } from "../../Context/auth.context.js";
 import HomeScreen from "../../Screens/Home/HomeScreen.js";
 import ClientHomeScreen from "../../Screens/ClientHome/ClientHomeScreen.js";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Lazy load the screens
 const NotificationTobTab = lazy(() => import("../TopTab/NotificationTopTab/NotificationTopTab.js"),);
 const CustomDrawerNavigator = lazy(() => import("../Drawer/CustomDrawerNavigator.js"));
 const ProfileScreen = lazy(() => import("../../Screens/Profile/ProfileScreen.js"));
 const ClientProfileScreen = lazy(() => import("../../Screens/ClientProfile/ClientProfileScreen.js"));
+const LoginScreen = lazy(() => import("../../Screens/Auth/LoginScreen.js"));
+const ServiceScreen = lazy(() => import("../../Screens/Service/ServiceScreen.js"));
 
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator = () => {
+  const { isLoggedIn } = useAuth();
   const [userType, setUserType] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -37,6 +41,7 @@ const BottomTabNavigator = () => {
     Home: "home-outline",
     Profile: "person-outline",
     Notifications: "notifications-outline",
+    Service: "briefcase-outline",
     Menu: "menu-outline",
   };
 
@@ -56,7 +61,7 @@ const BottomTabNavigator = () => {
         </View>
       }>
       <Tab.Navigator
-        initialRouteName={userType === "Client" ? "ClientHome" : "Home"}
+        initialRouteName="Home"
         backBehavior="history"
         screenOptions={({ route }) => ({
           headerShown: false,
@@ -78,19 +83,28 @@ const BottomTabNavigator = () => {
           },
         })}>
         {
-          (userType === "Client") ? (
-            <>
-              <Tab.Screen name="Home" component={ClientHomeScreen} />
-              <Tab.Screen name="Profile" component={ClientProfileScreen} />
-            </>
+          (isLoggedIn && userType === "Employee") ? (
+            <Tab.Screen name="Home" component={HomeScreen} />
           ) : (
-            <>
-              <Tab.Screen name="Home" component={HomeScreen} />
-              <Tab.Screen name="Profile" component={ProfileScreen} />
-            </>
+            <Tab.Screen name="Home" component={ClientHomeScreen} />
           )
         }
-        <Tab.Screen name="Notifications" component={NotificationTobTab} />
+        {
+          (!isLoggedIn) ? (
+            <Tab.Screen name="Profile" component={LoginScreen} options={{ tabBarLabel: "Login" }} />
+          ) : (userType === "Client") ? (
+            <Tab.Screen name="Profile" component={ClientProfileScreen} />
+          ) : (
+            <Tab.Screen name="Profile" component={ProfileScreen} />
+          )
+        }
+        {
+          (isLoggedIn && userType === "Employee") ? (
+            <Tab.Screen name="Notifications" component={NotificationTobTab} />
+          ) : (
+            <Tab.Screen name="Service" component={ServiceScreen} />
+          )
+        }
         <Tab.Screen name="Menu" component={CustomDrawerNavigator} />
       </Tab.Navigator>
     </Suspense>

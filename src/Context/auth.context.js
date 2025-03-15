@@ -64,11 +64,10 @@ export const AuthProvider = ({ children }) => {
         };
         refreshTeamData(storedToken[1]);
       } else {
-        Toast.show({ type: "info", text1: "Please login to continue." });
+        Toast.show({ type: "info", text1: "Login to continue" });
       };
     } catch (error) {
-      await logOutTeam();
-      Toast.show({ type: "error", text1: "Session expired, login again to continue." });
+      console.log("Error:", error?.message);
     } finally {
       setIsLoading(false);
     };

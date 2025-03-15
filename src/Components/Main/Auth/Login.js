@@ -16,14 +16,14 @@ import { API_BASE_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ScrollView } from "react-native-gesture-handler";
 
-const Login = () => {
+const Login = (props) => {
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [isClientLogin, setIsClientLogin] = useState(false);
   const { storeToken } = useAuth();
 
-  const fetchUserType = async () => {
+  const fetchUserType = async (props) => {
     const userType = await AsyncStorage.getItem("userType");
     if (userType === "Client") {
       setIsClientLogin(true);
@@ -57,7 +57,8 @@ const Login = () => {
         setPassword("");
         await AsyncStorage.setItem("userType", isClientLogin ? "Client" : "Employee");
         storeToken(response?.data?.token);
-        Toast.show({ type: "success", text1: "Login Successful" });
+        Toast.show({ type: "success", text1: "Login Successful" })
+        props.navigation.navigate("Home");
       } else {
         Toast.show({ type: "error", text1: "Login failed. Please try again." });
       };

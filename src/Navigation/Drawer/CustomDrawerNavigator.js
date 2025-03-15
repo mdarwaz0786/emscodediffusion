@@ -1,14 +1,32 @@
-import React from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, ActivityIndicator } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useAuth } from "../../Context/auth.context.js";
 import Logo from "../../Assets/logo.png";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CustomDrawerNavigator = () => {
   const navigation = useNavigation();
-  const { team } = useAuth();
+  const { team, isLoggedIn } = useAuth();
+  const [userType, setUserType] = useState(null);
+  const [loading, setLoading] = useState(true);
   const fieldPermissions = team?.role?.permissions?.attendance?.fields;
+
+  const fetchUserType = async () => {
+    try {
+      const type = await AsyncStorage.getItem("userType");
+      setUserType(type);
+    } catch (error) {
+      console.log("Error:", error.message);
+    } finally {
+      setLoading(false);
+    };
+  };
+
+  useEffect(() => {
+    fetchUserType();
+  }, []);
 
   const drawerItems = [
     {
@@ -70,7 +88,7 @@ const CustomDrawerNavigator = () => {
     },
     {
       label: "Apply For Comp Off",
-      icon: "briefcase-outline",
+      icon: "bed-outline",
       route: "ApplyCompOff",
       show: fieldPermissions?.applyCompOff?.show,
     },
@@ -99,28 +117,34 @@ const CustomDrawerNavigator = () => {
       show: fieldPermissions?.ticket?.show,
     },
     {
+      label: "Service",
+      icon: "briefcase-outline",
+      route: "Service",
+      show: userType === "Employee" ? true : false,
+    },
+    {
       label: "About Us",
       icon: "information-circle-outline",
       route: "About",
-      show: fieldPermissions?.aboutUs?.show,
+      show: true,
     },
     {
       label: "Contact Us",
       icon: "call-outline",
       route: "Contact",
-      show: fieldPermissions?.contactUs?.show,
+      show: true,
     },
     {
       label: "Help & Support",
       icon: "help-circle-outline",
       route: "Help",
-      show: fieldPermissions?.helpAndSupport?.show,
+      show: true,
     },
     {
       label: "Logout",
       icon: "log-out-outline",
       route: "Logout",
-      show: true,
+      show: isLoggedIn ? true : false,
     },
   ];
 
@@ -134,6 +158,14 @@ const CustomDrawerNavigator = () => {
     } else {
       navigation.navigate(item.route);
     };
+  };
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#ffb300" />
+      </View>
+    );
   };
 
   return (

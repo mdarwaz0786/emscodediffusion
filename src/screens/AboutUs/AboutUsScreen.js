@@ -21,7 +21,7 @@ const AboutUsScreen = ({ navigation }) => {
         {/* Banner */}
         <View style={styles.bannerContainer}>
           <Image
-            source={require("../../Assets/company-banner.jpg")}
+            source={require("../../Assets/banner2.png")}
             style={styles.banner}
             resizeMode={FastImage.resizeMode.contain}
           />
@@ -46,7 +46,7 @@ const AboutUsScreen = ({ navigation }) => {
         <Text style={styles.subHeader}>What We Offer ?</Text>
         <View style={styles.list}>
           <Text style={styles.listItem}>💻 Custom Web Development</Text>
-          <Text style={styles.listItem}>📱 Mobile-Friendly Design</Text>
+          <Text style={styles.listItem}>📱 Mobile App Development</Text>
           <Text style={styles.listItem}>🔍 SEO Optimization</Text>
           <Text style={styles.listItem}>📊 E-Commerce Solutions</Text>
           <Text style={styles.listItem}>🔧 Maintenance & Support</Text>
@@ -61,7 +61,7 @@ const AboutUsScreen = ({ navigation }) => {
 
         <Text style={styles.subHeader}>Our History</Text>
         <Text style={styles.text}>
-          Established in 2015, we have spent over a decade building a reputation
+          Established in 2012, we have spent over a decade building a reputation
           for exceptional service and innovative solutions. From small startups
           to established enterprises, we've been a part of many success stories.
         </Text>
@@ -79,13 +79,13 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 10,
+    paddingTop: 0,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     padding: 12,
     backgroundColor: "#fff",
-
     zIndex: 1000,
   },
   headerTitle: {
@@ -98,19 +98,17 @@ const styles = StyleSheet.create({
   bannerContainer: {
     flexDirection: "column",
     alignItems: "center",
-    marginTop: -10,
   },
   banner: {
     width: "115%",
     height: 130,
-    resizeMode: "contain",
   },
   subHeader: {
     fontSize: 15,
     fontWeight: "400",
     color: "#333",
     marginTop: 10,
-    marginBottom: 5,
+    marginBottom: 2,
   },
   text: {
     fontSize: 14,

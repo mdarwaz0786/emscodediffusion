@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { View, ScrollView, Text, StyleSheet, Image, Dimensions, Linking, TouchableOpacity } from "react-native";
 const { width } = Dimensions.get("window");
 
-const CompanyHome = () => {
+const ClientHome = () => {
   const banners = [
     { id: "1", image: require("../../../Assets/banner1.png") },
     { id: "2", image: require("../../../Assets/banner2.png") },
@@ -216,4 +216,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CompanyHome;
+export default ClientHome;

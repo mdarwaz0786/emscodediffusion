@@ -8,10 +8,7 @@ const Logout = (props) => {
   const performLogout = () => {
     setTimeout(async () => {
       await logOutTeam();
-      props.navigation.reset({
-        index: 0,
-        routes: [{ name: "Login" }],
-      });
+      props.navigation.navigate("Home");
     }, 1000);
   };
 
