@@ -2,7 +2,13 @@ import React from "react";
 import { View, ScrollView, Text, StyleSheet, Image, TouchableOpacity, Linking } from "react-native";
 
 const Service = () => {
+  const url = "https://www.google.com/maps/place/Code+Diffusion+-+Mobile+Application+Development+Company+in+Delhi/@28.6290378,77.0703847,2542m/data=!3m3!1e3!4b1!5s0x396421a66a15b5f7:0x171170d419f52b5f!4m6!3m5!1s0x390d053a2359d897:0x7ade773a38d4c83d!8m2!3d28.6290194!4d77.0806845!16s%2Fg%2F11c2p478_s?entry=ttu&g_ep=EgoyMDI1MDMxMi4wIKXMDSoASAFQAw%3D%3D";
+
   const handleContactPress = (url) => {
+    Linking.openURL(url);
+  };
+
+  const openGoogleMaps = () => {
     Linking.openURL(url);
   };
 
@@ -53,8 +59,27 @@ const Service = () => {
         </Text>
       </View>
 
+      <View style={styles.serviceSection}>
+        <Image source={require("../../../Assets/graphic-designing.png")} style={styles.serviceImage} />
+        <Text style={styles.serviceTitle}>Graphic Designing</Text>
+        <Text style={styles.serviceDescription}>
+          Our creative graphic designing services cater to businesses looking for high-quality visual communication. From logo design, business cards, brochures, and social media graphics to complete branding solutions, we craft visually appealing designs that enhance your brand identity. Our team ensures that every design aligns with your business goals and resonates with your target audience.
+        </Text>
+      </View>
+
+      <View style={styles.serviceSection}>
+        <Image source={require("../../../Assets/industrial-training.jpg")} style={styles.serviceImage} />
+        <Text style={styles.serviceTitle}>Industrial Training</Text>
+        <Text style={styles.serviceDescription}>
+          Our industrial training programs provide hands-on experience in various technologies such as web development, mobile app development, UI/UX design, and digital marketing. Designed for students and professionals, our training programs help bridge the gap between theoretical knowledge and practical industry demands. With expert mentors, real-world projects, and certification, we prepare individuals for successful careers in the tech industry.
+        </Text>
+      </View>
+
       <View style={styles.contactSection}>
         <Text style={styles.contactTitle}>Get in Touch</Text>
+        <TouchableOpacity onPress={openGoogleMaps}>
+          <Text style={styles.contactText}>📍 Plot no 24, 2nd floor Sewak park Dwarka more New delhi - 110059</Text>
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => handleContactPress('mailto:info@codediffusion.in')}>
           <Text style={styles.contactText}>📩 info@codediffusion.in</Text>
         </TouchableOpacity>
@@ -75,7 +100,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8f9fa",
   },
   headerContainer: {
-    padding: 20,
+    padding: 10,
     backgroundColor: "#2c3e50",
     alignItems: "center",
   },
@@ -85,11 +110,11 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   headerSubtitle: {
-    fontSize: 14,
+    fontSize: 15,
     color: "#d1d1d1",
   },
   serviceSection: {
-    padding: 20,
+    padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
     alignItems: "center",
@@ -115,18 +140,18 @@ const styles = StyleSheet.create({
   contactSection: {
     padding: 20,
     backgroundColor: "#2c3e50",
-    alignItems: "center",
   },
   contactTitle: {
     fontSize: 16,
     fontWeight: "500",
     color: "#fff",
     marginBottom: 10,
+    textAlign: "center",
   },
   contactText: {
     fontSize: 14,
     color: "#ddd",
-    marginBottom: 5,
+    marginBottom: 10,
   },
 });
 

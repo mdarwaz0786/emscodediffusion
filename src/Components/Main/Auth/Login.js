@@ -58,7 +58,6 @@ const Login = (props) => {
         await AsyncStorage.setItem("userType", isClientLogin ? "Client" : "Employee");
         storeToken(response?.data?.token);
         Toast.show({ type: "success", text1: "Login Successful" })
-        props.navigation.navigate("Home");
       } else {
         Toast.show({ type: "error", text1: "Login failed. Please try again." });
       };
