@@ -15,9 +15,10 @@ import { API_BASE_URL } from "@env";
 import axios from "axios";
 import updateLocalStorageFields from "./utils/updateLocalStorageFields.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Icon from "react-native-vector-icons/Ionicons";
 
-const ClientProfileScreen = () => {
-  const { team, setTeam, validToken } = useAuth();
+const ClientProfileScreen = ({ navigation }) => {
+  const { team, setTeam, validToken, isLoggedIn, logOutTeam } = useAuth();
   const id = team?._id;
   const [name, setName] = useState(team?.name);
   const [email, setEmail] = useState(team?.email);
@@ -83,6 +84,11 @@ const ClientProfileScreen = () => {
     };
   };
 
+  const handleLogout = () => {
+    logOutTeam();
+    navigation.navigate("Home");
+  };
+
   return (
     <>
       {
@@ -104,6 +110,11 @@ const ClientProfileScreen = () => {
                 <Text style={styles.name}>{team?.name}</Text>
                 <Text style={styles.designation}>{team?.role?.name}</Text>
               </View>
+              {isLoggedIn && (
+                <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+                  <Icon name="log-out-outline" size={24} color="#ffb300" />
+                </TouchableOpacity>
+              )}
             </View>
 
             <View style={styles.infoCard}>

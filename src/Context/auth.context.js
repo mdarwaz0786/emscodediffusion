@@ -46,6 +46,7 @@ export const AuthProvider = ({ children }) => {
       setToken(null);
       setTeam(null);
       await AsyncStorage.removeItem("token");
+      await AsyncStorage.removeItem("userType");
       Toast.show({ type: "success", text1: "Logout successful" });
     } catch (error) {
       Toast.show({ type: "error", text1: "Logout failed. Please try again." });

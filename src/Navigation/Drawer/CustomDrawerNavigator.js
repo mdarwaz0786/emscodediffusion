@@ -8,7 +8,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CustomDrawerNavigator = () => {
   const navigation = useNavigation();
-  const { team, isLoggedIn } = useAuth();
+  const { team, isLoggedIn, logOutTeam } = useAuth();
   const [userType, setUserType] = useState(null);
   const [loading, setLoading] = useState(true);
   const fieldPermissions = team?.role?.permissions?.attendance?.fields;
@@ -27,6 +27,11 @@ const CustomDrawerNavigator = () => {
   useEffect(() => {
     fetchUserType();
   }, []);
+
+  const handleLogout = () => {
+    logOutTeam();
+    navigation.navigate("Home");
+  };
 
   const drawerItems = [
     {
@@ -120,7 +125,7 @@ const CustomDrawerNavigator = () => {
       label: "Service",
       icon: "briefcase-outline",
       route: "Service",
-      show: userType === "Employee" ? true : false,
+      show: (userType === "Employee" && isLoggedIn) ? true : false,
     },
     {
       label: "About Us",
@@ -139,12 +144,6 @@ const CustomDrawerNavigator = () => {
       icon: "help-circle-outline",
       route: "Help",
       show: true,
-    },
-    {
-      label: "Logout",
-      icon: "log-out-outline",
-      route: "Logout",
-      show: isLoggedIn ? true : false,
     },
   ];
 
@@ -174,6 +173,11 @@ const CustomDrawerNavigator = () => {
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
           <Image source={Logo} style={styles.logo} />
         </TouchableOpacity>
+        {isLoggedIn && (
+          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+            <Icon name="log-out-outline" size={24} color="#ffb300" />
+          </TouchableOpacity>
+        )}
       </View>
       <ScrollView style={styles.container}>
         <View style={styles.sidebar}>
@@ -201,11 +205,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    paddingRight: 20,
+    paddingTop: 10,
   },
   logo: {
     width: 100,
     height: 50,
     resizeMode: "contain",
+  },
+  logoutButton: {
+    justifyContent: "center",
+    alignItems: "center",
   },
   container: {
     flex: 1,

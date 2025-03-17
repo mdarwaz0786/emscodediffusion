@@ -92,7 +92,7 @@ const BottomTabNavigator = () => {
         {
           (!isLoggedIn) ? (
             <Tab.Screen name="Profile" component={LoginScreen} options={{ tabBarLabel: "Login" }} />
-          ) : (userType === "Client") ? (
+          ) : (isLoggedIn && userType === "Client") ? (
             <Tab.Screen name="Profile" component={ClientProfileScreen} />
           ) : (
             <Tab.Screen name="Profile" component={ProfileScreen} />
