@@ -34,19 +34,19 @@ const Employee = ({ navigation }) => {
 
       if (response?.data?.success) {
         setEmployees(response?.data?.team);
-      }
+      };
     } catch (error) {
-      console.log(error.message);
+      console.log("Error:", error.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
-    }
+    };
   };
 
   useEffect(() => {
     if (validToken) {
       fetchAllEmployees();
-    }
+    };
   }, [validToken, refreshKey]);
 
   const navigateToAttendance = (id) => {
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderTopWidth: 1,
     borderTopColor: "#e0e0e0",
-    zIndex: -1,
+    zIndex: 1,
   },
   heading: {
     flexDirection: "row",
@@ -206,9 +206,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 5,
     position: "absolute",
-    top: -10,
-    right: 50,
+    top: -12,
+    right: 60,
     height: 60,
+    zIndex: 9999,
   },
   popupOption: {
     paddingVertical: 5,

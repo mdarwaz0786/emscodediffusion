@@ -26,7 +26,7 @@ const ClientHome = () => {
           return nextSlide;
         };
       });
-    }, 3000);
+    }, 2000);
 
     return () => clearInterval(interval);
   }, [activeSlide]);

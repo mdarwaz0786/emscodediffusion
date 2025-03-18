@@ -9,8 +9,8 @@ import {
   Linking,
   RefreshControl,
 } from "react-native";
-import FileViewer from 'react-native-file-viewer';
 import Icon from "react-native-vector-icons/Feather";
+import FileViewer from 'react-native-file-viewer';
 import RNHTMLtoPDF from "react-native-html-to-pdf";
 import RNFS from 'react-native-fs';
 import RNFetchBlob from 'rn-fetch-blob';
@@ -763,9 +763,10 @@ const SalarySlip = ({ navigation }) => {
                   ) : (
                     <TouchableOpacity
                       onPress={() => generatePDF(item?.month, item?.year, item?.transactionId, item?.amountPaid, item?._id)}
-                      style={[styles.button, { opacity: isDownloading ? 0.6 : 1 }]}
+                      style={[styles.button, { opacity: isDownloading ? 0.8 : 1 }]}
                       disabled={isDownloading}
                     >
+                      <Icon name="download" size={18} color="#555" style={styles.icon} />
                       <Text style={styles.buttonText}>Download</Text>
                     </TouchableOpacity>
                   )
@@ -816,16 +817,22 @@ const styles = StyleSheet.create({
     color: "#555",
   },
   button: {
-    backgroundColor: "#555",
-    paddingVertical: 6,
-    paddingHorizontal: 10,
+    flexDirection: "row",
+    backgroundColor: "#eee",
+    paddingVertical: 10,
+    paddingHorizontal: 15,
     borderRadius: 8,
     alignItems: "center",
+    justifyContent: "center",
   },
   buttonText: {
-    color: "#fff",
+    color: "#555",
     fontWeight: "400",
     fontSize: 14,
+    marginLeft: 8,
+  },
+  icon: {
+    marginRight: 5,
   },
 });
 

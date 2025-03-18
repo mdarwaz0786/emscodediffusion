@@ -1,32 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, ActivityIndicator } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useAuth } from "../../Context/auth.context.js";
 import Logo from "../../Assets/logo.png";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const CustomDrawerNavigator = () => {
-  const navigation = useNavigation();
-  const { team, isLoggedIn, logOutTeam } = useAuth();
-  const [userType, setUserType] = useState(null);
-  const [loading, setLoading] = useState(true);
+const CustomDrawerNavigator = ({ navigation }) => {
+  const { team, isLoggedIn, isLoading, logOutTeam, userType } = useAuth();
   const fieldPermissions = team?.role?.permissions?.attendance?.fields;
-
-  const fetchUserType = async () => {
-    try {
-      const type = await AsyncStorage.getItem("userType");
-      setUserType(type);
-    } catch (error) {
-      console.log("Error:", error.message);
-    } finally {
-      setLoading(false);
-    };
-  };
-
-  useEffect(() => {
-    fetchUserType();
-  }, []);
 
   const handleLogout = () => {
     logOutTeam();
@@ -147,10 +127,9 @@ const CustomDrawerNavigator = () => {
     },
   ];
 
-  // Filter drawer items based on the permissions
+  // Filter drawer items based on the permission
   const visibleDrawerItems = drawerItems.filter((item) => item.show);
 
-  // Handle navigation
   const handleNavigation = (item) => {
     if (item.resetScreen) {
       navigation.navigate(item.route, { screen: item.resetScreen });
@@ -159,7 +138,7 @@ const CustomDrawerNavigator = () => {
     };
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color="#ffb300" />

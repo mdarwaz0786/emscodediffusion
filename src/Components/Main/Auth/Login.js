@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -22,19 +22,7 @@ const Login = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [isClientLogin, setIsClientLogin] = useState(false);
   const { storeToken } = useAuth();
-
-  const fetchUserType = async (props) => {
-    const userType = await AsyncStorage.getItem("userType");
-    if (userType === "Client") {
-      setIsClientLogin(true);
-    } else {
-      setIsClientLogin(false);
-    };
-  };
-
-  useEffect(() => {
-    fetchUserType();
-  }, []);
+  const userType = isClientLogin ? "Client" : "Employee";
 
   const handleLogin = async () => {
     setLoading(true);
@@ -55,10 +43,10 @@ const Login = ({ navigation }) => {
       if (response?.data?.success) {
         setLoginId("");
         setPassword("");
-        await AsyncStorage.setItem("userType", isClientLogin ? "Client" : "Employee");
-        storeToken(response?.data?.token);
+        const token = response?.data?.token;
+        storeToken(token, userType);
         Toast.show({ type: "success", text1: "Login Successful" });
-        navigation.navigate("BottomTabNavigator");
+        navigation.navigate("Home");
       } else {
         Toast.show({ type: "error", text1: "Login failed. Please try again." });
       };

@@ -9,33 +9,18 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [team, setTeam] = useState(null);
+  const [userType, setUserType] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-
   const isLoggedIn = !!token;
   const validToken = token ? `Bearer ${token}` : null;
 
-  const storeToken = async (serverToken) => {
+  const storeToken = async (serverToken, user) => {
     try {
-      await AsyncStorage.setItem("token", serverToken);
-      const userType = await AsyncStorage.getItem("userType");
-      let response;
-
-      if (userType === "Client") {
-        response = await axios.get(`${API_BASE_URL}/api/v1/customer/loggedin-customer`, {
-          headers: { Authorization: `Bearer ${serverToken}` }
-        });
-      } else if (userType === "Employee") {
-        response = await axios.get(`${API_BASE_URL}/api/v1/team/loggedin-team`, {
-          headers: { Authorization: `Bearer ${serverToken}` }
-        });
-      };
-
-      if (response?.data?.success) {
-        const newTeam = response?.data?.team;
-        setTeam(newTeam);
-        setToken(serverToken);
-        await AsyncStorage.setItem("team", JSON.stringify(newTeam));
-      };
+      await Promise.all([
+        AsyncStorage.setItem("token", serverToken),
+        AsyncStorage.setItem("userType", user),
+      ]);
+      initializeAuth();
     } catch (error) {
       Toast.show({ type: "error", text1: "Login failed. Please try again." });
     };
@@ -45,9 +30,14 @@ export const AuthProvider = ({ children }) => {
     try {
       setToken(null);
       setTeam(null);
-      await AsyncStorage.removeItem("token");
-      await AsyncStorage.removeItem("userType");
+      setUserType(null);
+      await Promise.all([
+        AsyncStorage.removeItem("token"),
+        AsyncStorage.removeItem("userType"),
+        AsyncStorage.removeItem("team"),
+      ]);
       Toast.show({ type: "success", text1: "Logout successful" });
+      initializeAuth();
     } catch (error) {
       Toast.show({ type: "error", text1: "Logout failed. Please try again." });
     };
@@ -56,15 +46,15 @@ export const AuthProvider = ({ children }) => {
   const initializeAuth = async () => {
     try {
       setIsLoading(true);
-      const [storedToken, cachedTeam] = await AsyncStorage.multiGet(["token", "team"]);
-
-      if (storedToken[1]) {
+      const [storedToken, storedUserType] = await AsyncStorage.multiGet(["token", "userType"]);
+      if (storedToken[1] && storedUserType[1]) {
         setToken(storedToken[1]);
-        if (cachedTeam[1]) {
-          setTeam(JSON.parse(cachedTeam[1]));
-        };
-        refreshTeamData(storedToken[1]);
+        setUserType(storedUserType[1])
+        refreshTeamData(storedToken[1], storedUserType[1]);
       } else {
+        setToken(null);
+        setTeam(null);
+        setUserType(null);
         Toast.show({ type: "info", text1: "Login to continue" });
       };
     } catch (error) {
@@ -74,16 +64,14 @@ export const AuthProvider = ({ children }) => {
     };
   };
 
-  const refreshTeamData = async (token) => {
+  const refreshTeamData = async (token, user) => {
     try {
-      const userType = await AsyncStorage.getItem("userType");
       let response;
-
-      if (userType === "Client") {
+      if (user === "Client") {
         response = await axios.get(`${API_BASE_URL}/api/v1/customer/loggedin-customer`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-      } else if (userType === "Employee") {
+      } else if (user === "Employee") {
         response = await axios.get(`${API_BASE_URL}/api/v1/team/loggedin-team`, {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -95,7 +83,7 @@ export const AuthProvider = ({ children }) => {
         await AsyncStorage.setItem("team", JSON.stringify(newTeam));
       };
     } catch (error) {
-      console.log("Error while user refreshing data:", error?.response?.data?.message);
+      console.log("Error while refreshing user data:", error?.response?.data?.message);
     };
   };
 
@@ -103,15 +91,16 @@ export const AuthProvider = ({ children }) => {
     initializeAuth();
   }, []);
 
-  const value = useMemo(() => ({
+  const value = {
     storeToken,
     logOutTeam,
     isLoggedIn,
     team,
     setTeam,
     isLoading,
-    validToken
-  }), [isLoggedIn, team, isLoading, validToken]);
+    validToken,
+    userType,
+  };
 
   return (
     <AuthContext.Provider value={value}>

@@ -407,9 +407,10 @@ const ProformaInvoice = ({ navigation }) => {
         ) : (
           <TouchableOpacity
             onPress={() => generatePDF(item?._id)}
-            style={[styles.button, { opacity: isDownloading ? 0.6 : 1 }]}
+            style={[styles.button, { opacity: isDownloading ? 0.8 : 1 }]}
             disabled={isDownloading}
           >
+            <Icon name="download" size={18} color="#555" style={styles.icon} />
             <Text style={styles.buttonText}>Download</Text>
           </TouchableOpacity>
         )
@@ -483,16 +484,23 @@ const styles = StyleSheet.create({
     color: "#555",
   },
   button: {
-    backgroundColor: "#555",
-    paddingVertical: 8,
-    borderRadius: 10,
+    flexDirection: "row",
+    backgroundColor: "#eee",
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 8,
     alignItems: "center",
+    justifyContent: "center",
     marginTop: 10,
   },
   buttonText: {
-    color: "#fff",
-    fontWeight: "500",
+    color: "#555",
+    fontWeight: "400",
     fontSize: 14,
+    marginLeft: 8,
+  },
+  icon: {
+    marginRight: 5,
   },
 });
 
